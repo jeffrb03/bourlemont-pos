@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso | Bourlemont Champagne Bar POS</title>
+  <link rel="stylesheet" href="/static/assets/css/apple-tinted.css">
+  <style>
+    .auth-canvas {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 20%, #1A1710 0%, #0A0A0C 75%);
+      padding: 20px;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 400px;
+      background-color: var(--bg-panel);
+      border: 1px solid var(--gold-subtle-border);
+      border-radius: var(--radius-xl);
+      padding: 36px 32px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), var(--shadow-gold-glow);
+      text-align: center;
+    }
+
+    .auth-logo-badge {
+      width: 58px;
+      height: 58px;
+      background: linear-gradient(135deg, var(--gold-primary), #8F7220);
+      border-radius: 16px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--gold-text-dark);
+      box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+    }
+
+    .auth-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .auth-sub {
+      font-size: 12px;
+      color: var(--gold-highlight-text);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 24px;
+    }
+
+    .auth-mode-switch {
+      display: flex;
+      background-color: var(--bg-surface);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      margin-bottom: 24px;
+      border: var(--hairline-border);
+    }
+
+    .auth-mode-tab {
+      flex: 1;
+      padding: 9px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border: none;
+      background: none;
+      transition: var(--transition-haptic);
+    }
+
+    .auth-mode-tab.active {
+      background-color: var(--gold-subtle-bg);
+      border: 1px solid var(--gold-subtle-border);
+      color: var(--gold-highlight-text);
+    }
+
+    /* Indicadores de PIN */
+    .pin-display-container {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .pin-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: var(--bg-surface);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.15s ease;
+    }
+
+    .pin-dot.filled {
+      background-color: var(--gold-primary);
+      border-color: var(--gold-highlight-text);
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.7);
+      transform: scale(1.15);
+    }
+
+    /* Teclado Táctil 3x4 */
+    .pinpad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .pin-key {
+      height: 64px;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-surface);
+      border: var(--hairline-border);
+      color: var(--text-primary);
+      font-size: 24px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-haptic);
+      outline: none;
+    }
+
+    .pin-key:hover {
+      background-color: var(--bg-surface-hover);
+      border-color: rgba(212, 175, 55, 0.3);
+    }
+
+    .pin-key:active {
+      transform: var(--scale-press);
+      background-color: var(--gold-subtle-bg);
+      border-color: var(--gold-primary);
+    }
+
+    .pin-key.action-key {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .pin-key.action-key:hover {
+      color: #FFF;
+    }
+
+    .auth-error {
+      color: var(--status-danger);
+      background: var(--status-danger-bg);
+      border: 1px solid var(--status-danger-border);
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .shake {
+      animation: shakeAnim 0.35s ease;
+    }
+
+    @keyframes shakeAnim {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    .demo-credentials-footer {
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: var(--hairline-border);
+      font-size: 11px;
+      color: var(--text-tertiary);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-canvas">
+    <div class="auth-card">
+      <div class="auth-logo-badge">B</div>
+      <h1 class="auth-title">Bourlemont</h1>
+      <div class="auth-sub">Champagne Bar · Sacatepéquez</div>
+
+      <!-- Selector de Modo -->
+      <div class="auth-mode-switch">
+        <button type="button" class="auth-mode-tab active" data-mode="pin">PIN Rápido</button>
+        <button type="button" class="auth-mode-tab" data-mode="admin">Credencial Admin</button>
+      </div>
+
+      <div id="login-error" class="auth-error"></div>
+
+      <!-- Sección de PIN Rápido para Bartenders -->
+      <div id="pin-section">
+        <div id="pin-display" class="pin-display-container">
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+        </div>
+
+        <div class="pinpad-grid">
+          <button type="button" class="pin-key" data-val="1">1</button>
+          <button type="button" class="pin-key" data-val="2">2</button>
+          <button type="button" class="pin-key" data-val="3">3</button>
+          <button type="button" class="pin-key" data-val="4">4</button>
+          <button type="button" class="pin-key" data-val="5">5</button>
+          <button type="button" class="pin-key" data-val="6">6</button>
+          <button type="button" class="pin-key" data-val="7">7</button>
+          <button type="button" class="pin-key" data-val="8">8</button>
+          <button type="button" class="pin-key" data-val="9">9</button>
+          <button type="button" class="pin-key action-key" data-val="clear">C</button>
+          <button type="button" class="pin-key" data-val="0">0</button>
+          <button type="button" class="pin-key action-key" data-val="back">⌫</button>
+        </div>
+      </div>
+
+      <!-- Sección de Credenciales para Administrador -->
+      <div id="admin-section" style="display: none;">
+        <form id="admin-form" style="display: flex; flex-direction: column; gap: 14px; text-align: left;">
+          <div>
+            <label style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Usuario Administrador</label>
+            <input type="text" id="admin-user" class="input-field" placeholder="Carlos Bourlemont" value="Carlos Bourlemont" required>
+          </div>
+          <div>
+            <label style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Contraseña de Seguridad</label>
+            <input type="password" id="admin-pass" class="input-field" placeholder="••••••••••••" value="admin_bourlemont_2026" required>
+          </div>
+          <button type="submit" class="btn btn-gold" style="width: 100%; margin-top: 10px; padding: 14px;">Ingresar a Gerencia</button>
+        </form>
+      </div>
+
+      <div class="demo-credentials-footer">
+        <strong>Acceso Rápido en Barra:</strong><br>
+        Mateo: <code>1234</code> · Sofía: <code>2468</code> · Alejandro: <code>7788</code><br>
+        Admin PIN: <code>9999</code> (o con contraseña)
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/static/assets/js/pinpad.js"></script>
+</body>
+</html>
