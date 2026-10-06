@@ -78,3 +78,31 @@ def obtener_perfil_actual(current_user: Usuario = Depends(get_current_user)):
 def listar_usuarios_activos(db: Session = Depends(get_db)):
     """Lista todos los colaboradores activos para selección rápida en barra."""
     return db.query(Usuario).filter(Usuario.activo == True).all()
+
+
+@router.get("/nit/{nit}")
+def buscar_receptor_por_nit(nit: str, current_user: Usuario = Depends(get_current_user)):
+    """
+    Stub de lookup de NIT en SAT / padrón fiscal local.
+    En producción conectar con la API FEL del proveedor certificado (Infile, Fel-Express, etc.).
+    Devuelve 404 si no se encuentra → el frontend deja el campo en blanco para ingreso manual.
+    """
+    from fastapi import HTTPException as _HTTPException
+
+    # CF siempre resuelve como Consumidor Final
+    if nit.upper() in ("CF", "C/F"):
+        return {"nit": "CF", "nombre": "CONSUMIDOR FINAL"}
+
+    # Padrón local de socios del club (ampliar según base de clientes)
+    padron_local: dict = {
+        "12345678": "Club Residencial Ciudad Vieja, S.A.",
+        "98765432": "Eventos Bourlemont, S.A.",
+    }
+
+    if nit in padron_local:
+        return {"nit": nit, "nombre": padron_local[nit]}
+
+    raise _HTTPException(
+        status_code=404,
+        detail=f"NIT {nit!r} no encontrado en padrón local."
+    )

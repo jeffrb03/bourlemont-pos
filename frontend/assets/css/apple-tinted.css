@@ -1,17 +1,20 @@
 /* ==============================================================
-   BOURLEMONT CHAMPAGNE BAR - APPLE TINTED DARK DESIGN SYSTEM
+   BOURLEMONT CHAMPAGNE BAR
+   APPLE TINTED DARK DESIGN SYSTEM — v2.0
    Human Interface Guidelines (HIG) Tinted Dark Mode
    ============================================================== */
 
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+
 :root {
-  /* Paleta Base */
+  /* ── Paleta Canvas ── */
   --bg-canvas: #0A0A0C;
   --bg-panel: #141416;
   --bg-surface: #1F1F23;
   --bg-surface-hover: #29292E;
   --bg-surface-active: #2F2F36;
 
-  /* Tinte Acento Bourlemont (Champagne Gold / Ámbar) */
+  /* ── Tinte Acento Bourlemont (Champagne Gold) ── */
   --gold-primary: #D4AF37;
   --gold-primary-hover: #E5C158;
   --gold-text-dark: #121008;
@@ -19,41 +22,65 @@
   --gold-subtle-border: #63522A;
   --gold-highlight-text: #F0C961;
 
-  /* Colores Semánticos */
+  /* ── Semántica de Estado ── */
   --status-success: #34C759;
   --status-warning: #FF9F0A;
   --status-danger: #FF453A;
   --status-danger-bg: rgba(255, 69, 58, 0.15);
   --status-danger-border: rgba(255, 69, 58, 0.4);
+  --status-info: #0A84FF;
 
-  /* Tipografía y Textos */
+  /* ── Tipografía ── */
   --text-primary: #FFFFFF;
   --text-secondary: #8E8E93;
   --text-tertiary: #5A5A5E;
-  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  --font-family: "Inter", -apple-system, BlinkMacSystemFont,
+                 "SF Pro Display", "SF Pro Text",
+                 "Segoe UI", Roboto, sans-serif;
 
-  /* Bordes y Geometría */
+  /* ── Bordes y Geometría ── */
   --hairline-border: 1px solid rgba(255, 255, 255, 0.08);
   --hairline-border-light: 1px solid rgba(255, 255, 255, 0.12);
+  --hairline-gold: 1px solid var(--gold-subtle-border);
+  --radius-xs: 6px;
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 18px;
   --radius-xl: 24px;
+  --radius-pill: 999px;
 
-  /* Animaciones y Físicas Hápticas Apple */
-  --transition-haptic: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.15s ease, border-color 0.15s ease;
+  /* ── Animaciones Apple Haptic Physics ── */
+  --transition-haptic: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1),
+                       background-color 0.15s ease,
+                       border-color 0.15s ease,
+                       box-shadow 0.15s ease;
   --scale-press: scale(0.96);
+
+  /* ── Sombras ── */
   --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.5);
-  --shadow-gold-glow: 0 0 25px rgba(212, 175, 55, 0.25);
+  --shadow-float: 0 12px 40px rgba(0, 0, 0, 0.7);
+  --shadow-gold-glow: 0 0 28px rgba(212, 175, 55, 0.22);
+  --shadow-gold-btn: 0 4px 14px rgba(212, 175, 55, 0.3);
+
+  /* ── Espaciado (Escala 4px) ── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
 }
 
-/* Reset Global */
+/* ═══════════════════════════════════════════════
+   RESET GLOBAL
+   ═══════════════════════════════════════════════ */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  user-select: none;
-  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -66,14 +93,23 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar Sutil */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Inputs y textareas sí admiten selección de texto */
+input, textarea, pre, code {
+  user-select: text;
+  -webkit-user-select: text;
 }
-::-webkit-scrollbar-track {
-  background: var(--bg-canvas);
+
+/* Lo demás: sin selección (táctil POS) */
+body > :not(input):not(textarea) {
+  user-select: none;
+  -webkit-user-select: none;
 }
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR SUTIL
+   ═══════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-canvas); }
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
@@ -82,7 +118,23 @@ body {
   background: rgba(212, 175, 55, 0.4);
 }
 
-/* Componentes de Botones con Compresión Háptica */
+/* ═══════════════════════════════════════════════
+   TIPOGRAFÍA
+   ═══════════════════════════════════════════════ */
+h1, h2, h3, h4 {
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ═══════════════════════════════════════════════
+   BOTONES — Sistema Haptic
+   ═══════════════════════════════════════════════ */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -91,6 +143,7 @@ body {
   padding: 12px 20px;
   font-size: 15px;
   font-weight: 600;
+  font-family: var(--font-family);
   border-radius: var(--radius-md);
   border: var(--hairline-border);
   background-color: var(--bg-surface);
@@ -99,6 +152,8 @@ body {
   transition: var(--transition-haptic);
   outline: none;
   text-decoration: none;
+  letter-spacing: 0.1px;
+  line-height: 1;
 }
 
 .btn:hover {
@@ -111,17 +166,26 @@ body {
   background-color: var(--bg-surface-active);
 }
 
-/* Botón Acción Crítica / Oro Primario */
+.btn:disabled,
+.btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  pointer-events: none;
+}
+
+/* Botón Acción Primaria — Champagne Gold */
 .btn-gold {
   background-color: var(--gold-primary);
   color: var(--gold-text-dark);
   border: 1px solid var(--gold-highlight-text);
-  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
+  box-shadow: var(--shadow-gold-btn);
 }
 
 .btn-gold:hover {
   background-color: var(--gold-primary-hover);
   border-color: #FFF;
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.45);
 }
 
 .btn-gold:active {
@@ -130,10 +194,10 @@ body {
   box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
 }
 
-/* Botón Sutil / Tinte Ámbar */
+/* Botón Sutil Ámbar */
 .btn-subtle-gold {
   background-color: var(--gold-subtle-bg);
-  border: 1px solid var(--gold-subtle-border);
+  border: var(--hairline-gold);
   color: var(--gold-highlight-text);
 }
 
@@ -161,15 +225,27 @@ body {
   transform: var(--scale-press);
 }
 
-/* Tarjetas y Paneles */
+/* ═══════════════════════════════════════════════
+   TARJETAS Y PANELES
+   ═══════════════════════════════════════════════ */
 .panel {
   background-color: var(--bg-panel);
   border: var(--hairline-border);
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: var(--space-5);
 }
 
-/* Inputs y Selectores */
+.panel-gold {
+  background-color: var(--bg-panel);
+  border: var(--hairline-gold);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-gold-glow);
+}
+
+/* ═══════════════════════════════════════════════
+   INPUTS Y SELECTORES
+   ═══════════════════════════════════════════════ */
 .input-field {
   width: 100%;
   padding: 14px 16px;
@@ -178,35 +254,40 @@ body {
   border-radius: var(--radius-md);
   color: var(--text-primary);
   font-size: 15px;
-  font-family: inherit;
+  font-family: var(--font-family);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 .input-field:focus {
   border-color: var(--gold-primary);
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.22);
 }
 
 .input-field::placeholder {
   color: var(--text-tertiary);
 }
 
-/* Etiquetas y Badges */
+/* ═══════════════════════════════════════════════
+   BADGES
+   ═══════════════════════════════════════════════ */
 .badge {
   display: inline-flex;
   align-items: center;
   padding: 4px 10px;
-  border-radius: 20px;
+  border-radius: var(--radius-pill);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.3px;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .badge-gold {
   background-color: var(--gold-subtle-bg);
-  border: 1px solid var(--gold-subtle-border);
+  border: var(--hairline-gold);
   color: var(--gold-highlight-text);
 }
 
@@ -228,7 +309,15 @@ body {
   color: var(--status-danger);
 }
 
-/* Barra Superior Global (Header) */
+.badge-info {
+  background-color: rgba(10, 132, 255, 0.15);
+  border: 1px solid rgba(10, 132, 255, 0.35);
+  color: var(--status-info);
+}
+
+/* ═══════════════════════════════════════════════
+   HEADER BAR GLOBAL
+   ═══════════════════════════════════════════════ */
 .header-bar {
   display: flex;
   align-items: center;
@@ -239,6 +328,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
+  gap: 16px;
 }
 
 .brand-section {
@@ -258,7 +348,8 @@ body {
   font-weight: 900;
   font-size: 20px;
   color: var(--gold-text-dark);
-  box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 2px 12px rgba(212, 175, 55, 0.35);
+  flex-shrink: 0;
 }
 
 .brand-title {
@@ -266,6 +357,7 @@ body {
   font-weight: 700;
   color: #FFF;
   letter-spacing: 0.5px;
+  line-height: 1.2;
 }
 
 .brand-subtitle {
@@ -273,12 +365,15 @@ body {
   color: var(--gold-highlight-text);
   text-transform: uppercase;
   letter-spacing: 1px;
+  line-height: 1.4;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
 }
 
 .nav-item {
@@ -289,6 +384,8 @@ body {
   font-size: 14px;
   font-weight: 500;
   transition: all 0.15s;
+  border: 1px solid transparent;
+  white-space: nowrap;
 }
 
 .nav-item:hover {
@@ -299,9 +396,10 @@ body {
 .nav-item.active {
   color: var(--gold-highlight-text);
   background-color: var(--gold-subtle-bg);
-  border: 1px solid var(--gold-subtle-border);
+  border-color: var(--gold-subtle-border);
 }
 
+/* ── Status Pill ── */
 .user-status-pill {
   display: flex;
   align-items: center;
@@ -309,8 +407,9 @@ body {
   padding: 6px 14px;
   background-color: var(--bg-surface);
   border: var(--hairline-border);
-  border-radius: 20px;
+  border-radius: var(--radius-pill);
   font-size: 13px;
+  white-space: nowrap;
 }
 
 .status-dot {
@@ -319,16 +418,19 @@ body {
   border-radius: 50%;
   background-color: var(--status-success);
   box-shadow: 0 0 8px var(--status-success);
+  flex-shrink: 0;
 }
 
-/* Modales */
+/* ═══════════════════════════════════════════════
+   MODALES — Con animación Apple Spring
+   ═══════════════════════════════════════════════ */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0, 0, 0, 0.78);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -336,6 +438,8 @@ body {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .modal-overlay.active {
@@ -345,14 +449,16 @@ body {
 
 .modal-content {
   background-color: var(--bg-panel);
-  border: 1px solid var(--gold-subtle-border);
+  border: var(--hairline-gold);
   border-radius: var(--radius-xl);
   padding: 28px;
   width: 90%;
   max-width: 520px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), var(--shadow-gold-glow);
-  transform: translateY(20px) scale(0.97);
-  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), var(--shadow-gold-glow);
+  transform: translateY(24px) scale(0.97);
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-overlay.active .modal-content {
@@ -380,9 +486,51 @@ body {
   color: var(--text-secondary);
   font-size: 22px;
   cursor: pointer;
-  padding: 4px;
+  padding: 4px 8px;
+  border-radius: var(--radius-xs);
+  line-height: 1;
+  transition: color 0.15s, background 0.15s;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .modal-close:hover {
   color: #FFF;
+  background-color: var(--bg-surface);
+}
+
+/* ═══════════════════════════════════════════════
+   ANIMACIONES GLOBALES
+   ═══════════════════════════════════════════════ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGold {
+  0%, 100% { box-shadow: 0 0 8px rgba(212, 175, 55, 0.3); }
+  50%       { box-shadow: 0 0 20px rgba(212, 175, 55, 0.6); }
+}
+
+.animate-in {
+  animation: fadeIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* ═══════════════════════════════════════════════
+   IMPRESIÓN GLOBAL — Ocultar UI en impresión
+   ═══════════════════════════════════════════════ */
+@media print {
+  .header-bar,
+  .nav-links,
+  .pos-catalog-area,
+  .pos-order-panel,
+  .modal-overlay:not(#ticket-modal),
+  .bl-toast {
+    display: none !important;
+  }
+
+  body {
+    background: #FFF !important;
+    color: #000 !important;
+  }
 }

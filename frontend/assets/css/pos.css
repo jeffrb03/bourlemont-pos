@@ -9,7 +9,7 @@
   overflow: hidden;
 }
 
-/* Área Izquierda: Catálogo y Productos */
+/* ─── Área Izquierda: Catálogo ─── */
 .pos-catalog-area {
   display: flex;
   flex-direction: column;
@@ -69,7 +69,7 @@
   min-width: 220px;
 }
 
-/* Grilla de Productos */
+/* ─── Grilla de Productos ─── */
 .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -82,13 +82,12 @@
 .product-card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   background-color: var(--bg-panel);
   border: var(--hairline-border);
   border-radius: var(--radius-lg);
-  padding: 16px;
+  padding: 0;
   cursor: pointer;
-  min-height: 140px;
+  min-height: 170px;
   transition: var(--transition-haptic);
   position: relative;
   overflow: hidden;
@@ -103,55 +102,88 @@
   height: 100%;
   background-color: transparent;
   transition: background-color 0.2s;
+  z-index: 1;
 }
 
 .product-card:hover {
   background-color: var(--bg-surface-hover);
-  border-color: rgba(212, 175, 55, 0.3);
+  border-color: rgba(212, 175, 55, 0.35);
   transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
 
 .product-card:hover::before {
   background-color: var(--gold-primary);
 }
 
-.product-card:active {
+.product-card:active,
+.product-card.pressed {
   transform: var(--scale-press);
+}
+
+/* Imagen / Silueta del producto */
+.product-card-img-wrap {
+  width: 100%;
+  height: 90px;
+  overflow: hidden;
+  background-color: #0d0d0f;
+  border-bottom: var(--hairline-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-card-img {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.85;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.product-card:hover .product-card-img {
+  opacity: 1;
+  transform: scale(1.04);
+}
+
+.product-card-body {
+  padding: 12px 14px 4px;
+  flex: 1;
 }
 
 .product-card.champagne {
   border-color: rgba(212, 175, 55, 0.2);
 }
 
-.product-card.coctel {
+.product-card.cocteles-autor {
   border-color: rgba(255, 159, 10, 0.2);
 }
 
 .product-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: #FFF;
   line-height: 1.3;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .product-meta {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .product-price-row {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  margin-top: 14px;
+  padding: 8px 14px 12px;
 }
 
 .product-price {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--gold-highlight-text);
 }
@@ -170,7 +202,7 @@
   border: 1px solid var(--status-danger-border);
 }
 
-/* Área Derecha: Comanda / Ticket Lateral */
+/* ─── Comanda Lateral ─── */
 .pos-order-panel {
   display: flex;
   flex-direction: column;
@@ -199,6 +231,8 @@
   border-radius: var(--radius-sm);
   color: #FFF;
   font-size: 14px;
+  font-family: var(--font-family);
+  cursor: pointer;
 }
 
 .order-items-list {
@@ -222,8 +256,8 @@
 }
 
 .empty-icon {
-  font-size: 40px;
-  opacity: 0.4;
+  font-size: 42px;
+  opacity: 0.35;
 }
 
 .order-item-row {
@@ -235,6 +269,7 @@
   border: var(--hairline-border);
   border-radius: var(--radius-md);
   transition: background-color 0.15s;
+  gap: 8px;
 }
 
 .order-item-row:hover {
@@ -243,13 +278,16 @@
 
 .order-item-info {
   flex: 1;
-  padding-right: 12px;
+  min-width: 0;
 }
 
 .order-item-name {
   font-size: 14px;
   font-weight: 600;
   color: #FFF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .order-item-unit-price {
@@ -262,6 +300,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .qty-btn {
@@ -278,17 +317,19 @@
   justify-content: center;
   cursor: pointer;
   transition: var(--transition-haptic);
+  line-height: 1;
 }
 
 .qty-btn:active {
   transform: var(--scale-press);
-  background-color: var(--bg-surface-hover);
+  background-color: var(--gold-subtle-bg);
+  border-color: var(--gold-subtle-border);
 }
 
 .qty-value {
   font-size: 14px;
   font-weight: 700;
-  min-width: 20px;
+  min-width: 22px;
   text-align: center;
   color: #FFF;
 }
@@ -297,8 +338,9 @@
   font-size: 14px;
   font-weight: 700;
   color: var(--gold-highlight-text);
-  min-width: 75px;
+  min-width: 70px;
   text-align: right;
+  flex-shrink: 0;
 }
 
 .delete-item-btn {
@@ -309,17 +351,18 @@
   padding: 4px 6px;
   font-size: 14px;
   transition: color 0.15s;
+  flex-shrink: 0;
 }
 
 .delete-item-btn:hover {
   color: var(--status-danger);
 }
 
-/* Pie de la Comanda con Totales y Botón Dorado */
+/* ─── Pie de la Comanda ─── */
 .order-panel-footer {
   padding: 20px;
   border-top: var(--hairline-border);
-  background-color: rgba(20, 20, 22, 0.95);
+  background-color: rgba(20, 20, 22, 0.98);
 }
 
 .order-summary-row {
@@ -360,7 +403,7 @@
   letter-spacing: 0.5px;
 }
 
-/* Modal de Cobro */
+/* ─── Modal de Cobro ─── */
 .payment-methods-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -388,6 +431,10 @@
   background-color: var(--bg-surface-hover);
 }
 
+.payment-method-btn:active {
+  transform: var(--scale-press);
+}
+
 .payment-method-btn.active {
   background-color: var(--gold-subtle-bg);
   border-color: var(--gold-primary);
@@ -400,17 +447,117 @@
   margin-top: 14px;
 }
 
+/* ─── Ticket Térmico ─── */
 .thermal-ticket-box {
   background-color: #000;
   border: 1px dashed var(--gold-subtle-border);
   color: #00FF66;
   font-family: "Courier New", Courier, monospace;
   font-size: 11px;
-  line-height: 1.3;
+  line-height: 1.4;
   padding: 16px;
   border-radius: var(--radius-sm);
   max-height: 350px;
   overflow-y: auto;
   white-space: pre-wrap;
   margin-top: 14px;
+}
+
+/* ─── Spinner Inline ─── */
+.spinner-inline {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #FFF;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Toast Animation ─── */
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   IMPRESIÓN TÉRMICA 80mm (ESC/POS)
+   ───────────────────────────────────────────────────────────── */
+@media print {
+  /* Ocultar TODA la UI excepto el contenedor del ticket */
+  body > *:not(#ticket-modal),
+  .header-bar,
+  .pos-container,
+  .pos-catalog-area,
+  .pos-order-panel,
+  #checkout-modal {
+    display: none !important;
+  }
+
+  /* El contenedor wrapper del ticket */
+  #ticket-modal {
+    display: block !important;
+    position: static !important;
+    background: none !important;
+  }
+
+  /* El overlay interno se vuelve estático */
+  #ticket-modal .modal-overlay {
+    position: static !important;
+    background: none !important;
+    display: block !important;
+    opacity: 1 !important;
+    backdrop-filter: none !important;
+    pointer-events: auto !important;
+  }
+
+  /* Cuadro del ticket centrado al ancho 80mm */
+  #ticket-modal .modal-content {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 72mm !important;
+    margin: 0 auto !important;
+    background: #FFF !important;
+    transform: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Ocultar controles del modal */
+  #ticket-modal .modal-header,
+  #ticket-modal button,
+  #ticket-modal #ticket-inventory-alerts {
+    display: none !important;
+  }
+
+  /* El pre con el ticket en blanco y negro */
+  .thermal-ticket-box {
+    background: #FFF !important;
+    color: #000 !important;
+    border: none !important;
+    font-size: 10px !important;
+    line-height: 1.35 !important;
+    padding: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+    page-break-inside: avoid;
+  }
+
+  /* Tamaño de página térmica 80mm */
+  @page {
+    size: 80mm auto;
+    margin: 3mm 2mm;
+  }
 }

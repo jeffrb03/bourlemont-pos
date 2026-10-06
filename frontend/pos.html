@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Punto de venta táctil con deducción algorítmica de mililitros por escandallo. Bourlemont Champagne Bar.">
   <title>Punto de Venta | Bourlemont Champagne Bar</title>
   <link rel="stylesheet" href="/static/assets/css/apple-tinted.css">
   <link rel="stylesheet" href="/static/assets/css/pos.css">
@@ -20,24 +21,24 @@
 
     <!-- Navegación de Módulos -->
     <nav class="nav-links">
-      <a href="/pos.html" class="nav-item active">Punto de Venta</a>
-      <a href="/inventario.html" class="nav-item">Inventario en ml</a>
-      <a href="/recetas.html" class="nav-item">Recetas & Escandallos</a>
-      <a href="/auditoria.html" class="nav-item admin-only">Auditoría de Pagos</a>
-      <a href="/dashboard.html" class="nav-item admin-only">Dashboard & Arqueos</a>
+      <a href="/pos.html" class="nav-item active" id="nav-pos">Punto de Venta</a>
+      <a href="/inventario.html" class="nav-item" id="nav-inv">Inventario en ml</a>
+      <a href="/recetas.html" class="nav-item" id="nav-rec">Recetas &amp; Escandallos</a>
+      <a href="/auditoria.html" class="nav-item admin-only" id="nav-aud">Auditoría de Pagos</a>
+      <a href="/dashboard.html" class="nav-item admin-only" id="nav-dash">Dashboard &amp; Arqueos</a>
     </nav>
 
-    <!-- Estado del Bartender y Bar -->
-    <div style="display: flex; align-items: center; gap: 14px;">
+    <!-- Bartender Activo -->
+    <div style="display: flex; align-items: center; gap: 14px; flex-shrink: 0;">
       <div class="user-status-pill">
         <div class="status-dot"></div>
         <div>
-          <strong id="header-user-name" style="color: #FFF;">Bartender</strong>
-          <span id="header-user-role" class="badge badge-gold" style="font-size: 10px; margin-left: 6px;">BARTENDER</span>
+          <strong id="header-user-name" style="color: #FFF; font-size: 14px;">Bartender</strong>
+          <span id="header-user-role" class="badge badge-gold" style="font-size: 10px; margin-left: 6px; vertical-align: middle;">BARTENDER</span>
         </div>
       </div>
-      <button id="logout-btn" class="btn btn-subtle-gold" style="padding: 8px 14px; font-size: 13px;" title="Cerrar Turno / Salir">
-        Bloquear
+      <button id="logout-btn" class="btn btn-subtle-gold" style="padding: 8px 14px; font-size: 13px;" title="Bloquear sesión / Salir">
+        🔒 Bloquear
       </button>
     </div>
   </header>
@@ -48,13 +49,15 @@
     <main class="pos-catalog-area">
       <div class="catalog-header">
         <div class="category-tabs">
-          <button class="category-tab active" data-cat="TODOS">Todos los Productos</button>
-          <button class="category-tab" data-cat="CHAMPAGNE">Champagne & Cavas</button>
-          <button class="category-tab" data-cat="COCTELES_AUTOR">Cócteles de Autor</button>
-          <button class="category-tab" data-cat="LICORES">Licores Premium</button>
+          <button class="category-tab active" data-cat="TODOS">Todos</button>
+          <button class="category-tab" data-cat="CHAMPAGNE">🍾 Champagne &amp; Cavas</button>
+          <button class="category-tab" data-cat="COCTELES_AUTOR">🍹 Cócteles de Autor</button>
+          <button class="category-tab" data-cat="LICORES">🥃 Licores Premium</button>
         </div>
         <div class="search-input-wrapper">
-          <input type="text" id="search-input" class="input-field" placeholder="Buscar champagne o cóctel..." style="padding: 10px 14px; font-size: 14px;">
+          <input type="search" id="search-input" class="input-field"
+                 placeholder="🔍 Buscar champagne o cóctel..."
+                 style="padding: 10px 14px; font-size: 14px;">
         </div>
       </div>
 
@@ -64,7 +67,7 @@
       </div>
     </main>
 
-    <!-- Área de Comanda Lateral (Derecha) -->
+    <!-- Comanda Lateral (Derecha) -->
     <aside class="pos-order-panel">
       <div class="order-panel-header">
         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -72,12 +75,14 @@
           <span class="badge badge-gold" style="font-size: 11px;">Consumo de Barra</span>
         </div>
         <div class="table-selector-row">
-          <label style="font-size: 12px; color: var(--text-secondary); white-space: nowrap;">Ubicación:</label>
+          <label style="font-size: 12px; color: var(--text-secondary); white-space: nowrap;">📍 Ubicación:</label>
           <select id="table-select" class="table-input">
             <option value="Barra 360 - Asiento 1">Barra 360 - Asiento 1</option>
             <option value="Barra 360 - Asiento 2">Barra 360 - Asiento 2</option>
             <option value="Barra 360 - Asiento 3">Barra 360 - Asiento 3</option>
             <option value="Barra 360 - Asiento 4">Barra 360 - Asiento 4</option>
+            <option value="Barra 360 - Asiento 5">Barra 360 - Asiento 5</option>
+            <option value="Barra 360 - Asiento 6">Barra 360 - Asiento 6</option>
             <option value="Mesa 1 (Jardín)">Mesa 1 (Jardín)</option>
             <option value="Mesa 2 (Lounge)">Mesa 2 (Lounge)</option>
             <option value="Mesa 3 (Cava Privada)">Mesa 3 (Cava Privada)</option>
@@ -86,16 +91,18 @@
         </div>
       </div>
 
-      <!-- Lista de Ítems en la Comanda -->
+      <!-- Lista de Ítems -->
       <div class="order-items-list" id="order-items-list">
         <div class="empty-order-state" id="empty-order-state">
           <div class="empty-icon">🥂</div>
           <div style="font-size: 15px; font-weight: 600; color: #FFF;">Comanda Vacía</div>
-          <p style="font-size: 13px; max-width: 200px;">Selecciona productos de la carta para agregar a la cuenta.</p>
+          <p style="font-size: 13px; max-width: 200px; color: var(--text-secondary);">
+            Selecciona productos de la carta para agregar a la cuenta.
+          </p>
         </div>
       </div>
 
-      <!-- Resumen de Totales y Acción de Cobro -->
+      <!-- Totales y Acción de Cobro -->
       <div class="order-panel-footer">
         <div class="order-summary-row">
           <span>Subtotal (Sin IVA):</span>
@@ -117,67 +124,81 @@
     </aside>
   </div>
 
-  <!-- Modal de Liquidación y Cobro FEL -->
-  <div class="modal-overlay" id="checkout-modal">
+  <!-- ─── MODAL: Liquidación y Cobro FEL ─── -->
+  <div class="modal-overlay" id="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-title">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">Liquidación & Cobro</h3>
-        <button class="modal-close">&times;</button>
+        <h3 class="modal-title" id="checkout-modal-title">💳 Liquidación &amp; Cobro</h3>
+        <button class="modal-close" aria-label="Cerrar">&times;</button>
       </div>
 
+      <!-- Método de Pago -->
       <div style="margin-bottom: 14px;">
-        <label style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Método de Pago</label>
+        <label style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
+          Método de Pago
+        </label>
         <div class="payment-methods-grid">
           <button type="button" class="payment-method-btn active" data-method="EFECTIVO">
-            <span style="font-size: 20px;">💵</span>
+            <span style="font-size: 22px;">💵</span>
             <span>Efectivo</span>
           </button>
           <button type="button" class="payment-method-btn" data-method="TARJETA_VISA">
-            <span style="font-size: 20px;">💳</span>
+            <span style="font-size: 22px;">💳</span>
             <span>Tarjeta Visa</span>
           </button>
           <button type="button" class="payment-method-btn" data-method="TARJETA_MASTERCARD">
-            <span style="font-size: 20px;">💳</span>
+            <span style="font-size: 22px;">💳</span>
             <span>Mastercard</span>
           </button>
           <button type="button" class="payment-method-btn" data-method="TRANSFERENCIA">
-            <span style="font-size: 20px;">🏦</span>
+            <span style="font-size: 22px;">🏦</span>
             <span>Transferencia</span>
           </button>
         </div>
       </div>
 
-      <!-- Propina Voluntaria -->
+      <!-- Propina -->
       <div style="margin-bottom: 16px;">
-        <label style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Propina del Servicio</label>
-        <div style="display: flex; gap: 8px; margin-top: 6px;">
+        <label style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
+          Propina del Servicio
+        </label>
+        <div style="display: flex; gap: 8px; margin-top: 8px;">
           <button type="button" class="btn btn-subtle-gold tip-btn" data-tip="0" style="flex: 1; padding: 8px;">0%</button>
           <button type="button" class="btn btn-subtle-gold tip-btn active" data-tip="10" style="flex: 1; padding: 8px;">10%</button>
           <button type="button" class="btn btn-subtle-gold tip-btn" data-tip="15" style="flex: 1; padding: 8px;">15%</button>
+          <button type="button" class="btn btn-subtle-gold tip-btn" data-tip="20" style="flex: 1; padding: 8px;">20%</button>
         </div>
       </div>
 
-      <!-- Datos Receptor Factura FEL -->
+      <!-- Datos Receptor FEL -->
       <div style="margin-bottom: 16px;">
-        <label style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Facturación Electrónica SAT (FEL)</label>
+        <label style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
+          Facturación Electrónica SAT (FEL)
+        </label>
         <div class="nit-input-row">
-          <input type="text" id="fel-nit" class="input-field" placeholder="NIT o CF" value="CF" style="flex: 1;">
-          <button type="button" id="btn-cf-fast" class="btn btn-subtle-gold" style="padding: 10px 14px;">CF</button>
+          <input type="text" id="fel-nit" class="input-field"
+                 placeholder="NIT o CF" value="CF"
+                 style="flex: 1;" autocomplete="off"
+                 inputmode="numeric">
+          <button type="button" id="btn-cf-fast" class="btn btn-subtle-gold" style="padding: 10px 16px; flex-shrink: 0;">CF</button>
         </div>
-        <input type="text" id="fel-nombre" class="input-field" placeholder="Nombre Receptor" value="CONSUMIDOR FINAL" style="margin-top: 8px;">
+        <input type="text" id="fel-nombre" class="input-field"
+               placeholder="Nombre Receptor"
+               value="CONSUMIDOR FINAL"
+               style="margin-top: 8px;" autocomplete="off">
       </div>
 
-      <!-- Resumen Previo al Cobro -->
+      <!-- Resumen -->
       <div class="panel" style="padding: 14px; margin-bottom: 20px; background-color: var(--bg-surface);">
-        <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">
-          <span>Consumo:</span>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); margin-bottom: 5px;">
+          <span>Consumo bruto:</span>
           <span id="modal-subtotal">Q 0.00</span>
         </div>
-        <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px;">
+        <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
           <span>Propina:</span>
           <span id="modal-tip">Q 0.00</span>
         </div>
-        <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: 800; color: var(--gold-highlight-text); border-top: var(--hairline-border); padding-top: 8px;">
+        <div style="display: flex; justify-content: space-between; font-size: 19px; font-weight: 800; color: var(--gold-highlight-text); border-top: var(--hairline-border); padding-top: 10px;">
           <span>Total a Pagar:</span>
           <span id="modal-total">Q 0.00</span>
         </div>
@@ -185,27 +206,34 @@
 
       <div style="display: flex; gap: 10px;">
         <button type="button" class="btn modal-cancel" style="flex: 1;">Cancelar</button>
-        <button type="button" id="confirm-payment-btn" class="btn btn-gold" style="flex: 2;">Confirmar y Emitir Factura</button>
+        <button type="button" id="confirm-payment-btn" class="btn btn-gold" style="flex: 2;">
+          Confirmar y Emitir Factura
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Modal Comprobante Térmico ESC/POS -->
-  <div class="modal-overlay" id="ticket-modal">
-    <div class="modal-content" style="max-width: 460px;">
-      <div class="modal-header">
-        <h3 class="modal-title">Ticket & Factura FEL</h3>
-        <button class="modal-close">&times;</button>
-      </div>
+  <!-- ─── MODAL: Ticket Térmico ESC/POS (solo este se imprime) ─── -->
+  <div id="ticket-modal">
+    <div class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="ticket-modal-title">
+      <div class="modal-content" style="max-width: 480px;">
+        <div class="modal-header">
+          <h3 class="modal-title" id="ticket-modal-title">🖨️ Ticket &amp; Factura FEL</h3>
+          <button class="modal-close" aria-label="Cerrar">&times;</button>
+        </div>
 
-      <div id="ticket-inventory-alerts" class="badge badge-warning" style="display: none; width: 100%; margin-bottom: 12px; padding: 10px; text-align: left; line-height: 1.4;">
-      </div>
+        <div id="ticket-inventory-alerts" class="badge badge-warning"
+             style="display: none; width: 100%; margin-bottom: 12px; padding: 10px; text-align: left; line-height: 1.5; font-size: 13px; text-transform: none; border-radius: var(--radius-md);">
+        </div>
 
-      <pre id="ticket-content-box" class="thermal-ticket-box"></pre>
+        <pre id="ticket-content-box" class="thermal-ticket-box"></pre>
 
-      <div style="display: flex; gap: 10px; margin-top: 18px;">
-        <button type="button" class="btn modal-close" style="flex: 1;">Cerrar</button>
-        <button type="button" id="print-ticket-btn" class="btn btn-gold" style="flex: 2;">🖨️ Imprimir Ticket</button>
+        <div style="display: flex; gap: 10px; margin-top: 18px;">
+          <button type="button" class="btn modal-close" style="flex: 1;">Cerrar</button>
+          <button type="button" id="print-ticket-btn" class="btn btn-gold" style="flex: 2;">
+            🖨️ Imprimir Ticket (80mm)
+          </button>
+        </div>
       </div>
     </div>
   </div>
