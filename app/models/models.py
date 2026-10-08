@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from decimal import Decimal
 from typing import List, Optional
 import enum
@@ -9,6 +9,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.db.base import Base
+
+TZ_GUATEMALA = timezone(timedelta(hours=-6))
 
 class RolUsuario(str, enum.Enum):
     ADMIN = "ADMIN"
@@ -57,6 +59,7 @@ class Usuario(Base):
     password_hash: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     rol: Mapped[RolUsuario] = mapped_column(SQLEnum(RolUsuario), default=RolUsuario.BARTENDER, nullable=False)
     activo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    foto_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, default=None)
 
     ordenes_creadas = relationship("Orden", back_populates="usuario_creacion")
     pagos_cobrados = relationship("TransaccionPago", back_populates="usuario_cobro")
@@ -76,6 +79,7 @@ class Producto(Base):
     stock_ml: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     stock_minimo_ml: Mapped[int] = mapped_column(Integer, default=750, nullable=False)
     unidad_medida: Mapped[str] = mapped_column(String(10), default="ml", nullable=False)
+    imagen_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     # Relaciones de escandallos
     recetas_como_final = relationship(
@@ -113,7 +117,7 @@ class Orden(Base):
     numero_mesa: Mapped[str] = mapped_column(String(50), nullable=False)
     id_usuario_creacion: Mapped[int] = mapped_column(Integer, ForeignKey("usuarios.id_usuario"), nullable=False)
     estado: Mapped[EstadoOrden] = mapped_column(SQLEnum(EstadoOrden), default=EstadoOrden.ABIERTA, nullable=False)
-    fecha_creacion: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    fecha_creacion: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone(timedelta(hours=-6))), nullable=False)
     fecha_cierre: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     total: Mapped[Decimal] = mapped_column(Numeric(10, 2), default=0.00, nullable=False)
 
@@ -148,7 +152,7 @@ class TransaccionPago(Base):
     metodo_pago: Mapped[MetodoPago] = mapped_column(SQLEnum(MetodoPago), nullable=False)
     monto_pagado: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     propina: Mapped[Decimal] = mapped_column(Numeric(10, 2), default=0.00, nullable=False)
-    fecha_transaccion: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    fecha_transaccion: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone(timedelta(hours=-6))), nullable=False)
 
     orden = relationship("Orden", back_populates="pagos")
     usuario_cobro = relationship("Usuario", back_populates="pagos_cobrados")
@@ -160,7 +164,7 @@ class ArqueoCaja(Base):
 
     id_arqueo: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     id_usuario: Mapped[int] = mapped_column(Integer, ForeignKey("usuarios.id_usuario"), nullable=False)
-    fecha_apertura: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    fecha_apertura: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone(timedelta(hours=-6))), nullable=False)
     fecha_cierre: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     fondo_inicial: Mapped[Decimal] = mapped_column(Numeric(10, 2), default=0.00, nullable=False)
     efectivo_declarado: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 2), nullable=True)
@@ -180,7 +184,7 @@ class BitacoraAuditoria(Base):
     id_usuario: Mapped[int] = mapped_column(Integer, ForeignKey("usuarios.id_usuario"), nullable=False)
     accion: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[str] = mapped_column(Text, nullable=False)
-    fecha: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    fecha: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone(timedelta(hours=-6))), nullable=False)
 
     usuario = relationship("Usuario", back_populates="logs_auditoria")
 

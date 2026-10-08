@@ -12,6 +12,7 @@ class UsuarioBase(BaseModel):
     nombre: str
     rol: RolUsuario
     activo: bool = True
+    foto_url: Optional[str] = None
 
 class UsuarioCreate(UsuarioBase):
     pin: str = Field(..., min_length=4, max_length=4, pattern=r"^\d{4}$")
@@ -26,7 +27,24 @@ class UsuarioLoginAdmin(BaseModel):
 
 class UsuarioResponse(UsuarioBase):
     id_usuario: int
+    fecha_creacion: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
+
+class UsuarioAdminCreate(BaseModel):
+    nombre: str
+    rol: RolUsuario = RolUsuario.BARTENDER
+    pin: Optional[str] = None
+    password: Optional[str] = None
+    activo: bool = True
+    foto_url: Optional[str] = None
+
+class UsuarioAdminUpdate(BaseModel):
+    nombre: Optional[str] = None
+    rol: Optional[RolUsuario] = None
+    pin: Optional[str] = None
+    password: Optional[str] = None
+    activo: Optional[bool] = None
+    foto_url: Optional[str] = None
 
 class TokenResponse(BaseModel):
     access_token: str
@@ -54,6 +72,7 @@ class ProductoBase(BaseModel):
     stock_ml: int = Field(default=0)
     stock_minimo_ml: int = Field(default=750, ge=0)
     unidad_medida: str = "ml"
+    imagen_url: Optional[str] = None
 
 class ProductoCreate(ProductoBase):
     recetas: Optional[List[RecetaInsumoItem]] = None
@@ -66,6 +85,7 @@ class ProductoUpdate(BaseModel):
     stock_ml: Optional[int] = None
     stock_minimo_ml: Optional[int] = None
     unidad_medida: Optional[str] = None
+    imagen_url: Optional[str] = None
 
 class ProductoResponse(ProductoBase):
     id_producto: int
@@ -77,6 +97,14 @@ class ProductoResponse(ProductoBase):
 class AsignarRecetaRequest(BaseModel):
     id_producto_final: int
     ingredientes: List[RecetaInsumoItem]
+
+class RecetaUpdate(BaseModel):
+    cantidad_descontar_ml: int = Field(..., gt=0)
+
+class RecetaIngredienteCreate(BaseModel):
+    id_producto_final: int
+    id_insumo_base: int
+    cantidad_descontar_ml: int = Field(..., gt=0)
 
 # ==================== ORDENES Y DETALLES ====================
 class ItemOrdenCreate(BaseModel):

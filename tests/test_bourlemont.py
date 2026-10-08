@@ -48,8 +48,8 @@ def test_algoritmo_atomico_escandallo_y_cobro():
     """
     db = SessionLocal()
     # Obtener stock inicial de insumos
-    tanqueray_antes = db.query(Producto).filter(Producto.nombre == "Gin Tanqueray No. TEN").first().stock_ml
-    moet_antes = db.query(Producto).filter(Producto.nombre == "Moët & Chandon Impérial Brut").first().stock_ml
+    tanqueray_antes = db.query(Producto).filter(Producto.nombre == "Gin Tanqueray (750 ml)").first().stock_ml
+    champagne_antes = db.query(Producto).filter(Producto.nombre == "Champagne Brut (750 ml)").first().stock_ml
     coctel_french = db.query(Producto).filter(Producto.nombre == "French 75 Bourlemont").first()
     db.close()
 
@@ -87,12 +87,12 @@ def test_algoritmo_atomico_escandallo_y_cobro():
 
     # 3. Validar deducción exacta en mililitros
     db2 = SessionLocal()
-    tanqueray_despues = db2.query(Producto).filter(Producto.nombre == "Gin Tanqueray No. TEN").first().stock_ml
-    moet_despues = db2.query(Producto).filter(Producto.nombre == "Moët & Chandon Impérial Brut").first().stock_ml
+    tanqueray_despues = db2.query(Producto).filter(Producto.nombre == "Gin Tanqueray (750 ml)").first().stock_ml
+    champagne_despues = db2.query(Producto).filter(Producto.nombre == "Champagne Brut (750 ml)").first().stock_ml
     db2.close()
 
     assert tanqueray_despues == tanqueray_antes - 90
-    assert moet_despues == moet_antes - 180
+    assert champagne_despues == champagne_antes - 180
 
 def test_auditoria_cambio_metodo_pago():
     """Prueba la corrección de un método de pago por el Administrador con bitácora."""

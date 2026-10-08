@@ -120,12 +120,26 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    // Limpieza de campos al alternar
+    const adminUserInput = document.getElementById("admin-user");
+    const adminPassInput = document.getElementById("admin-pass");
+    const btnAdminLogin = document.getElementById("btn-admin-login");
+    if (btnAdminLogin) {
+        btnAdminLogin.disabled = false;
+    }
+
     // Envío del formulario de Admin
     if (adminForm) {
         adminForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const nombre = document.getElementById("admin-user").value.trim();
-            const password = document.getElementById("admin-pass").value;
+            const nombre = adminUserInput ? adminUserInput.value.trim() : "";
+            const password = adminPassInput ? adminPassInput.value : "";
+
+            if (!nombre || !password) {
+                errorMsg.textContent = "Debe ingresar usuario y contraseña de administrador.";
+                errorMsg.style.display = "block";
+                return;
+            }
 
             errorMsg.style.display = "none";
             try {

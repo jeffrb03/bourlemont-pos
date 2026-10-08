@@ -1,347 +1,486 @@
 <!DOCTYPE html>
-<html lang="es">
+<html class="dark" lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Gerencial & Arqueos | Bourlemont POS</title>
-  <link rel="stylesheet" href="/static/assets/css/apple-tinted.css">
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta name="description" content="Dashboard Ejecutivo, Ventas en Tiempo Real y Arqueo Ciego Bourlemont Champagne Bar."/>
+  <title>Dashboard Gerencial &amp; Arqueos | Bourlemont POS</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/assets/css/pos.css"/>
   <style>
-    .dash-container {
-      padding: 28px;
-      max-width: 1400px;
-      margin: 0 auto;
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
     }
-
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-top: 20px;
-      margin-bottom: 28px;
-    }
-
-    .metric-card {
-      background-color: var(--bg-panel);
-      border: var(--hairline-border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-    }
-
-    .metric-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .metric-value {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--gold-highlight-text);
-      margin-top: 8px;
-    }
-
-    .two-col-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-bottom: 30px;
-    }
-
-    @media (max-width: 900px) {
-      .two-col-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .custom-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    .custom-table th {
-      background-color: var(--bg-surface);
-      padding: 12px 16px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--gold-highlight-text);
-      border-bottom: var(--hairline-border);
-      text-transform: uppercase;
-    }
-
-    .custom-table td {
-      padding: 12px 16px;
-      font-size: 13px;
-      border-bottom: var(--hairline-border);
-      color: var(--text-primary);
-    }
+    ::-webkit-scrollbar { display: none; }
   </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      "darkMode": "class",
+      "theme": {
+        "extend": {
+          "colors": {
+            "on-primary-fixed-variant": "#574500",
+            "tertiary-fixed": "#ffe08d",
+            "on-secondary": "#233143",
+            "outline-variant": "#4d4635",
+            "on-primary-container": "#554300",
+            "secondary-fixed-dim": "#b9c8de",
+            "on-primary": "#3c2f00",
+            "on-secondary-fixed-variant": "#39485a",
+            "inverse-on-surface": "#2e3036",
+            "surface-container-low": "#191c21",
+            "surface-dim": "#111319",
+            "secondary-container": "#39485a",
+            "on-surface": "#e2e2ea",
+            "primary-fixed-dim": "#e9c349",
+            "on-tertiary-container": "#564300",
+            "primary": "#f2ca50",
+            "on-secondary-container": "#a7b6cc",
+            "tertiary": "#eecb6c",
+            "on-surface-variant": "#d0c5af",
+            "background": "#111319",
+            "tertiary-fixed-dim": "#e5c365",
+            "on-background": "#e2e2ea",
+            "surface-tint": "#e9c349",
+            "tertiary-container": "#d0b054",
+            "primary-fixed": "#ffe088",
+            "on-secondary-fixed": "#0d1c2d",
+            "surface-container-lowest": "#0c0e13",
+            "inverse-surface": "#e2e2ea",
+            "on-error": "#690005",
+            "error-container": "#93000a",
+            "on-tertiary": "#3d2f00",
+            "secondary-fixed": "#d4e4fa",
+            "on-error-container": "#ffdad6",
+            "on-tertiary-fixed-variant": "#584400",
+            "surface-container-highest": "#33353b",
+            "secondary": "#b9c8de",
+            "on-tertiary-fixed": "#241a00",
+            "surface": "#111319",
+            "surface-container": "#1d2025",
+            "inverse-primary": "#735c00",
+            "surface-variant": "#33353b",
+            "error": "#ffb4ab",
+            "primary-container": "#d4af37",
+            "outline": "#99907c",
+            "surface-bright": "#37393f",
+            "surface-container-high": "#282a30",
+            "on-primary-fixed": "#241a00"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-panel": "1.25rem",
+            "space-3xl": "4rem",
+            "space-sm": "0.75rem",
+            "margin-screen": "1.5rem",
+            "space-2xl": "3rem",
+            "space-lg": "1.5rem",
+            "space-2xs": "0.25rem",
+            "space-xl": "2rem",
+            "space-xs": "0.5rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "label-sm": ["Plus Jakarta Sans"],
+            "currency-display": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"],
+            "title-md": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "title-lg": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-xl-mobile": ["Plus Jakarta Sans"]
+          }
+        }
+      }
+    };
+  </script>
 </head>
-<body>
-  <header class="header-bar">
-    <div class="brand-section">
-      <div class="brand-logo">B</div>
-      <div>
-        <div class="brand-title">Bourlemont</div>
-        <div class="brand-subtitle">Panel Gerencial & Auditoría Contable</div>
-      </div>
-    </div>
-
-    <nav class="nav-links">
-      <a href="/pos.html" class="nav-item">Punto de Venta</a>
-      <a href="/inventario.html" class="nav-item">Inventario en ml</a>
-      <a href="/recetas.html" class="nav-item">Recetas & Escandallos</a>
-      <a href="/auditoria.html" class="nav-item admin-only">Auditoría de Pagos</a>
-      <a href="/dashboard.html" class="nav-item active admin-only">Dashboard & Arqueos</a>
-    </nav>
-
-    <div style="display: flex; align-items: center; gap: 14px;">
-      <a href="/pos.html" class="btn btn-subtle-gold" style="padding: 8px 14px; font-size: 13px;">Volver a Barra</a>
-    </div>
-  </header>
-
-  <div class="dash-container">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-      <div>
-        <h1 style="font-size: 24px; font-weight: 700; color: #FFF;">Panel Ejecutivo & Cierre de Caja</h1>
-        <p style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">
-          Métricas consolidadas de facturación, rendimiento de bartenders y arqueo ciego de turno.
-        </p>
-      </div>
-
-      <button id="btn-export-excel" class="btn btn-gold" style="padding: 14px 22px;">
-        📊 Descargar Libro de Auditoría Excel (.xlsx)
-      </button>
-    </div>
-
-    <!-- Grilla de Métricas Principales -->
-    <div class="metrics-grid">
-      <div class="metric-card">
-        <div class="metric-label">Total Recaudado (Ventas)</div>
-        <div class="metric-value" id="stat-total">Q 0.00</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Cuentas Pagadas</div>
-        <div class="metric-value" id="stat-ordenes">0</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Ticket Promedio</div>
-        <div class="metric-value" id="stat-ticket">Q 0.00</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Comandas Abiertas</div>
-        <div class="metric-value" id="stat-abiertas" style="color: var(--status-warning);">0</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Alertas Insumos Críticos</div>
-        <div class="metric-value" id="stat-alertas" style="color: var(--status-danger);">0</div>
-      </div>
-    </div>
-
-    <!-- Distribución de Ventas y Rendimiento -->
-    <div class="two-col-layout">
-      <!-- Rendimiento Bartenders -->
-      <div class="panel">
-        <h3 style="font-size: 17px; font-weight: 700; margin-bottom: 14px; color: #FFF;">🏆 Rendimiento de Bartenders</h3>
-        <table class="custom-table">
-          <thead>
-            <tr>
-              <th>Colaborador</th>
-              <th>Órdenes</th>
-              <th>Total Vendido</th>
-            </tr>
-          </thead>
-          <tbody id="bartenders-table-body">
-            <!-- Render dinámico -->
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Módulo de Arqueo Ciego de Caja -->
-      <div class="panel" style="border: 1px solid var(--gold-subtle-border);">
-        <h3 style="font-size: 17px; font-weight: 700; margin-bottom: 14px; color: #FFF;">🔒 Cierre de Turno (Arqueo Ciego)</h3>
-        <div id="caja-estado-info" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
-          Consultando estado de turno...
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen">
+  <!-- Sidebar Stitch -->
+  <aside class="fixed left-0 top-0 h-full w-72 p-space-md z-50 pointer-events-none">
+    <div class="h-full w-full bg-surface-container/85 backdrop-blur-2xl rounded-2xl p-space-md flex flex-col justify-between shadow-[0_8px_32px_rgba(0,0,0,0.6)] border border-white/5 pointer-events-auto">
+      <div class="flex flex-col gap-space-lg">
+        <div class="flex items-center justify-center p-4 border-b border-stone-800/60 mb-2">
+          <img src="/assets/img/logo1.png" onerror="if(!this._f1){this._f1=true; this.src='/assets/img/logo.png';}else if(!this._f2){this._f2=true; this.src='/assets/img/bourlemont-logo.svg';}" alt="Bourlemont" class="max-h-12 w-auto object-contain mx-auto"/>
         </div>
 
-        <form id="form-cierre-caja">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-            <div>
-              <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Efectivo Físico Contado (Q)</label>
-              <input type="number" step="0.01" id="cierre-efectivo" class="input-field" placeholder="0.00" required>
+        <nav class="flex flex-col gap-space-2xs">
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/pos.html">
+            <span class="material-symbols-outlined text-title-lg">point_of_sale</span>
+            <span>Punto de Venta</span>
+          </a>
+          <a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl transition-all duration-200 bg-primary-container text-on-primary font-title-md shadow-[0_0_20px_rgba(212,175,55,0.25)]" href="/dashboard.html">
+            <span class="material-symbols-outlined text-title-lg">dashboard</span>
+            <span>Dashboard &amp; Arqueos</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/inventario.html">
+            <span class="material-symbols-outlined text-title-lg">inventory_2</span>
+            <span>Inventario en ml</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/recetas.html">
+            <span class="material-symbols-outlined text-title-lg">liquor</span>
+            <span>Recetas &amp; Escandallos</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/auditoria.html">
+            <span class="material-symbols-outlined text-title-lg">history</span>
+            <span>Auditoría de Pagos</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/usuarios.html">
+            <span class="material-symbols-outlined text-title-lg">group</span>
+            <span>Usuarios</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="p-space-xs rounded-xl bg-surface-container-low/70 flex items-center justify-between border border-white/5">
+        <div class="flex items-center gap-space-sm overflow-hidden">
+          <div class="relative flex-shrink-0">
+            <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary font-bold text-sm">
+              <span class="material-symbols-outlined text-[18px]">person</span>
             </div>
-            <div>
-              <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Vouchers Tarjeta (Q)</label>
-              <input type="number" step="0.01" id="cierre-tarjetas" class="input-field" placeholder="0.00" required>
+            <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-surface-container-low"></span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="font-title-md text-title-md text-on-surface truncate leading-snug" id="header-user-name">Administrador</span>
+            <span class="font-label-sm text-label-sm text-primary uppercase truncate tracking-wider" id="header-user-role">ADMINISTRADOR</span>
+          </div>
+        </div>
+        <a class="p-1 rounded-lg text-on-surface-variant hover:text-primary transition-colors" href="/pos.html" title="Volver al Salón">
+          <span class="material-symbols-outlined text-title-lg">arrow_back</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Contenido Principal -->
+  <div class="pl-72 flex flex-col min-h-screen">
+    <header class="fixed top-0 left-72 right-0 h-16 z-40 bg-surface/85 backdrop-blur-xl border-b border-white/5 px-4 lg:px-6 flex items-center justify-between">
+      <div class="flex items-center gap-2 text-on-surface font-semibold text-sm">
+        <span class="material-symbols-outlined text-primary text-[20px]">dashboard</span>
+        <span>Dashboard de Ventas &amp; Auditoría</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-space-xs bg-surface-container px-space-sm py-space-2xs rounded-full border border-white/5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Turno Activo</span>
+        </div>
+        <button id="top-logout-btn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-error text-xs font-semibold border border-white/5 transition-all" title="Bloquear / Cerrar Sesión" type="button">
+          <span class="material-symbols-outlined text-[16px]">lock</span>
+          <span>Bloquear</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="w-full pt-16 bg-surface flex-1">
+      <div class="flex flex-col w-full px-space-xl py-space-lg gap-space-lg">
+        <!-- Ambient Glow -->
+        <div class="relative w-full">
+          <div class="absolute -top-12 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+          <div class="absolute top-48 right-10 w-80 h-80 bg-tertiary-container/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+          <!-- Header Section -->
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-lg">
+            <div class="flex flex-col gap-space-2xs">
+              <div class="flex items-center gap-space-xs">
+                <span class="inline-flex items-center gap-1.5 px-space-sm py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm shadow-inner border border-white/5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+                  <span>En Vivo • Servicio Activo</span>
+                </span>
+                <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest font-semibold">Bourlemont Sacatepéquez</span>
+              </div>
+              <div class="flex items-baseline gap-space-sm">
+                <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight font-bold">Dashboard de Ventas &amp; Caja</h1>
+              </div>
+            </div>
+
+            <!-- Botón Exportar Excel -->
+            <div class="flex items-center gap-space-sm self-start md:self-auto">
+              <button class="flex items-center gap-space-xs bg-gradient-to-r from-primary to-primary-fixed-dim text-on-primary font-title-md text-title-md font-bold px-space-lg py-space-sm rounded-xl shadow-[0_4px_20px_rgba(212,175,55,0.3)] hover:brightness-110 active:scale-95 transition-all" id="btn-export-excel" type="button">
+                <span class="material-symbols-outlined text-title-lg">file_download</span>
+                <span>Descargar Auditoría Excel (.xlsx)</span>
+              </button>
             </div>
           </div>
-          <button type="submit" id="btn-cerrar-caja" class="btn btn-gold" style="width: 100%;">
-            Ejecutar Arqueo Ciego y Cerrar Turno
-          </button>
-        </form>
 
-        <div id="arqueo-resultado-box" style="display: none; margin-top: 16px; padding: 14px; background-color: var(--bg-surface); border-radius: var(--radius-md);">
-          <!-- Resultado de diferencia revelado -->
+          <!-- Grilla de Métricas Principales (5 Columns / Responsive) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-space-md mb-space-lg">
+            <!-- Total Recaudado -->
+            <div class="relative overflow-hidden bg-surface-container/70 backdrop-blur-xl rounded-2xl p-space-md shadow-lg border border-white/5 flex flex-col justify-between group">
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Total Ventas</span>
+                <span class="material-symbols-outlined text-primary text-title-md">payments</span>
+              </div>
+              <div class="my-1">
+                <div class="font-currency-display text-2xl font-bold text-primary tracking-tight" id="stat-total">Q 0.00</div>
+                <div class="text-xs text-on-surface-variant mt-1">Con IVA (12% SAT) inc.</div>
+              </div>
+              <div class="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden mt-2">
+                <div class="h-full bg-gradient-to-r from-primary to-primary-container rounded-full" style="width: 85%;"></div>
+              </div>
+            </div>
+
+            <!-- Cuentas Pagadas -->
+            <div class="relative overflow-hidden bg-surface-container/70 backdrop-blur-xl rounded-2xl p-space-md shadow-lg border border-white/5 flex flex-col justify-between group">
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Cuentas Pagadas</span>
+                <span class="material-symbols-outlined text-secondary text-title-md">receipt_long</span>
+              </div>
+              <div class="my-1">
+                <div class="font-currency-display text-2xl font-bold text-on-surface tracking-tight" id="stat-ordenes">0</div>
+                <div class="text-xs text-on-surface-variant mt-1">Comandas cerradas</div>
+              </div>
+              <div class="text-xs text-secondary-fixed flex items-center gap-1 mt-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span>Facturas FEL emitidas</span>
+              </div>
+            </div>
+
+            <!-- Ticket Promedio -->
+            <div class="relative overflow-hidden bg-surface-container/70 backdrop-blur-xl rounded-2xl p-space-md shadow-lg border border-white/5 flex flex-col justify-between group">
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Ticket Promedio</span>
+                <span class="material-symbols-outlined text-tertiary text-title-md">price_check</span>
+              </div>
+              <div class="my-1">
+                <div class="font-currency-display text-2xl font-bold text-primary tracking-tight" id="stat-ticket">Q 0.00</div>
+                <div class="text-xs text-on-surface-variant mt-1">Gasto medio / cuenta</div>
+              </div>
+              <div class="text-xs text-tertiary flex items-center gap-1 mt-2">
+                <span class="material-symbols-outlined text-xs">star</span>
+                <span>Consumo promedio</span>
+              </div>
+            </div>
+
+            <!-- Comandas Abiertas (Interactivo) -->
+            <div id="card-comandas-abiertas" class="relative overflow-hidden bg-surface-container/70 backdrop-blur-xl rounded-2xl p-space-md shadow-lg border border-white/5 flex flex-col justify-between group cursor-pointer hover:border-amber-400/60 hover:bg-surface-container transition-all hover:scale-[1.01]">
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Comandas Abiertas</span>
+                <span class="material-symbols-outlined text-amber-400 text-title-md">table_restaurant</span>
+              </div>
+              <div class="my-1">
+                <div class="font-currency-display text-2xl font-bold text-amber-400 tracking-tight" id="stat-abiertas">0</div>
+                <div class="text-xs text-on-surface-variant mt-1">Mesas en consumo activo</div>
+              </div>
+              <div class="text-xs text-amber-300 flex items-center justify-between mt-2">
+                <span class="flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                  <span>Pendientes de cobro</span>
+                </span>
+                <span class="underline font-semibold text-[11px] group-hover:text-primary transition-colors">Gestionar ➔</span>
+              </div>
+            </div>
+
+            <!-- Alertas Críticas -->
+            <div class="relative overflow-hidden bg-surface-container/70 backdrop-blur-xl rounded-2xl p-space-md shadow-lg border border-white/5 flex flex-col justify-between group">
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Stock Crítico</span>
+                <span class="material-symbols-outlined text-error text-title-md">notification_important</span>
+              </div>
+              <div class="my-1">
+                <div class="font-currency-display text-2xl font-bold text-error tracking-tight" id="stat-alertas">0</div>
+                <div class="text-xs text-on-surface-variant mt-1">Insumos bajo mínimo ml</div>
+              </div>
+              <div class="text-xs text-error flex items-center gap-1 mt-2">
+                <span>Alerta reposición</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Curva SVG de Ventas en Vivo -->
+          <div class="bg-surface-container/70 backdrop-blur-xl rounded-2xl p-space-lg shadow-xl border border-white/5 mb-space-lg flex flex-col gap-space-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+              <div>
+                <div class="flex items-center gap-space-xs">
+                  <span class="material-symbols-outlined text-primary text-title-lg">stacked_line_chart</span>
+                  <h2 class="font-headline-md text-title-lg text-on-surface font-bold">Flujo de Facturación y Servicio (Sacatepéquez)</h2>
+                </div>
+                <p class="text-xs text-on-surface-variant">Velocidad de ventas e ingresos por turno en Quetzales (Q)</p>
+              </div>
+              <div class="flex items-center gap-space-sm bg-surface-container-low px-3 py-1.5 rounded-full border border-white/5">
+                <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Estado Fiscal:</span>
+                <span class="text-xs text-primary font-bold">FEL SAT Decreto 27-92 Activo</span>
+              </div>
+            </div>
+
+            <div class="relative w-full h-44 pt-2">
+              <svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 1000 200">
+                <defs>
+                  <linearGradient id="champagneGlow" x1="0%" x2="0%" y1="0%" y2="100%">
+                    <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.38"></stop>
+                    <stop offset="60%" stop-color="#F2CA50" stop-opacity="0.08"></stop>
+                    <stop offset="100%" stop-color="#111319" stop-opacity="0"></stop>
+                  </linearGradient>
+                </defs>
+                <path d="M 0 180 Q 200 160 350 110 T 700 70 T 1000 40 L 1000 200 L 0 200 Z" fill="url(#champagneGlow)"></path>
+                <path d="M 0 180 Q 200 160 350 110 T 700 70 T 1000 40" fill="none" stroke="#F2CA50" stroke-linecap="round" stroke-width="3.5"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Dos Columnas: Rendimiento Bartenders & Arqueo Ciego -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg mb-space-lg">
+            <!-- Rendimiento Bartenders -->
+            <div class="bg-surface-container/70 backdrop-blur-2xl p-space-lg rounded-2xl border border-white/5 shadow-xl flex flex-col">
+              <div class="flex items-center justify-between mb-4 pb-2 border-b border-white/5">
+                <h3 class="font-title-lg text-title-lg font-bold text-on-surface flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary">military_tech</span>
+                  <span>Rendimiento de Colaboradores</span>
+                </h3>
+                <span class="text-xs text-on-surface-variant">Turno Activo</span>
+              </div>
+
+              <div class="overflow-x-auto flex-1">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider border-b border-white/5">
+                      <th class="py-2.5 px-3">Colaborador</th>
+                      <th class="py-2.5 px-3">Órdenes</th>
+                      <th class="py-2.5 px-3 text-right">Total Vendido (Q)</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-white/5" id="bartenders-table-body">
+                    <tr><td colspan="3" class="text-center py-6 text-on-surface-variant text-sm">Cargando colaboradores…</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Módulo de Arqueo Ciego de Caja -->
+            <div class="bg-surface-container/70 backdrop-blur-2xl p-space-lg rounded-2xl border border-primary/20 shadow-xl flex flex-col">
+              <div class="flex items-center justify-between mb-4 pb-2 border-b border-white/5">
+                <h3 class="font-title-lg text-title-lg font-bold text-on-surface flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary">lock_clock</span>
+                  <span>Cierre de Turno (Arqueo Ciego)</span>
+                </h3>
+                <span class="text-xs text-primary font-bold uppercase tracking-wider">Control Ciego</span>
+              </div>
+
+              <div id="caja-estado-info" class="p-3 rounded-xl bg-surface-container-lowest border border-white/5 mb-4 text-sm text-on-surface-variant">
+                Consultando estado de turno...
+              </div>
+
+              <form id="form-cierre-caja" class="flex flex-col gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">
+                      Efectivo Físico Contado (Q) *
+                    </label>
+                    <input type="number" step="0.01" id="cierre-efectivo" class="input-field" placeholder="0.00" required>
+                  </div>
+                  <div>
+                    <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">
+                      Vouchers Tarjeta (Q) *
+                    </label>
+                    <input type="number" step="0.01" id="cierre-tarjetas" class="input-field" placeholder="0.00" required>
+                  </div>
+                </div>
+
+                <button type="submit" id="btn-cerrar-caja" class="w-full bg-gradient-to-r from-primary to-primary-fixed-dim text-on-primary py-3 rounded-xl font-bold font-title-md text-title-md shadow-lg shadow-primary/25 hover:brightness-110 active:scale-95 transition-all mt-1 disabled:opacity-40 disabled:pointer-events-none">
+                  Ejecutar Arqueo Ciego y Cerrar Turno
+                </button>
+              </form>
+
+              <div id="arqueo-resultado-box" class="mt-4 p-4 rounded-xl bg-surface-container-lowest border border-white/10 text-sm" style="display: none;"></div>
+            </div>
+          </div>
+
+          <!-- Historial de Arqueos de Caja -->
+          <div class="bg-surface-container/70 backdrop-blur-2xl p-space-lg rounded-2xl border border-white/5 shadow-xl">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-white/5">
+              <h3 class="font-title-lg text-title-lg font-bold text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">history_edu</span>
+                <span>Historial de Arqueos de Caja</span>
+              </h3>
+              <span class="text-xs text-on-surface-variant font-semibold">Cierres Verificados</span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider border-b border-white/5">
+                    <th class="py-2.5 px-3">ID</th>
+                    <th class="py-2.5 px-3">Usuario / Sommelier</th>
+                    <th class="py-2.5 px-3">Apertura</th>
+                    <th class="py-2.5 px-3">Cierre</th>
+                    <th class="py-2.5 px-3">Fondo Inicial</th>
+                    <th class="py-2.5 px-3">Declarado Efec.</th>
+                    <th class="py-2.5 px-3">Teórico Sistema</th>
+                    <th class="py-2.5 px-3">Diferencia</th>
+                    <th class="py-2.5 px-3">Estado</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5" id="arqueos-table-body">
+                  <tr><td colspan="9" class="text-center py-6 text-on-surface-variant text-sm">Cargando bitácora de caja…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </main>
+  </div>
 
-    <!-- Historial de Arqueos -->
-    <div class="panel">
-      <h3 style="font-size: 17px; font-weight: 700; margin-bottom: 14px; color: #FFF;">📜 Historial de Arqueos de Caja</h3>
-      <table class="custom-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Bartender / Usuario</th>
-            <th>Apertura</th>
-            <th>Cierre</th>
-            <th>Fondo Inicial</th>
-            <th>Declarado Efectivo</th>
-            <th>Teórico Sistema</th>
-            <th>Diferencia</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody id="arqueos-table-body">
-          <!-- Render dinámico -->
-        </tbody>
-      </table>
+  <!-- Modal Comandas Abiertas Flotante Centrado -->
+  <div id="modal-comandas-abiertas" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden" role="dialog" aria-modal="true">
+    <div class="modal-content max-w-2xl bg-surface-container-high/95 border border-primary/30 rounded-2xl p-6 shadow-2xl w-full mx-4 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-3">
+        <div class="flex items-center gap-2 text-primary font-bold text-lg">
+          <span class="material-symbols-outlined text-amber-400">table_restaurant</span>
+          <span>Comandas Abiertas en Servicio</span>
+        </div>
+        <button type="button" class="modal-close text-on-surface-variant hover:text-on-surface text-2xl leading-none">&times;</button>
+      </div>
+
+      <div id="lista-comandas-abiertas" class="overflow-y-auto flex-1 flex flex-col gap-3 py-2 pr-1">
+        <div class="text-center py-8 text-on-surface-variant text-sm">Cargando comandas abiertas…</div>
+      </div>
+
+      <div class="border-t border-white/10 pt-4 mt-3 flex justify-between items-center">
+        <span class="text-xs text-on-surface-variant" id="total-comandas-modal-count">0 comandas activas</span>
+        <button type="button" class="btn modal-close px-5 py-2 rounded-xl bg-surface-container text-on-surface text-xs font-semibold hover:bg-surface-container-highest transition-colors">
+          Cerrar
+        </button>
+      </div>
     </div>
   </div>
 
-  <script type="module">
-    import { api, authState } from "/static/assets/js/api.js";
+  <!-- Modal Confirmación Anular Comanda -->
+  <div id="modal-confirm-anular-comanda" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center hidden" role="dialog" aria-modal="true">
+    <div class="modal-content max-w-md bg-surface-container-high/95 border border-error/30 rounded-2xl p-6 shadow-2xl w-full mx-4 flex flex-col text-center">
+      <div class="w-12 h-12 rounded-full bg-error/15 border border-error/30 flex items-center justify-center mx-auto mb-3 text-error">
+        <span class="material-symbols-outlined text-2xl">warning</span>
+      </div>
+      <h3 class="text-title-lg font-bold text-on-surface mb-2">Anular Comanda</h3>
+      <p class="text-body-md text-on-surface-variant mb-6">
+        ¿Confirmas la anulación de esta comanda? Esta acción liberará la mesa.
+      </p>
+      <div class="flex gap-3">
+        <button type="button" id="btn-cancelar-anulacion" class="btn flex-1 py-2.5 rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface font-semibold text-sm transition-colors">
+          Cancelar
+        </button>
+        <button type="button" id="btn-confirmar-anulacion" class="btn flex-1 py-2.5 rounded-xl bg-error hover:bg-error/90 text-on-error font-bold text-sm transition-colors shadow-lg shadow-error/20">
+          Confirmar Anulación
+        </button>
+      </div>
+    </div>
+  </div>
 
-    if (!authState.isAuthenticated()) {
-      window.location.href = "/index.html";
-    }
-
-    if (!authState.isAdmin()) {
-      alert("Acceso denegado: El dashboard requiere credenciales de Administrador.");
-      window.location.href = "/pos.html";
-    }
-
-    async function loadDashboard() {
-      try {
-        const metrics = await api.getDashboardMetrics();
-        document.getElementById("stat-total").textContent = `Q ${metrics.total_recaudado.toFixed(2)}`;
-        document.getElementById("stat-ordenes").textContent = metrics.ordenes_cerradas;
-        document.getElementById("stat-ticket").textContent = `Q ${metrics.ticket_promedio.toFixed(2)}`;
-        document.getElementById("stat-abiertas").textContent = metrics.ordenes_abiertas;
-        document.getElementById("stat-alertas").textContent = metrics.alertas_stock_critico;
-
-        // Bartenders
-        const bBody = document.getElementById("bartenders-table-body");
-        bBody.innerHTML = metrics.rendimiento_bartenders.map(b => `
-          <tr>
-            <td style="font-weight: 600; color: #FFF;">${b.nombre} <span class="badge badge-gold" style="font-size: 10px;">${b.rol}</span></td>
-            <td>${b.ordenes_atendidas}</td>
-            <td style="font-weight: 700; color: var(--gold-highlight-text);">Q ${b.total_vendido.toFixed(2)}</td>
-          </tr>
-        `).join("");
-
-      } catch (err) {
-        console.error("Error dashboard:", err);
-      }
-    }
-
-    async function loadCajaStatus() {
-      try {
-        const res = await api.getCajaActual();
-        const infoEl = document.getElementById("caja-estado-info");
-        const btnCerrar = document.getElementById("btn-cerrar-caja");
-
-        if (res.abierto) {
-          const a = res.arqueo;
-          const hora = new Date(a.fecha_apertura).toLocaleTimeString("es-GT");
-          infoEl.innerHTML = `
-            <span class="badge badge-success">✓ Turno Abierto</span>
-            <div style="margin-top: 6px;">
-              Apertura a las <strong>${hora}</strong> por <strong>${a.nombre_usuario}</strong>.<br>
-              Fondo inicial: <strong>Q ${parseFloat(a.fondo_inicial).toFixed(2)}</strong>.
-            </div>
-          `;
-          btnCerrar.disabled = false;
-        } else {
-          infoEl.innerHTML = `<span class="badge badge-danger">Caja Cerrada</span><div style="margin-top: 6px;">No hay turno activo actualmente.</div>`;
-          btnCerrar.disabled = true;
-        }
-
-        // Historial
-        const historial = await api.getHistorialCaja();
-        const hBody = document.getElementById("arqueos-table-body");
-        hBody.innerHTML = historial.map(h => {
-          const fApertura = new Date(h.fecha_apertura).toLocaleString("es-GT");
-          const fCierre = h.fecha_cierre ? new Date(h.fecha_cierre).toLocaleString("es-GT") : "-";
-          const dif = h.diferencia_efectivo !== null ? parseFloat(h.diferencia_efectivo) : null;
-          let difBadge = "-";
-          if (dif !== null) {
-            if (dif === 0) difBadge = `<span class="badge badge-success">Exacto (Q 0.00)</span>`;
-            else if (dif > 0) difBadge = `<span class="badge badge-warning">+Q ${dif.toFixed(2)} (Sobrante)</span>`;
-            else difBadge = `<span class="badge badge-danger">-Q ${Math.abs(dif).toFixed(2)} (Faltante)</span>`;
-          }
-
-          return `
-            <tr>
-              <td style="font-family: monospace;">#${h.id_arqueo}</td>
-              <td style="font-weight: 600;">${h.nombre_usuario || '-'}</td>
-              <td style="font-size: 12px;">${fApertura}</td>
-              <td style="font-size: 12px;">${fCierre}</td>
-              <td>Q ${parseFloat(h.fondo_inicial).toFixed(2)}</td>
-              <td>${h.efectivo_declarado !== null ? 'Q ' + parseFloat(h.efectivo_declarado).toFixed(2) : '-'}</td>
-              <td>${h.efectivo_teorico_sistema !== null ? 'Q ' + parseFloat(h.efectivo_teorico_sistema).toFixed(2) : '-'}</td>
-              <td>${difBadge}</td>
-              <td><span class="badge ${h.estado === 'ABIERTO' ? 'badge-success' : 'badge-gold'}">${h.estado}</span></td>
-            </tr>
-          `;
-        }).join("");
-
-      } catch (err) {
-        console.error("Error caja:", err);
-      }
-    }
-
-    document.getElementById("form-cierre-caja").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const efec = parseFloat(document.getElementById("cierre-efectivo").value);
-      const tarj = parseFloat(document.getElementById("cierre-tarjetas").value);
-
-      if (!confirm("¿Está seguro de realizar el arqueo ciego y cerrar el turno?")) return;
-
-      try {
-        const res = await api.cierreCaja(efec, tarj);
-        const resultBox = document.getElementById("arqueo-resultado-box");
-        const dif = parseFloat(res.diferencia_efectivo);
-        
-        resultBox.style.display = "block";
-        resultBox.innerHTML = `
-          <h4 style="color: #FFF; margin-bottom: 8px;">Resultado del Arqueo #${res.id_arqueo}</h4>
-          <p>Efectivo Declarado: <strong>Q ${efec.toFixed(2)}</strong></p>
-          <p>Efectivo Teórico Sistema: <strong>Q ${parseFloat(res.efectivo_teorico_sistema).toFixed(2)}</strong></p>
-          <p style="margin-top: 6px; font-size: 15px;">Diferencia: 
-            <strong style="color: ${dif >= 0 ? 'var(--status-success)' : 'var(--status-danger)'}">
-              ${dif >= 0 ? '+' : ''}Q ${dif.toFixed(2)}
-            </strong>
-          </p>
-        `;
-
-        await loadCajaStatus();
-        await loadDashboard();
-      } catch (err) {
-        alert("Error al cerrar caja: " + err.message);
-      }
-    });
-
-    // Descarga de Excel
-    document.getElementById("btn-export-excel").addEventListener("click", () => {
-      window.location.href = api.descargarExcelUrl();
-    });
-
-    loadDashboard();
-    loadCajaStatus();
-  </script>
+  <script type="module" src="/assets/js/dashboard.js"></script>
 </body>
 </html>

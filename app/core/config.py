@@ -11,9 +11,8 @@ class Settings(BaseSettings):
     HOST: str = "127.0.0.1"
     PORT: int = 8000
     
-    DATABASE_URL: str = "mysql+pymysql://root:root@localhost:3306/bourlemont_pos"
-    FALLBACK_TO_SQLITE: bool = True
-    SQLITE_URL: str = "sqlite:///./bourlemont.db"
+    DATABASE_URL: str = "mysql+pymysql://root:@localhost:3306/bourlemontdb"
+    FALLBACK_TO_SQLITE: bool = False
     
     # Facturación Electrónica SAT / Infile
     FEL_PROVIDER: str = "MOCK"  # 'MOCK' o 'INFILE'

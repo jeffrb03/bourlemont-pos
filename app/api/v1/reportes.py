@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from decimal import Decimal
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
@@ -7,7 +7,8 @@ from sqlalchemy import func
 
 from app.api.deps import get_db, get_current_user
 from app.models.models import (
-    Orden, EstadoOrden, TransaccionPago, Producto, Usuario, DetalleOrden, CategoriaProducto
+    Orden, EstadoOrden, TransaccionPago, Producto, Usuario, DetalleOrden, CategoriaProducto,
+    ArqueoCaja, EstadoArqueo
 )
 from app.services.excel_reports import generar_excel_auditoria_ventas
 
@@ -23,7 +24,7 @@ def descargar_reporte_excel(
     con tres hojas especializadas con paleta Apple Tinted Dark y acentos dorados.
     """
     excel_stream = generar_excel_auditoria_ventas(db)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(timezone(timedelta(hours=-6))).strftime("%Y%m%d_%H%M%S")
     filename = f"Bourlemont_Auditoria_Ventas_{timestamp}.xlsx"
     
     headers = {
@@ -43,8 +44,14 @@ def obtener_metricas_dashboard(
     total_recaudado = sum([float(o.total) for o in ventas_pagadas])
     ordenes_cerradas = len(ventas_pagadas)
     
-    # Órdenes abiertas actualmente
-    ordenes_abiertas = db.query(Orden).filter(Orden.estado == EstadoOrden.ABIERTA).count()
+    # Órdenes abiertas pertenecientes únicamente al turno actual, evitando duplicados
+    arqueo_abierto = db.query(ArqueoCaja).filter(ArqueoCaja.estado == EstadoArqueo.ABIERTO).first()
+    query_abiertas = db.query(Orden).filter(Orden.estado == EstadoOrden.ABIERTA)
+    if arqueo_abierto:
+        query_abiertas = query_abiertas.filter(Orden.fecha_creacion >= arqueo_abierto.fecha_apertura)
+    
+    ordenes_abiertas_ids = set(o.id_orden for o in query_abiertas.all())
+    ordenes_abiertas = len(ordenes_abiertas_ids)
     
     # Insumos y licores con stock bajo
     productos_bajos = db.query(Producto).filter(Producto.stock_ml <= Producto.stock_minimo_ml).all()

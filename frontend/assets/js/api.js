@@ -107,6 +107,10 @@ export const api = {
         return request(`/inventario/productos${qs}`);
     },
 
+    async getProducto(id) {
+        return request(`/inventario/productos/${id}`);
+    },
+
     async createProducto(data) {
         return request("/inventario/productos", {
             method: "POST",
@@ -121,6 +125,31 @@ export const api = {
         });
     },
 
+    async deleteProducto(id) {
+        return request(`/inventario/productos/${id}`, {
+            method: "DELETE"
+        });
+    },
+
+    async uploadImagen(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const token = authState.getToken();
+        const headers = {};
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        const res = await fetch(`${API_BASE}/inventario/upload-imagen`, {
+            method: "POST",
+            headers,
+            body: formData
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.detail || "Error al subir la imagen al servidor");
+        }
+        return res.json();
+    },
+
     async getRecetas() {
         return request("/inventario/recetas");
     },
@@ -130,6 +159,34 @@ export const api = {
             method: "POST",
             body: JSON.stringify(data)
         });
+    },
+
+    async deleteReceta(id) {
+        return request(`/inventario/recetas/${id}`, {
+            method: "DELETE"
+        });
+    },
+
+    async updateReceta(id, cantidad_descontar_ml) {
+        return request(`/inventario/recetas/${id}`, {
+            method: "PUT",
+            body: JSON.stringify({ cantidad_descontar_ml: parseInt(cantidad_descontar_ml, 10) })
+        });
+    },
+
+    async agregarIngredienteReceta(id_producto_final, id_insumo_base, cantidad_descontar_ml) {
+        return request("/inventario/recetas/ingrediente", {
+            method: "POST",
+            body: JSON.stringify({
+                id_producto_final: parseInt(id_producto_final, 10),
+                id_insumo_base: parseInt(id_insumo_base, 10),
+                cantidad_descontar_ml: parseInt(cantidad_descontar_ml, 10)
+            })
+        });
+    },
+
+    async getInsumos() {
+        return request("/inventario/insumos");
     },
 
     // Órdenes y Comandas
@@ -145,6 +202,13 @@ export const api = {
     async createOrden(numero_mesa, items) {
         return request("/ordenes", {
             method: "POST",
+            body: JSON.stringify({ numero_mesa, items })
+        });
+    },
+
+    async updateOrden(id_orden, numero_mesa, items) {
+        return request(`/ordenes/${id_orden}`, {
+            method: "PUT",
             body: JSON.stringify({ numero_mesa, items })
         });
     },
@@ -204,6 +268,49 @@ export const api = {
     // Métricas y Reportes
     async getDashboardMetrics() {
         return request("/reportes/dashboard");
+    },
+
+    // Gestión de Usuarios (Admin)
+    async getUsuarios() {
+        return request("/usuarios");
+    },
+
+    async crearUsuario(data) {
+        return request("/usuarios", {
+            method: "POST",
+            body: JSON.stringify(data)
+        });
+    },
+
+    async updateUsuario(id, data) {
+        return request(`/usuarios/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(data)
+        });
+    },
+
+    async deleteUsuario(id) {
+        return request(`/usuarios/${id}`, {
+            method: "DELETE"
+        });
+    },
+
+    async uploadAvatar(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const headers = {};
+        const token = authState.getToken();
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+        const response = await fetch(`${API_BASE}/usuarios/upload-avatar`, {
+            method: "POST",
+            headers,
+            body: formData
+        });
+        if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            throw new Error(err.detail || "Error al subir avatar");
+        }
+        return await response.json();
     },
 
     descargarExcelUrl() {

@@ -1,5 +1,5 @@
 import io
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from decimal import Decimal
 from typing import List
 from sqlalchemy.orm import Session
@@ -44,7 +44,7 @@ def generar_excel_auditoria_ventas(db: Session) -> io.BytesIO:
     # Encabezado de Marca
     ws1["A1"] = "BOURLEMONT CHAMPAGNE BAR"
     ws1["A1"].font = title_font
-    ws1["A2"] = f"Reporte de Auditoría de Ventas Detalladas - Generado el {datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    ws1["A2"] = f"Reporte de Auditoría de Ventas Detalladas - Generado el {datetime.now(timezone(timedelta(hours=-6))).strftime('%d/%m/%Y %H:%M')}"
     ws1["A2"].font = sub_font
     
     headers1 = [

@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {"darkMode":"class","theme":{"extend":{"colors":{"on-primary-fixed-variant":"#574500","tertiary-fixed":"#ffe08d","on-secondary":"#233143","outline-variant":"#4d4635","on-primary-container":"#554300","secondary-fixed-dim":"#b9c8de","on-primary":"#3c2f00","on-secondary-fixed-variant":"#39485a","inverse-on-surface":"#2e3036","surface-container-low":"#191c21","surface-dim":"#111319","secondary-container":"#39485a","on-surface":"#e2e2ea","primary-fixed-dim":"#e9c349","on-tertiary-container":"#564300","primary":"#f2ca50","on-secondary-container":"#a7b6cc","tertiary":"#eecb6c","on-surface-variant":"#d0c5af","background":"#111319","tertiary-fixed-dim":"#e5c365","on-background":"#e2e2ea","surface-tint":"#e9c349","tertiary-container":"#d0b054","primary-fixed":"#ffe088","on-secondary-fixed":"#0d1c2d","surface-container-lowest":"#0c0e13","inverse-surface":"#e2e2ea","on-error":"#690005","error-container":"#93000a","on-tertiary":"#3d2f00","secondary-fixed":"#d4e4fa","on-error-container":"#ffdad6","on-tertiary-fixed-variant":"#584400","surface-container-highest":"#33353b","secondary":"#b9c8de","on-tertiary-fixed":"#241a00","surface":"#111319","surface-container":"#1d2025","inverse-primary":"#735c00","surface-variant":"#33353b","error":"#ffb4ab","primary-container":"#d4af37","outline":"#99907c","surface-bright":"#37393f","surface-container-high":"#282a30","on-primary-fixed":"#241a00"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter-panel":"1.25rem","space-3xl":"4rem","space-sm":"0.75rem","margin-screen":"1.5rem","space-2xl":"3rem","space-lg":"1.5rem","space-2xs":"0.25rem","space-xl":"2rem","space-xs":"0.5rem","space-md":"1rem"},"fontFamily":{"label-sm":["Plus Jakarta Sans"],"currency-display":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"title-md":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"title-lg":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"]},"fontSize":{"label-sm":["10px",{"lineHeight":"14px","letterSpacing":"0.06em","fontWeight":"600"}],"currency-display":["32px",{"lineHeight":"38px","letterSpacing":"-0.03em","fontWeight":"700"}],"headline-xl":["40px",{"lineHeight":"48px","letterSpacing":"-0.03em","fontWeight":"600"}],"title-md":["16px",{"lineHeight":"22px","letterSpacing":"0em","fontWeight":"500"}],"body-md":["13px",{"lineHeight":"18px","letterSpacing":"0.01em","fontWeight":"400"}],"title-lg":["18px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"500"}],"headline-lg":["28px",{"lineHeight":"34px","letterSpacing":"-0.02em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.04em","fontWeight":"600"}],"body-lg":["15px",{"lineHeight":"22px","letterSpacing":"0.005em","fontWeight":"400"}],"headline-md":["22px",{"lineHeight":"28px","letterSpacing":"-0.015em","fontWeight":"600"}],"headline-xl-mobile":["30px",{"lineHeight":"36px","letterSpacing":"-0.02em","fontWeight":"600"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 p-space-md z-50 pointer-events-none"><div class="h-full w-full bg-surface-container/70 backdrop-blur-2xl rounded-xl p-space-md flex flex-col justify-between shadow-[0_4px_30px_rgba(0,0,0,0.5)] pointer-events-auto"><div class="flex flex-col gap-space-lg"><div class="flex items-center gap-space-sm px-space-xs pt-space-xs"><img alt="Champagne Bar Bourlemont Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1ULokydg2UryjyqNQFyQxHfHL5zi4yTwWW0qw53H_aXUn5IFoPJjUxzSetL4riPG2jrQSPUHckcw6-yVFlxKVYng4yIFGsKUeKZ2SF3T7kNf3YLmwVWoAU-CmjnADeMyNkg6wJYKXG8G7Jp2CFQWFfSIfVHg65sfUaiPPLfP6l9alEfs7lh46HiO2QSIy8PxZGpjEjCD9dXV9rHjPC4ZIHIrcyWCN4tmBtxDcoVZEFiXY5xblDBJdWFpw"/><div class="flex flex-col"><span class="font-title-lg text-title-lg text-primary leading-tight tracking-tight">Bourlemont</span><span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant/70">Champagne &amp; POS</span></div></div><nav class="flex flex-col gap-space-2xs" data-active-classes="bg-primary-container text-on-primary font-title-md shadow-[0_0_20px_rgba(212,175,55,0.2)]"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" data-path="dashboard" href="#"><span class="material-symbols-outlined text-title-lg">dashboard</span><span>Dashboard</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" data-path="nueva-orden" href="#"><span class="material-symbols-outlined text-title-lg">add_shopping_cart</span><span>Nueva Orden</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl transition-all duration-200 bg-primary-container text-on-primary font-title-md shadow-[0_0_20px_rgba(212,175,55,0.2)]" data-path="inventario" href="#"><span class="material-symbols-outlined text-title-lg">inventory_2</span><span>Inventario</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" data-path="historial" href="#"><span class="material-symbols-outlined text-title-lg">history</span><span>Historial</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" data-path="recetas" href="#"><span class="material-symbols-outlined text-title-lg">liquor</span><span>Recetas</span></a></nav></div><div class="p-space-xs rounded-xl bg-surface-container-low/60 flex items-center justify-between shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]"><div class="flex items-center gap-space-sm overflow-hidden"><div class="relative flex-shrink-0"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApp2YZm9YLTKL_dMAcd6xA2N51AAIfOr0oBOsShCTQaNpfwDJ3Ci0JSf3lDceoXGtjDIoO4yqiKRLswxu8Ws_rJE_9z4DZ_s_pgcjy9j1OmLYqFN7oGG_3FJhBmTSkwEvJo7w5zBtZJYeC2hzuU52akhY3wb9xtrn2D3kYaDQRhTyPNJ0AhUzrb76hM6XC6eRkWvbf0_kSfRjqErzoy5pV0Pqq3Qpz7Zg_TY-5UD7NkIaJkhBhF_8R"/><span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-primary ring-2 ring-surface-container-low"></span></div><div class="flex flex-col min-w-0"><span class="font-title-md text-title-md text-on-surface truncate leading-snug">Édouard Laurent</span><span class="font-label-sm text-label-sm text-on-surface-variant truncate">Head Sommelier &amp; Admin</span></div></div><div class="flex items-center pl-space-2xs pr-space-xs"><span class="material-symbols-outlined text-on-surface-variant hover:text-on-surface cursor-pointer text-title-md transition-colors">lock</span></div></div></div></aside><div class="pl-72 flex flex-col min-h-screen"><header class="fixed top-0 left-72 right-0 h-16 z-40 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-space-xl flex items-center justify-between"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-xs text-on-surface-variant"><span class="material-symbols-outlined text-title-md text-primary">schedule</span><span class="font-body-md text-body-md text-on-surface">21:45 • Service du Soir</span></div><div class="flex items-center gap-space-xs text-on-surface-variant"><span class="material-symbols-outlined text-title-md text-primary">point_of_sale</span><span class="font-body-md text-body-md text-on-surface-variant">Caja Principal #01 •</span><span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Abierta</span></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs bg-surface-container px-space-sm py-space-2xs rounded-full shadow-[0_0_12px_rgba(212,175,55,0.12)]"><span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Salon Bourlemont Live</span></div><span class="material-symbols-outlined text-on-surface-variant hover:text-on-surface cursor-pointer text-title-lg transition-colors">search</span><span class="material-symbols-outlined text-on-surface-variant hover:text-on-surface cursor-pointer text-title-lg transition-colors">notifications</span></div></div></header><main class="w-full pt-16 bg-surface flex-1"><div class="flex flex-col w-full px-space-xl py-space-lg gap-space-xl">
+<!-- Subtle Ambient Glow Orbs -->
+<div class="relative w-full">
+<div class="absolute -top-12 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<div class="absolute top-48 left-10 w-72 h-72 bg-tertiary-container/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<!-- Section Header & Primacy Controls -->
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md mb-space-lg">
+<div class="flex flex-col gap-space-2xs">
+<div class="flex items-center gap-space-xs text-primary font-label-md text-label-md uppercase tracking-widest">
+<span class="material-symbols-outlined text-title-md">wine_bar</span>
+<span>Cava Reserve · Gestión de Precisión</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">Control de Inventario &amp; Cava</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+          Seguimiento de botellas, descorches y mermas por mililitro en tiempo real para servicio de alta gama.
+        </p>
+</div>
+<div class="flex items-center gap-space-sm flex-wrap">
+<button class="group relative inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-primary text-on-primary font-title-md text-title-md shadow-[0_4px_24px_rgba(212,175,55,0.35)] hover:bg-primary-fixed hover:scale-[1.015] active:scale-[0.99] transition-all duration-200" type="button">
+<span class="material-symbols-outlined text-headline-md leading-none">add_circle</span>
+<span>Crear Producto</span>
+</button>
+<button class="p-space-sm rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors shadow-sm flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-title-lg">file_download</span>
+</button>
+<button class="p-space-sm rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors shadow-sm flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-title-lg">tune</span>
+</button>
+</div>
+</div>
+<!-- Metric Bento Strip -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md mb-space-lg">
+<!-- Card 1: Valor Total -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container/70 backdrop-blur-xl p-space-lg shadow-[0_8px_32px_rgba(0,0,0,0.36)] flex flex-col justify-between group">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">Valor Total Bodega</span>
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-title-md">account_balance_wallet</span>
+</div>
+</div>
+<div class="mt-space-md flex items-baseline gap-space-xs">
+<span class="font-currency-display text-currency-display text-primary">€142,500</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">EUR</span>
+</div>
+<div class="mt-space-xs flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-label-md text-primary">trending_up</span>
+<span class="font-label-sm text-label-sm text-primary">+4.2% vs. último balance</span>
+<span class="text-on-surface-variant/40 font-label-sm text-label-sm">• Auditoría 24h</span>
+</div>
+</div>
+<!-- Card 2: Referencias Activas -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container/70 backdrop-blur-xl p-space-lg shadow-[0_8px_32px_rgba(0,0,0,0.36)] flex flex-col justify-between group">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">Referencias Activas</span>
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-title-md">inventory_2</span>
+</div>
+</div>
+<div class="mt-space-md flex items-baseline gap-space-xs">
+<span class="font-currency-display text-currency-display text-on-surface">84</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">SKUs en carta</span>
+</div>
+<div class="mt-space-xs flex items-center gap-space-xs text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="font-label-sm text-label-sm">52 Champagnes • 24 Espirituosos • 8 Aperitivos</span>
+</div>
+</div>
+<!-- Card 3: Alertas de Reposición -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container/70 backdrop-blur-xl p-space-lg shadow-[0_8px_32px_rgba(0,0,0,0.36)] flex flex-col justify-between group">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">Alertas de Reposición</span>
+<div class="w-8 h-8 rounded-full bg-error-container/30 flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-title-md">notifications_active</span>
+</div>
+</div>
+<div class="mt-space-md flex items-baseline gap-space-xs">
+<span class="font-currency-display text-currency-display text-error">3</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">referencias críticas</span>
+</div>
+<div class="mt-space-xs flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-error">Stock &lt; 20% en Clase Azul &amp; Citadelle</span>
+</div>
+</div>
+</div>
+<!-- Search, Filters and Quick Selector Bar -->
+<div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-space-md mb-space-md bg-surface-container-low/60 backdrop-blur-xl p-space-sm rounded-xl">
+<!-- Search Input -->
+<div class="relative flex-1 max-w-md">
+<span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-title-md pointer-events-none">search</span>
+<input class="w-full bg-surface-container-lowest/80 text-on-surface font-body-md text-body-md pl-10 pr-space-md py-space-sm rounded-lg placeholder:text-on-surface-variant/50 focus:outline-none focus:bg-surface-container-lowest shadow-inner" id="inventorySearchInput" placeholder="Filtrar bodega por cuvée, añada o maison..." type="text"/>
+</div>
+<!-- Category Filter Pills -->
+<div class="flex items-center gap-space-2xs overflow-x-auto pb-1 md:pb-0" id="filterPillsContainer">
+<button class="filter-pill px-space-md py-space-xs rounded-full font-label-md text-label-md bg-primary text-on-primary shadow-[0_0_16px_rgba(212,175,55,0.25)] transition-all" data-filter="all" type="button">
+          Todo
+        </button>
+<button class="filter-pill px-space-md py-space-xs rounded-full font-label-md text-label-md bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-filter="champagne" type="button">
+          Champagne
+        </button>
+<button class="filter-pill px-space-md py-space-xs rounded-full font-label-md text-label-md bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-filter="destilados" type="button">
+          Destilados
+        </button>
+<button class="filter-pill px-space-md py-space-xs rounded-full font-label-md text-label-md bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-filter="licores" type="button">
+          Licores
+        </button>
+<button class="filter-pill px-space-md py-space-xs rounded-full font-label-md text-label-md bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-filter="frescos" type="button">
+          Ingredientes Frescos
+        </button>
+<button class="filter-pill inline-flex items-center gap-space-2xs px-space-md py-space-xs rounded-full font-label-md text-label-md bg-error-container/20 text-error hover:bg-error-container/40 transition-all" data-filter="alerta" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span>
+<span>Alerta Stock Bajo</span>
+</button>
+</div>
+</div>
+<!-- Main Liquid Glass Table Container -->
+<div class="rounded-xl bg-surface-container/60 backdrop-blur-2xl shadow-[0_16px_40px_rgba(0,0,0,0.45)] overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high/40 text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">
+<th class="py-space-md px-space-lg" scope="col">Producto</th>
+<th class="py-space-md px-space-md" scope="col">Categoría</th>
+<th class="py-space-md px-space-md" scope="col">Stock (ml)</th>
+<th class="py-space-md px-space-md" scope="col">Stock Botellas</th>
+<th class="py-space-md px-space-md" scope="col">Costo Unitario</th>
+<th class="py-space-md px-space-md" scope="col">Precio Venta</th>
+<th class="py-space-md px-space-md" scope="col">Estado</th>
+<th class="py-space-md px-space-lg text-right" scope="col">Acciones</th>
+</tr>
+</thead>
+<tbody class="divide-y-0" id="inventoryTableBody">
+<!-- Row 1: Dom Pérignon -->
+<tr class="group hover:bg-surface-container-high/50 transition-colors duration-150" data-category="champagne" data-status="optimo">
+<td class="py-space-md px-space-lg">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-headline-md">wine_bar</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface truncate">Dom Pérignon Vintage 2013</span>
+<span class="font-body-md text-body-md text-on-surface-variant truncate">Épernay • Champagne AOC • 750ml</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-block px-space-sm py-0.5 rounded-full font-label-sm text-label-sm bg-primary/10 text-primary uppercase">Champagne Grand Cru</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<div class="flex flex-col gap-1">
+<div class="flex items-baseline justify-between text-on-surface font-title-md text-title-md">
+<span>10,500 <span class="font-label-sm text-label-sm text-on-surface-variant font-normal">ml</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">14 btl</span>
+</div>
+<div class="w-32 h-1.5 bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 78%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-title-md text-title-md text-on-surface">
+                14 <span class="font-body-md text-body-md text-on-surface-variant font-normal">selladas</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-body-lg text-body-lg text-on-surface-variant">
+                €185.00
+              </td>
+<td class="py-space-md px-space-md whitespace-nowrap font-headline-md text-headline-md text-primary">
+                €380.00
+              </td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-space-2xs rounded-full font-label-sm text-label-sm bg-surface-container-highest text-on-surface">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span>Stock Óptimo</span>
+</span>
+</td>
+<td class="py-space-md px-space-lg text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-space-xs">
+<button class="btn-adjust-ml px-space-sm py-space-2xs rounded-lg bg-surface-container-highest hover:bg-primary hover:text-on-primary font-label-md text-label-md text-on-surface transition-all" type="button">
+                    Ajustar ml
+                  </button>
+<button class="p-space-2xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" type="button">
+<span class="material-symbols-outlined text-title-lg">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Krug Grande Cuvée -->
+<tr class="group hover:bg-surface-container-high/50 transition-colors duration-150" data-category="champagne" data-status="en-stock">
+<td class="py-space-md px-space-lg">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-headline-md">wine_bar</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface truncate">Krug Grande Cuvée 170th Edition</span>
+<span class="font-body-md text-body-md text-on-surface-variant truncate">Reims • Cuveé de Prestige • 750ml</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-block px-space-sm py-0.5 rounded-full font-label-sm text-label-sm bg-primary/10 text-primary uppercase">Champagne Grand Cru</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<div class="flex flex-col gap-1">
+<div class="flex items-baseline justify-between text-on-surface font-title-md text-title-md">
+<span>6,750 <span class="font-label-sm text-label-sm text-on-surface-variant font-normal">ml</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">9 btl</span>
+</div>
+<div class="w-32 h-1.5 bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 55%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-title-md text-title-md text-on-surface">
+                9 <span class="font-body-md text-body-md text-on-surface-variant font-normal">selladas</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-body-lg text-body-lg text-on-surface-variant">
+                €160.00
+              </td>
+<td class="py-space-md px-space-md whitespace-nowrap font-headline-md text-headline-md text-primary">
+                €320.00
+              </td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-space-2xs rounded-full font-label-sm text-label-sm bg-surface-container-high text-on-surface">
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim"></span>
+<span>En Stock</span>
+</span>
+</td>
+<td class="py-space-md px-space-lg text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-space-xs">
+<button class="btn-adjust-ml px-space-sm py-space-2xs rounded-lg bg-surface-container-highest hover:bg-primary hover:text-on-primary font-label-md text-label-md text-on-surface transition-all" type="button">
+                    Ajustar ml
+                  </button>
+<button class="p-space-2xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" type="button">
+<span class="material-symbols-outlined text-title-lg">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Gin Citadelle Reserve -->
+<tr class="group hover:bg-surface-container-high/50 transition-colors duration-150" data-category="destilados" data-status="reponer">
+<td class="py-space-md px-space-lg">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-secondary group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-headline-md">local_bar</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface truncate">Gin Citadelle Réserve</span>
+<span class="font-body-md text-body-md text-on-surface-variant truncate">Château de Bonbonnet • Gin Francés • 700ml</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-block px-space-sm py-0.5 rounded-full font-label-sm text-label-sm bg-secondary-container/50 text-secondary uppercase">Gin • Espirituosos</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<div class="flex flex-col gap-1">
+<div class="flex items-baseline justify-between text-on-surface font-title-md text-title-md">
+<span>2,450 <span class="font-label-sm text-label-sm text-on-surface-variant font-normal">ml</span></span>
+<span class="font-label-sm text-label-sm text-tertiary">3.5 btl</span>
+</div>
+<div class="w-32 h-1.5 bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary rounded-full" style="width: 25%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-title-md text-title-md text-on-surface">
+                3 <span class="font-body-md text-body-md text-on-surface-variant font-normal">+ 350ml abiertos</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-body-lg text-body-lg text-on-surface-variant">
+                €26.50
+              </td>
+<td class="py-space-md px-space-md whitespace-nowrap font-headline-md text-headline-md text-primary">
+                €18.00 <span class="font-label-sm text-label-sm text-on-surface-variant font-normal">/copa</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-space-2xs rounded-full font-label-sm text-label-sm bg-tertiary-container/20 text-tertiary-fixed">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span>Reponer pronto</span>
+</span>
+</td>
+<td class="py-space-md px-space-lg text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-space-xs">
+<button class="btn-adjust-ml px-space-sm py-space-2xs rounded-lg bg-surface-container-highest hover:bg-primary hover:text-on-primary font-label-md text-label-md text-on-surface transition-all" type="button">
+                    Ajustar ml
+                  </button>
+<button class="p-space-2xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" type="button">
+<span class="material-symbols-outlined text-title-lg">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4: Tequila Clase Azul -->
+<tr class="group hover:bg-surface-container-high/50 transition-colors duration-150" data-category="destilados" data-status="reponer">
+<td class="py-space-md px-space-lg">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-headline-md">liquor</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface truncate">Tequila Clase Azul Reposado</span>
+<span class="font-body-md text-body-md text-on-surface-variant truncate">Jalisco • 100% Agave Azul • 750ml</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-block px-space-sm py-0.5 rounded-full font-label-sm text-label-sm bg-secondary-container/50 text-secondary uppercase">Destilados Ultra Premium</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<div class="flex flex-col gap-1">
+<div class="flex items-baseline justify-between text-on-surface font-title-md text-title-md">
+<span>1,800 <span class="font-label-sm text-label-sm text-on-surface-variant font-normal">ml</span></span>
+<span class="font-label-sm text-label-sm text-error">2.4 btl</span>
+</div>
+<div class="w-32 h-1.5 bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-error rounded-full" style="width: 18%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-title-md text-title-md text-on-surface">
+                2 <span class="font-body-md text-body-md text-on-surface-variant font-normal">+ 300ml abiertos</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-body-lg text-body-lg text-on-surface-variant">
+                €110.00
+              </td>
+<td class="py-space-md px-space-md whitespace-nowrap font-headline-md text-headline-md text-primary">
+                €35.00 <span class="font-label-sm text-label-sm text-on-surface-variant font-normal">/copa</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-space-2xs rounded-full font-label-sm text-label-sm bg-error-container/30 text-error">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+<span>Reponer pronto</span>
+</span>
+</td>
+<td class="py-space-md px-space-lg text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-space-xs">
+<button class="btn-adjust-ml px-space-sm py-space-2xs rounded-lg bg-surface-container-highest hover:bg-primary hover:text-on-primary font-label-md text-label-md text-on-surface transition-all" type="button">
+                    Ajustar ml
+                  </button>
+<button class="p-space-2xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" type="button">
+<span class="material-symbols-outlined text-title-lg">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5: Cointreau Liqueur -->
+<tr class="group hover:bg-surface-container-high/50 transition-colors duration-150" data-category="licores" data-status="optimo">
+<td class="py-space-md px-space-lg">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-on-surface-variant group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-headline-md">liquor</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface truncate">Cointreau Liqueur d'Oranges</span>
+<span class="font-body-md text-body-md text-on-surface-variant truncate">Angers • Triple Sec Francés • 700ml</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-block px-space-sm py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container-highest text-on-surface uppercase">Licores • Coctelería</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<div class="flex flex-col gap-1">
+<div class="flex items-baseline justify-between text-on-surface font-title-md text-title-md">
+<span>3,150 <span class="font-label-sm text-label-sm text-on-surface-variant font-normal">ml</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4.5 btl</span>
+</div>
+<div class="w-32 h-1.5 bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-primary-fixed rounded-full" style="width: 60%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-title-md text-title-md text-on-surface">
+                4 <span class="font-body-md text-body-md text-on-surface-variant font-normal">+ 350ml abiertos</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-body-lg text-body-lg text-on-surface-variant">
+                €18.00
+              </td>
+<td class="py-space-md px-space-md whitespace-nowrap font-headline-md text-headline-md text-primary">
+                €14.00 <span class="font-label-sm text-label-sm text-on-surface-variant font-normal">/copa</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-space-2xs rounded-full font-label-sm text-label-sm bg-surface-container-highest text-on-surface">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span>Stock Óptimo</span>
+</span>
+</td>
+<td class="py-space-md px-space-lg text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-space-xs">
+<button class="btn-adjust-ml px-space-sm py-space-2xs rounded-lg bg-surface-container-highest hover:bg-primary hover:text-on-primary font-label-md text-label-md text-on-surface transition-all" type="button">
+                    Ajustar ml
+                  </button>
+<button class="p-space-2xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" type="button">
+<span class="material-symbols-outlined text-title-lg">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 6: Ruinart Blanc de Blancs -->
+<tr class="group hover:bg-surface-container-high/50 transition-colors duration-150" data-category="champagne" data-status="en-stock">
+<td class="py-space-md px-space-lg">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-headline-md">wine_bar</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface truncate">Ruinart Blanc de Blancs Brut</span>
+<span class="font-body-md text-body-md text-on-surface-variant truncate">Reims • Chardonnay 100% • 750ml</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-block px-space-sm py-0.5 rounded-full font-label-sm text-label-sm bg-primary/10 text-primary uppercase">Champagne Grand Cru</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<div class="flex flex-col gap-1">
+<div class="flex items-baseline justify-between text-on-surface font-title-md text-title-md">
+<span>16,500 <span class="font-label-sm text-label-sm text-on-surface-variant font-normal">ml</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">22 btl</span>
+</div>
+<div class="w-32 h-1.5 bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 92%;"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-title-md text-title-md text-on-surface">
+                22 <span class="font-body-md text-body-md text-on-surface-variant font-normal">selladas</span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-body-lg text-body-lg text-on-surface-variant">
+                €92.00
+              </td>
+<td class="py-space-md px-space-md whitespace-nowrap font-headline-md text-headline-md text-primary">
+                €195.00
+              </td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-space-2xs rounded-full font-label-sm text-label-sm bg-surface-container-high text-on-surface">
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim"></span>
+<span>En Stock</span>
+</span>
+</td>
+<td class="py-space-md px-space-lg text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-space-xs">
+<button class="btn-adjust-ml px-space-sm py-space-2xs rounded-lg bg-surface-container-highest hover:bg-primary hover:text-on-primary font-label-md text-label-md text-on-surface transition-all" type="button">
+                    Ajustar ml
+                  </button>
+<button class="p-space-2xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" type="button">
+<span class="material-symbols-outlined text-title-lg">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination & Realtime Status Footer -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-md p-space-md bg-surface-container-high/30 font-body-md text-body-md text-on-surface-variant">
+<div class="flex items-center gap-space-xs">
+<span>Mostrando</span>
+<span class="font-title-md text-title-md text-on-surface">6</span>
+<span>de</span>
+<span class="font-title-md text-title-md text-on-surface">84</span>
+<span>referencias en cava activa</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="px-space-md py-space-xs rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-highest transition-colors disabled:opacity-50" disabled="" type="button">
+            Anterior
+          </button>
+<button class="w-8 h-8 rounded-lg bg-primary text-on-primary font-title-md text-title-md flex items-center justify-center shadow-sm" type="button">
+            1
+          </button>
+<button class="w-8 h-8 rounded-lg bg-surface-container text-on-surface font-title-md text-title-md flex items-center justify-center hover:bg-surface-container-highest transition-colors" type="button">
+            2
+          </button>
+<button class="w-8 h-8 rounded-lg bg-surface-container text-on-surface font-title-md text-title-md flex items-center justify-center hover:bg-surface-container-highest transition-colors" type="button">
+            3
+          </button>
+<button class="px-space-md py-space-xs rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-highest transition-colors" type="button">
+            Siguiente
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Modal for ml Adjustments (Quick Cellar Sommelier Tool) -->
+<div class="fixed inset-0 z-50 bg-background/80 backdrop-blur-md hidden items-center justify-center p-space-md transition-opacity duration-200" id="adjustMlModal">
+<div class="w-full max-w-lg bg-surface-container-high/95 backdrop-blur-2xl rounded-xl p-space-xl shadow-[0_24px_50px_rgba(0,0,0,0.8)] relative flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-title-lg">tune</span>
+<h3 class="font-title-lg text-title-lg text-on-surface">Ajuste Rápido de Volumen (ml)</h3>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors" id="closeAdjustModal">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-space-sm bg-surface-container rounded-lg flex items-center justify-between">
+<div>
+<span class="font-title-md text-title-md text-on-surface block" id="modalBottleTitle">Referencia</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Descorche por copa • Control de mermas</span>
+</div>
+<div class="text-right">
+<span class="font-currency-display text-currency-display text-primary" id="modalCurrentMl">0</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant block">ml actuales</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Motivo del Descuento / Ajuste</label>
+<div class="grid grid-cols-3 gap-space-xs">
+<button class="quick-deduct px-space-sm py-space-xs rounded-lg bg-surface-container hover:bg-primary-container text-on-surface font-title-md text-title-md transition-colors text-center" data-amount="150" type="button">
+            -150 ml <span class="block font-label-sm text-label-sm opacity-60">Copa Regular</span>
+</button>
+<button class="quick-deduct px-space-sm py-space-xs rounded-lg bg-surface-container hover:bg-primary-container text-on-surface font-title-md text-title-md transition-colors text-center" data-amount="50" type="button">
+            -50 ml <span class="block font-label-sm text-label-sm opacity-60">Degustación</span>
+</button>
+<button class="quick-deduct px-space-sm py-space-xs rounded-lg bg-surface-container hover:bg-error-container/40 text-error font-title-md text-title-md transition-colors text-center" data-amount="750" type="button">
+            -750 ml <span class="block font-label-sm text-label-sm opacity-60">Btl Completa</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-space-2xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Registro manual de nuevo volumen (ml)</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest px-space-md py-space-sm rounded-lg text-on-surface font-headline-md text-headline-md focus:outline-none focus:ring-1 focus:ring-primary shadow-inner" id="customMlInput" placeholder="0" type="number"/>
+<span class="absolute right-space-md top-1/2 -translate-y-1/2 font-label-md text-label-md text-on-surface-variant">ml totales</span>
+</div>
+</div>
+<div class="flex items-center justify-end gap-space-sm mt-space-sm">
+<button class="px-space-lg py-space-sm rounded-xl font-title-md text-title-md text-on-surface hover:bg-surface-container transition-colors" id="cancelAdjustBtn" type="button">
+          Cancelar
+        </button>
+<button class="px-space-xl py-space-sm rounded-xl bg-primary text-on-primary font-title-md text-title-md shadow-[0_4px_20px_rgba(212,175,55,0.3)] hover:bg-primary-fixed transition-transform active:scale-95" id="saveAdjustBtn" type="button">
+          Confirmar Ajuste
+        </button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Simple reactive filter pills
+  const filterPills = document.querySelectorAll('.filter-pill');
+  const tableRows = document.querySelectorAll('#inventoryTableBody tr');
+  const searchInput = document.getElementById('inventorySearchInput');
+
+  function applyFilters() {
+    const activePill = document.querySelector('.filter-pill.bg-primary');
+    const filterValue = activePill ? activePill.dataset.filter : 'all';
+    const query = searchInput.value.toLowerCase().trim();
+
+    tableRows.forEach(row => {
+      const category = row.dataset.category || '';
+      const status = row.dataset.status || '';
+      const text = row.innerText.toLowerCase();
+
+      let matchesCategory = false;
+      if (filterValue === 'all') matchesCategory = true;
+      else if (filterValue === 'alerta') matchesCategory = (status === 'reponer');
+      else matchesCategory = category.includes(filterValue);
+
+      const matchesQuery = query === '' || text.includes(query);
+
+      if (matchesCategory && matchesQuery) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+
+  filterPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      filterPills.forEach(p => {
+        p.classList.remove('bg-primary', 'text-on-primary', 'shadow-[0_0_16px_rgba(212,175,55,0.25)]');
+        p.classList.add('bg-surface-container', 'text-on-surface-variant');
+      });
+      pill.classList.remove('bg-surface-container', 'text-on-surface-variant');
+      pill.classList.add('bg-primary', 'text-on-primary', 'shadow-[0_0_16px_rgba(212,175,55,0.25)]');
+      applyFilters();
+    });
+  });
+
+  searchInput.addEventListener('input', applyFilters);
+
+  // Modal logic for 'Ajustar ml'
+  const adjustModal = document.getElementById('adjustMlModal');
+  const closeAdjustModal = document.getElementById('closeAdjustModal');
+  const cancelAdjustBtn = document.getElementById('cancelAdjustBtn');
+  const saveAdjustBtn = document.getElementById('saveAdjustBtn');
+  const modalBottleTitle = document.getElementById('modalBottleTitle');
+  const modalCurrentMl = document.getElementById('modalCurrentMl');
+  const customMlInput = document.getElementById('customMlInput');
+
+  let activeTargetRow = null;
+
+  document.querySelectorAll('.btn-adjust-ml').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const row = e.target.closest('tr');
+      activeTargetRow = row;
+      const bottleName = row.querySelector('.font-title-md').innerText;
+      const mlText = row.querySelector('td:nth-child(3) .text-on-surface span').innerText.replace(/,/g, '');
+      
+      modalBottleTitle.innerText = bottleName;
+      modalCurrentMl.innerText = parseInt(mlText, 10).toLocaleString();
+      customMlInput.value = parseInt(mlText, 10);
+      
+      adjustModal.classList.remove('hidden');
+      adjustModal.classList.add('flex');
+    });
+  });
+
+  function closeModal() {
+    adjustModal.classList.add('hidden');
+    adjustModal.classList.remove('flex');
+    activeTargetRow = null;
+  }
+
+  closeAdjustModal.addEventListener('click', closeModal);
+  cancelAdjustBtn.addEventListener('click', closeModal);
+
+  document.querySelectorAll('.quick-deduct').forEach(quickBtn => {
+    quickBtn.addEventListener('click', () => {
+      const deduction = parseInt(quickBtn.dataset.amount, 10);
+      const current = parseInt(customMlInput.value, 10) || 0;
+      customMlInput.value = Math.max(0, current - deduction);
+    });
+  });
+
+  saveAdjustBtn.addEventListener('click', () => {
+    if (activeTargetRow) {
+      const newMl = parseInt(customMlInput.value, 10) || 0;
+      const targetDisplay = activeTargetRow.querySelector('td:nth-child(3) .text-on-surface');
+      if (targetDisplay) {
+        targetDisplay.childNodes[0].nodeValue = `${newMl.toLocaleString()} `;
+      }
+    }
+    closeModal();
+  });
+</script></main></div></body></html>

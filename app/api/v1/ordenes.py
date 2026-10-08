@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from decimal import Decimal
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -79,7 +79,7 @@ def crear_orden(
         numero_mesa=payload.numero_mesa,
         id_usuario_creacion=current_user.id_usuario,
         estado=EstadoOrden.ABIERTA,
-        fecha_creacion=datetime.now(timezone.utc),
+        fecha_creacion=datetime.now(timezone(timedelta(hours=-6))),
         total=Decimal("0.00")
     )
     db.add(nueva_orden)
@@ -128,6 +128,47 @@ def obtener_orden(id_orden: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Orden no encontrada")
     return _format_orden_response(orden)
 
+@router.put("/{id_orden}", response_model=OrdenResponse)
+def actualizar_orden(
+    id_orden: int,
+    payload: OrdenCreate,
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user)
+):
+    """Actualiza una orden comanda abierta (mesa e items)."""
+    orden = db.query(Orden).filter(Orden.id_orden == id_orden).first()
+    if not orden:
+        raise HTTPException(status_code=404, detail="Orden no encontrada")
+    if orden.estado != EstadoOrden.ABIERTA:
+        raise HTTPException(status_code=400, detail=f"No se puede modificar una comanda que no esté abierta (estado: {orden.estado.value})")
+
+    orden.numero_mesa = payload.numero_mesa
+    # Borrar items anteriores
+    db.query(DetalleOrden).filter(DetalleOrden.id_orden == id_orden).delete(synchronize_session=False)
+
+    total_acumulado = Decimal("0.00")
+    for it in payload.items:
+        prod = db.query(Producto).filter(Producto.id_producto == it.id_producto).first()
+        if not prod:
+            raise HTTPException(status_code=404, detail=f"Producto con ID {it.id_producto} no encontrado.")
+            
+        subtotal = prod.precio_venta * it.cantidad
+        total_acumulado += subtotal
+        
+        detalle = DetalleOrden(
+            id_orden=orden.id_orden,
+            id_producto=prod.id_producto,
+            cantidad=it.cantidad,
+            precio_unitario=prod.precio_venta,
+            subtotal=subtotal
+        )
+        db.add(detalle)
+
+    orden.total = total_acumulado
+    db.commit()
+    db.refresh(orden)
+    return _format_orden_response(orden)
+
 @router.post("/{id_orden}/cobrar", response_model=CobrarResponse)
 def cobrar_orden(
     id_orden: int,
@@ -164,13 +205,13 @@ def cobrar_orden(
             metodo_pago=payload.metodo_pago,
             monto_pagado=payload.monto_pagado,
             propina=payload.propina,
-            fecha_transaccion=datetime.now(timezone.utc)
+            fecha_transaccion=datetime.now(timezone(timedelta(hours=-6)))
         )
         db.add(pago)
         
         # 3. Cerrar y actualizar estado de la orden
         orden.estado = EstadoOrden.PAGADA
-        orden.fecha_cierre = datetime.now(timezone.utc)
+        orden.fecha_cierre = datetime.now(timezone(timedelta(hours=-6)))
         db.add(orden)
         db.flush()
         
@@ -233,6 +274,46 @@ def anular_orden(
         raise HTTPException(status_code=400, detail="Solo se pueden anular órdenes abiertas.")
         
     orden.estado = EstadoOrden.ANULADA
-    orden.fecha_cierre = datetime.now(timezone.utc)
+    orden.fecha_cierre = datetime.now(timezone(timedelta(hours=-6)))
     db.commit()
     return {"success": True, "mensaje": f"Orden #{id_orden} anulada exitosamente."}
+
+@router.put("/{id_orden}", response_model=OrdenResponse)
+def actualizar_orden_abierta(
+    id_orden: int,
+    payload: OrdenCreate,
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user)
+):
+    """Actualiza una orden/comanda abierta existente."""
+    orden = db.query(Orden).filter(Orden.id_orden == id_orden).first()
+    if not orden:
+        raise HTTPException(status_code=404, detail="Orden no encontrada")
+    if orden.estado != EstadoOrden.ABIERTA:
+        raise HTTPException(status_code=400, detail="Solo se pueden actualizar órdenes con estado ABIERTA.")
+    if not payload.items:
+        raise HTTPException(status_code=400, detail="La orden debe contener al menos un producto.")
+
+    orden.numero_mesa = payload.numero_mesa
+    db.query(DetalleOrden).filter(DetalleOrden.id_orden == orden.id_orden).delete()
+    
+    total_acumulado = Decimal("0.00")
+    for it in payload.items:
+        prod = db.query(Producto).filter(Producto.id_producto == it.id_producto).first()
+        if not prod:
+            raise HTTPException(status_code=404, detail=f"Producto con ID {it.id_producto} no encontrado.")
+        subtotal = prod.precio_venta * it.cantidad
+        total_acumulado += subtotal
+        detalle = DetalleOrden(
+            id_orden=orden.id_orden,
+            id_producto=prod.id_producto,
+            cantidad=it.cantidad,
+            precio_unitario=prod.precio_venta,
+            subtotal=subtotal
+        )
+        db.add(detalle)
+
+    orden.total = total_acumulado
+    db.commit()
+    db.refresh(orden)
+    return _format_orden_response(orden)

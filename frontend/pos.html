@@ -1,239 +1,471 @@
 <!DOCTYPE html>
-<html lang="es">
+<html class="dark" lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Punto de venta táctil con deducción algorítmica de mililitros por escandallo. Bourlemont Champagne Bar.">
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta name="description" content="Punto de Venta Táctil Bourlemont Champagne Bar. Deducción algorítmica de mililitros y facturación FEL en Quetzales (Q)."/>
   <title>Punto de Venta | Bourlemont Champagne Bar</title>
-  <link rel="stylesheet" href="/static/assets/css/apple-tinted.css">
-  <link rel="stylesheet" href="/static/assets/css/pos.css">
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/assets/css/pos.css"/>
+  <style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+    @page { size: 80mm auto; margin: 0mm; }
+    .product-card img,
+    .product-card-img {
+      width: 100% !important;
+      height: 110px !important;
+      object-fit: contain !important;
+      object-position: center !important;
+      background: rgba(28, 25, 23, 0.4) !important;
+      border-radius: 8px !important;
+      padding: 4px !important;
+    }
+    @media print {
+      body * { visibility: hidden !important; }
+      #ticket-printable-area, #ticket-printable-area *,
+      #ticket-content, #ticket-content *,
+      #ticket-content-box, #ticket-content-box *,
+      #ticket-qr-container, #ticket-qr-container * {
+        visibility: visible !important;
+      }
+      #ticket-modal {
+        position: absolute !important; left: 0 !important; top: 0 !important; width: 80mm !important;
+        margin: 0 !important; padding: 0 !important; background: transparent !important;
+        backdrop-filter: none !important; display: block !important; visibility: visible !important;
+        border: none !important; box-shadow: none !important;
+      }
+      #ticket-modal .modal-content {
+        position: static !important; width: 80mm !important; max-width: 80mm !important;
+        margin: 0 auto !important; padding: 0 !important; border: none !important;
+        background: #fff !important; box-shadow: none !important; transform: none !important;
+      }
+      #ticket-modal .modal-header, #ticket-modal button, #ticket-inventory-alerts {
+        display: none !important; visibility: hidden !important;
+      }
+      #ticket-printable-area {
+        display: block !important; width: 76mm !important; max-width: 76mm !important;
+        margin: 0 auto !important; padding: 2mm 0 !important; background: #fff !important;
+        color: #000 !important; box-sizing: border-box !important;
+      }
+      #ticket-content-box {
+        display: block !important; width: 100% !important; color: #000 !important;
+        background: #fff !important; border: none !important; font-family: 'Courier New', Courier, monospace !important;
+        font-size: 11px !important; line-height: 1.35 !important; white-space: pre-wrap !important;
+        word-break: break-word !important; margin: 0 !important; padding: 0 !important; text-align: left !important;
+      }
+      #ticket-qr-container {
+        display: flex !important; flex-direction: column !important; align-items: center !important;
+        justify-content: center !important; margin-top: 8px !important; text-align: center !important; background: #fff !important;
+      }
+      #ticket-qr-container svg { display: block !important; margin: 0 auto !important; width: 100px !important; height: 100px !important; }
+      .ticket-qr-caption { display: block !important; color: #000 !important; font-size: 9px !important; font-weight: 700 !important; text-align: center !important; margin-top: 4px !important; font-family: sans-serif !important; }
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      "darkMode": "class",
+      "theme": {
+        "extend": {
+          "colors": {
+            "on-primary-fixed-variant": "#574500",
+            "tertiary-fixed": "#ffe08d",
+            "on-secondary": "#233143",
+            "outline-variant": "#4d4635",
+            "on-primary-container": "#554300",
+            "secondary-fixed-dim": "#b9c8de",
+            "on-primary": "#3c2f00",
+            "on-secondary-fixed-variant": "#39485a",
+            "inverse-on-surface": "#2e3036",
+            "surface-container-low": "#191c21",
+            "surface-dim": "#111319",
+            "secondary-container": "#39485a",
+            "on-surface": "#e2e2ea",
+            "primary-fixed-dim": "#e9c349",
+            "on-tertiary-container": "#564300",
+            "primary": "#f2ca50",
+            "on-secondary-container": "#a7b6cc",
+            "tertiary": "#eecb6c",
+            "on-surface-variant": "#d0c5af",
+            "background": "#111319",
+            "tertiary-fixed-dim": "#e5c365",
+            "on-background": "#e2e2ea",
+            "surface-tint": "#e9c349",
+            "tertiary-container": "#d0b054",
+            "primary-fixed": "#ffe088",
+            "on-secondary-fixed": "#0d1c2d",
+            "surface-container-lowest": "#0c0e13",
+            "inverse-surface": "#e2e2ea",
+            "on-error": "#690005",
+            "error-container": "#93000a",
+            "on-tertiary": "#3d2f00",
+            "secondary-fixed": "#d4e4fa",
+            "on-error-container": "#ffdad6",
+            "on-tertiary-fixed-variant": "#584400",
+            "surface-container-highest": "#33353b",
+            "secondary": "#b9c8de",
+            "on-tertiary-fixed": "#241a00",
+            "surface": "#111319",
+            "surface-container": "#1d2025",
+            "inverse-primary": "#735c00",
+            "surface-variant": "#33353b",
+            "error": "#ffb4ab",
+            "primary-container": "#d4af37",
+            "outline": "#99907c",
+            "surface-bright": "#37393f",
+            "surface-container-high": "#282a30",
+            "on-primary-fixed": "#241a00"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-panel": "1.25rem",
+            "space-3xl": "4rem",
+            "space-sm": "0.75rem",
+            "margin-screen": "1.5rem",
+            "space-2xl": "3rem",
+            "space-lg": "1.5rem",
+            "space-2xs": "0.25rem",
+            "space-xl": "2rem",
+            "space-xs": "0.5rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "label-sm": ["Plus Jakarta Sans"],
+            "currency-display": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"],
+            "title-md": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "title-lg": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-xl-mobile": ["Plus Jakarta Sans"]
+          }
+        }
+      }
+    };
+  </script>
 </head>
-<body>
-  <!-- Barra Superior Global -->
-  <header class="header-bar">
-    <div class="brand-section">
-      <div class="brand-logo">B</div>
-      <div>
-        <div class="brand-title">Bourlemont</div>
-        <div class="brand-subtitle">Champagne Bar · Sacatepéquez</div>
-      </div>
-    </div>
+<body class="bg-surface font-body-md text-on-surface antialiased overflow-hidden">
+  <!-- Stitch Luxurious Sidebar -->
+  <aside class="fixed left-0 top-0 h-full w-72 p-space-md z-50 pointer-events-none">
+    <div class="h-full w-full bg-surface-container/85 backdrop-blur-2xl rounded-2xl p-space-md flex flex-col justify-between shadow-[0_8px_32px_rgba(0,0,0,0.6)] border border-white/5 pointer-events-auto">
+      <div class="flex flex-col gap-space-lg">
+        <!-- Logo Maison Bourlemont -->
+        <div class="flex items-center justify-center p-4 border-b border-stone-800/60 mb-2">
+          <img src="/assets/img/logo1.png" onerror="if(!this._f1){this._f1=true; this.src='/assets/img/logo.png';}else if(!this._f2){this._f2=true; this.src='/assets/img/bourlemont-logo.svg';}" alt="Bourlemont" class="max-h-12 w-auto object-contain mx-auto"/>
+        </div>
 
-    <!-- Navegación de Módulos -->
-    <nav class="nav-links">
-      <a href="/pos.html" class="nav-item active" id="nav-pos">Punto de Venta</a>
-      <a href="/inventario.html" class="nav-item" id="nav-inv">Inventario en ml</a>
-      <a href="/recetas.html" class="nav-item" id="nav-rec">Recetas &amp; Escandallos</a>
-      <a href="/auditoria.html" class="nav-item admin-only" id="nav-aud">Auditoría de Pagos</a>
-      <a href="/dashboard.html" class="nav-item admin-only" id="nav-dash">Dashboard &amp; Arqueos</a>
-    </nav>
+        <!-- Navigation Links -->
+        <nav class="flex flex-col gap-space-2xs">
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl transition-all duration-200 bg-primary-container text-on-primary font-title-md shadow-[0_0_20px_rgba(212,175,55,0.25)]" id="nav-pos" href="/pos.html">
+            <span class="material-symbols-outlined text-title-lg">point_of_sale</span>
+            <span>Punto de Venta</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" id="nav-inv" href="/inventario.html">
+            <span class="material-symbols-outlined text-title-lg">inventory_2</span>
+            <span>Inventario en ml</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" id="nav-rec" href="/recetas.html">
+            <span class="material-symbols-outlined text-title-lg">liquor</span>
+            <span>Recetas &amp; Escandallos</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 admin-only" id="nav-dash" href="/dashboard.html">
+            <span class="material-symbols-outlined text-title-lg">dashboard</span>
+            <span>Dashboard &amp; Arqueos</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 admin-only" id="nav-aud" href="/auditoria.html">
+            <span class="material-symbols-outlined text-title-lg">history</span>
+            <span>Auditoría de Pagos</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 admin-only" id="nav-usr" href="/usuarios.html">
+            <span class="material-symbols-outlined text-title-lg">group</span>
+            <span>Usuarios</span>
+          </a>
+        </nav>
 
-    <!-- Bartender Activo -->
-    <div style="display: flex; align-items: center; gap: 14px; flex-shrink: 0;">
-      <div class="user-status-pill">
-        <div class="status-dot"></div>
-        <div>
-          <strong id="header-user-name" style="color: #FFF; font-size: 14px;">Bartender</strong>
-          <span id="header-user-role" class="badge badge-gold" style="font-size: 10px; margin-left: 6px; vertical-align: middle;">BARTENDER</span>
+        <!-- Acción Rápida: Nueva Orden -->
+        <div class="pt-2 border-t border-white/5">
+          <button type="button" class="flex items-center justify-center gap-2 px-space-md py-2.5 rounded-xl transition-all duration-200 bg-surface-container-high hover:bg-surface-bright text-primary border border-primary/25 font-title-sm text-sm font-semibold w-full cursor-pointer hover:border-primary active:scale-95 shadow-sm" id="btn-nueva-orden">
+            <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+            <span>+ Nueva Orden</span>
+          </button>
         </div>
       </div>
-      <button id="logout-btn" class="btn btn-subtle-gold" style="padding: 8px 14px; font-size: 13px;" title="Bloquear sesión / Salir">
-        🔒 Bloquear
-      </button>
-    </div>
-  </header>
 
-  <!-- Contenedor Principal POS -->
-  <div class="pos-container">
-    <!-- Área de Catálogo (Izquierda) -->
-    <main class="pos-catalog-area">
-      <div class="catalog-header">
-        <div class="category-tabs">
+      <!-- User Status Pill & Lock Session -->
+      <div class="p-space-xs rounded-xl bg-surface-container-low/70 flex items-center justify-between border border-white/5">
+        <div class="flex items-center gap-space-sm overflow-hidden">
+          <div class="relative flex-shrink-0">
+            <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary font-bold text-sm">
+              <span class="material-symbols-outlined text-[18px]">person</span>
+            </div>
+            <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-surface-container-low"></span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="font-title-md text-title-md text-on-surface truncate leading-snug" id="header-user-name">Bartender</span>
+            <span class="font-label-sm text-label-sm text-primary uppercase truncate tracking-wider" id="header-user-role">BARTENDER</span>
+          </div>
+        </div>
+        <button class="p-1 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors" id="logout-btn" title="Bloquear sesión">
+          <span class="material-symbols-outlined text-title-lg">lock</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main View Area (Offset by 72 = 18rem) -->
+  <div class="pl-72 flex flex-col h-screen">
+    <!-- Top Global Header -->
+    <header class="h-16 w-full bg-surface/85 backdrop-blur-xl px-4 lg:px-6 flex items-center justify-between border-b border-white/5 z-40 flex-shrink-0">
+      <div class="flex items-center gap-2 text-on-surface font-semibold text-sm">
+        <span class="material-symbols-outlined text-primary text-[20px]">point_of_sale</span>
+        <span>Terminal Punto de Venta</span>
+      </div>
+
+      <!-- Estado de Servicio & Bloquear Sesión -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-1.5 bg-surface-container-low px-3 py-1 rounded-full border border-white/5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Turno Activo</span>
+        </div>
+        <button id="top-logout-btn" class="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-primary transition-all border border-white/5 text-label-md font-semibold" title="Bloquear Terminal">
+          <span class="material-symbols-outlined text-[18px]">lock</span>
+          <span>Bloquear</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Workstation Container (Split into Catalog & Command Rail) -->
+    <main class="flex-1 flex overflow-hidden p-space-md gap-space-md">
+      <!-- Left Catalog Area -->
+      <section class="flex-1 flex flex-col min-w-0 bg-surface-container/60 backdrop-blur-xl rounded-2xl p-space-md border border-white/5 overflow-hidden">
+        <!-- Top Action & Search Bar -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-space-md mb-space-md flex-shrink-0">
+          <!-- Search Input -->
+          <div class="relative flex-1">
+            <span class="material-symbols-outlined absolute left-space-md top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-title-md">search</span>
+            <input class="w-full bg-surface-container-lowest/80 pl-11 pr-space-md py-space-sm rounded-full font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-1 focus:ring-primary shadow-inner transition-all border border-white/5" id="search-input" placeholder="Buscar champagne, licor o cóctel de autor..." type="search"/>
+          </div>
+        </div>
+
+        <!-- Category Horizontal Filter Tabs -->
+        <div class="flex items-center gap-space-xs overflow-x-auto pb-space-xs mb-space-xs flex-shrink-0" id="category-tabs-container">
           <button class="category-tab active" data-cat="TODOS">Todos</button>
           <button class="category-tab" data-cat="CHAMPAGNE">🍾 Champagne &amp; Cavas</button>
           <button class="category-tab" data-cat="COCTELES_AUTOR">🍹 Cócteles de Autor</button>
           <button class="category-tab" data-cat="LICORES">🥃 Licores Premium</button>
         </div>
-        <div class="search-input-wrapper">
-          <input type="search" id="search-input" class="input-field"
-                 placeholder="🔍 Buscar champagne o cóctel..."
-                 style="padding: 10px 14px; font-size: 14px;">
-        </div>
-      </div>
 
-      <!-- Grilla de Productos -->
-      <div class="products-grid" id="products-grid">
-        <!-- Renderizado dinámico desde pos.js -->
-      </div>
+        <!-- Dynamic Products Grid (#catalogo-productos) -->
+        <div class="products-grid catalogo-productos flex-1 overflow-y-auto" id="catalogo-productos">
+          <!-- Renderizado dinámico vía pos.js -->
+        </div>
+
+        <!-- Bottom Sommelier Guarantee Strip -->
+        <div class="flex items-center justify-between bg-surface-container-low/70 p-space-sm rounded-xl gap-space-md mt-space-sm border border-white/5 flex-shrink-0">
+          <div class="flex items-center gap-space-sm">
+            <span class="material-symbols-outlined text-primary text-title-md">verified</span>
+            <span class="font-label-md text-label-md text-on-surface-variant">Deducción algorítmica de mililitros en tiempo real · Precios con IVA (12% SAT) incluido.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Command Rail: Active Table & Comanda -->
+      <aside class="w-full lg:w-[410px] flex flex-col flex-shrink-0 bg-surface-container/85 backdrop-blur-2xl rounded-2xl p-space-md shadow-2xl border border-white/5 overflow-hidden">
+        <!-- Top Rail Header: Ubicación & Selector de Mesa -->
+        <div class="flex flex-col gap-space-sm pb-space-sm border-b border-white/5 flex-shrink-0">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-space-xs">
+              <span class="material-symbols-outlined text-primary text-title-lg">table_restaurant</span>
+              <h2 class="font-title-lg text-title-lg text-on-surface font-bold tracking-tight">Comanda Activa</h2>
+            </div>
+            <span class="bg-primary/15 text-primary font-label-sm text-label-sm px-2.5 py-0.5 rounded-full uppercase tracking-wider font-bold">
+              En Servicio
+            </span>
+          </div>
+
+          <!-- Selector de Mesa / Ubicación -->
+          <div class="flex items-center gap-space-xs bg-surface-container-low p-space-2xs rounded-xl border border-white/5">
+            <span class="material-symbols-outlined text-primary text-title-md ml-2">room</span>
+            <select class="w-full bg-transparent text-on-surface font-title-md text-title-md py-1 pr-2 outline-none cursor-pointer" id="table-select">
+              <option class="bg-surface text-on-surface" value="Barra 360 - Asiento 1">Barra 360 - Asiento 1</option>
+              <option class="bg-surface text-on-surface" value="Barra 360 - Asiento 2">Barra 360 - Asiento 2</option>
+              <option class="bg-surface text-on-surface" value="Barra 360 - Asiento 3">Barra 360 - Asiento 3</option>
+              <option class="bg-surface text-on-surface" value="Barra 360 - Asiento 4">Barra 360 - Asiento 4</option>
+              <option class="bg-surface text-on-surface" value="Barra 360 - Asiento 5">Barra 360 - Asiento 5</option>
+              <option class="bg-surface text-on-surface" value="Barra 360 - Asiento 6">Barra 360 - Asiento 6</option>
+              <option class="bg-surface text-on-surface" value="Mesa 1 (Jardín)">Mesa 1 (Jardín)</option>
+              <option class="bg-surface text-on-surface" value="Mesa 2 (Lounge)">Mesa 2 (Lounge)</option>
+              <option class="bg-surface text-on-surface" value="Mesa 3 (Cava Privada)">Mesa 3 (Cava Privada)</option>
+              <option class="bg-surface text-on-surface" value="Mesa 4 (Terraza)">Mesa 4 (Terraza)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Ticket Items List -->
+        <div class="flex-1 flex flex-col gap-space-xs overflow-y-auto py-space-sm pr-1" id="order-items-list">
+          <div class="empty-order-state" id="empty-order-state">
+            <div class="empty-icon">🥂</div>
+            <div class="text-on-surface font-semibold text-title-md">Comanda Vacía</div>
+            <p class="text-on-surface-variant text-body-md max-w-[220px]">
+              Selecciona productos del catálogo para agregarlos a la comanda activa.
+            </p>
+          </div>
+        </div>
+
+        <!-- Financial Calculations (Fiscal Guatemala Q) -->
+        <div class="flex flex-col gap-space-2xs bg-surface-container-lowest/80 p-space-md rounded-2xl my-space-xs border border-white/5 flex-shrink-0">
+          <div class="flex items-center justify-between text-on-surface-variant font-body-md text-body-md">
+            <span>Subtotal (Sin IVA):</span>
+            <span class="text-on-surface font-medium" id="order-subtotal-sin-iva">Q 0.00</span>
+          </div>
+          <div class="flex items-center justify-between text-on-surface-variant font-body-md text-body-md">
+            <span>IVA (12% SAT Decreto 27-92):</span>
+            <span class="text-on-surface font-medium" id="order-iva">Q 0.00</span>
+          </div>
+          <div class="pt-space-xs mt-space-2xs border-t border-white/10 flex items-baseline justify-between">
+            <span class="font-title-lg text-title-lg text-on-surface font-semibold uppercase tracking-wider">Total Cuenta:</span>
+            <span class="font-currency-display text-currency-display text-primary font-bold tracking-tight" id="order-total">Q 0.00</span>
+          </div>
+        </div>
+
+        <!-- CTA Action Buttons -->
+        <div class="flex flex-col gap-space-xs pt-space-xs flex-shrink-0">
+          <button class="w-full py-2.5 px-4 rounded-xl bg-surface-container-high hover:bg-surface-bright text-on-surface font-title-md text-title-md font-semibold transition-all border border-white/5 flex items-center justify-center gap-2" id="btn-guardar-comanda" type="button">
+            <span class="material-symbols-outlined text-title-md text-primary">save</span>
+            <span>Guardar Comanda Abierta</span>
+          </button>
+          <button class="w-full bg-gradient-to-r from-primary via-primary-fixed to-primary text-on-primary py-3.5 rounded-full font-title-lg text-title-lg font-bold shadow-xl shadow-primary/25 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-space-sm disabled:opacity-40 disabled:pointer-events-none" id="btn-cobrar" data-alias="checkout-btn" type="button" disabled>
+            <span class="material-symbols-outlined text-headline-md">point_of_sale</span>
+            <span>Cobrar Orden (Q 0.00)</span>
+          </button>
+        </div>
+      </aside>
     </main>
-
-    <!-- Comanda Lateral (Derecha) -->
-    <aside class="pos-order-panel">
-      <div class="order-panel-header">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h2 style="font-size: 16px; font-weight: 700; color: #FFF;">Comanda Activa</h2>
-          <span class="badge badge-gold" style="font-size: 11px;">Consumo de Barra</span>
-        </div>
-        <div class="table-selector-row">
-          <label style="font-size: 12px; color: var(--text-secondary); white-space: nowrap;">📍 Ubicación:</label>
-          <select id="table-select" class="table-input">
-            <option value="Barra 360 - Asiento 1">Barra 360 - Asiento 1</option>
-            <option value="Barra 360 - Asiento 2">Barra 360 - Asiento 2</option>
-            <option value="Barra 360 - Asiento 3">Barra 360 - Asiento 3</option>
-            <option value="Barra 360 - Asiento 4">Barra 360 - Asiento 4</option>
-            <option value="Barra 360 - Asiento 5">Barra 360 - Asiento 5</option>
-            <option value="Barra 360 - Asiento 6">Barra 360 - Asiento 6</option>
-            <option value="Mesa 1 (Jardín)">Mesa 1 (Jardín)</option>
-            <option value="Mesa 2 (Lounge)">Mesa 2 (Lounge)</option>
-            <option value="Mesa 3 (Cava Privada)">Mesa 3 (Cava Privada)</option>
-            <option value="Mesa 4 (Terraza)">Mesa 4 (Terraza)</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Lista de Ítems -->
-      <div class="order-items-list" id="order-items-list">
-        <div class="empty-order-state" id="empty-order-state">
-          <div class="empty-icon">🥂</div>
-          <div style="font-size: 15px; font-weight: 600; color: #FFF;">Comanda Vacía</div>
-          <p style="font-size: 13px; max-width: 200px; color: var(--text-secondary);">
-            Selecciona productos de la carta para agregar a la cuenta.
-          </p>
-        </div>
-      </div>
-
-      <!-- Totales y Acción de Cobro -->
-      <div class="order-panel-footer">
-        <div class="order-summary-row">
-          <span>Subtotal (Sin IVA):</span>
-          <span id="order-subtotal-sin-iva">Q 0.00</span>
-        </div>
-        <div class="order-summary-row">
-          <span>IVA (12% SAT):</span>
-          <span id="order-iva">Q 0.00</span>
-        </div>
-        <div class="order-total-row">
-          <span class="order-total-label">Total Cuenta:</span>
-          <span class="order-total-amount" id="order-total">Q 0.00</span>
-        </div>
-
-        <button id="checkout-btn" class="btn btn-gold checkout-btn" disabled>
-          Cobrar Orden (Q 0.00)
-        </button>
-      </div>
-    </aside>
   </div>
 
-  <!-- ─── MODAL: Liquidación y Cobro FEL ─── -->
-  <div class="modal-overlay" id="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-title">
+  <!-- ─── MODAL: Liquidación y Cobro FEL (#modal-cobro) ─── -->
+  <div class="modal-overlay" id="modal-cobro" data-alias="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-title">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title" id="checkout-modal-title">💳 Liquidación &amp; Cobro</h3>
+        <h3 class="modal-title flex items-center gap-2" id="checkout-modal-title">
+          <span class="material-symbols-outlined text-primary">payments</span>
+          <span>Liquidación &amp; Cobro</span>
+        </h3>
         <button class="modal-close" aria-label="Cerrar">&times;</button>
       </div>
 
       <!-- Método de Pago -->
-      <div style="margin-bottom: 14px;">
-        <label style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
+      <div class="mb-4">
+        <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-2">
           Método de Pago
         </label>
         <div class="payment-methods-grid">
           <button type="button" class="payment-method-btn active" data-method="EFECTIVO">
-            <span style="font-size: 22px;">💵</span>
+            <span class="material-symbols-outlined text-2xl text-primary">payments</span>
             <span>Efectivo</span>
           </button>
           <button type="button" class="payment-method-btn" data-method="TARJETA_VISA">
-            <span style="font-size: 22px;">💳</span>
+            <span class="material-symbols-outlined text-2xl text-primary">credit_card</span>
             <span>Tarjeta Visa</span>
           </button>
           <button type="button" class="payment-method-btn" data-method="TARJETA_MASTERCARD">
-            <span style="font-size: 22px;">💳</span>
+            <span class="material-symbols-outlined text-2xl text-primary">contactless</span>
             <span>Mastercard</span>
           </button>
-          <button type="button" class="payment-method-btn" data-method="TRANSFERENCIA">
-            <span style="font-size: 22px;">🏦</span>
-            <span>Transferencia</span>
-          </button>
         </div>
       </div>
 
-      <!-- Propina -->
-      <div style="margin-bottom: 16px;">
-        <label style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
-          Propina del Servicio
+      <!-- Propina del Servicio -->
+      <div class="mb-4">
+        <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-2">
+          Propina Sugerida Sommelier
         </label>
-        <div style="display: flex; gap: 8px; margin-top: 8px;">
-          <button type="button" class="btn btn-subtle-gold tip-btn" data-tip="0" style="flex: 1; padding: 8px;">0%</button>
-          <button type="button" class="btn btn-subtle-gold tip-btn active" data-tip="10" style="flex: 1; padding: 8px;">10%</button>
-          <button type="button" class="btn btn-subtle-gold tip-btn" data-tip="15" style="flex: 1; padding: 8px;">15%</button>
-          <button type="button" class="btn btn-subtle-gold tip-btn" data-tip="20" style="flex: 1; padding: 8px;">20%</button>
+        <div class="flex gap-2">
+          <button type="button" class="tip-btn" data-tip="0">0%</button>
+          <button type="button" class="tip-btn active" data-tip="10">10%</button>
+          <button type="button" class="tip-btn" data-tip="15">15%</button>
+          <button type="button" class="tip-btn" data-tip="20">20%</button>
         </div>
       </div>
 
-      <!-- Datos Receptor FEL -->
-      <div style="margin-bottom: 16px;">
-        <label style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
+      <!-- Datos Receptor FEL SAT (Guatemala) -->
+      <div class="mb-4">
+        <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-2">
           Facturación Electrónica SAT (FEL)
         </label>
-        <div class="nit-input-row">
-          <input type="text" id="fel-nit" class="input-field"
-                 placeholder="NIT o CF" value="CF"
-                 style="flex: 1;" autocomplete="off"
-                 inputmode="numeric">
-          <button type="button" id="btn-cf-fast" class="btn btn-subtle-gold" style="padding: 10px 16px; flex-shrink: 0;">CF</button>
+        <div class="flex gap-2 mb-2">
+          <input type="text" id="fel-nit" class="input-field flex-1" placeholder="NIT o CF" value="CF" autocomplete="off" inputmode="numeric">
+          <button type="button" id="btn-cf-fast" class="btn btn-subtle-gold px-4 font-bold" title="Asignar Consumidor Final">CF</button>
         </div>
-        <input type="text" id="fel-nombre" class="input-field"
-               placeholder="Nombre Receptor"
-               value="CONSUMIDOR FINAL"
-               style="margin-top: 8px;" autocomplete="off">
+        <input type="text" id="fel-nombre" class="input-field" placeholder="Nombre Receptor" value="CONSUMIDOR FINAL" autocomplete="off">
       </div>
 
-      <!-- Resumen -->
-      <div class="panel" style="padding: 14px; margin-bottom: 20px; background-color: var(--bg-surface);">
-        <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); margin-bottom: 5px;">
-          <span>Consumo bruto:</span>
-          <span id="modal-subtotal">Q 0.00</span>
+      <!-- Resumen Financiero -->
+      <div class="bg-surface-container-lowest p-4 rounded-xl mb-4 border border-white/5">
+        <div class="flex justify-between text-body-md text-on-surface-variant mb-1">
+          <span>Consumo de Carta:</span>
+          <span id="modal-subtotal" class="text-on-surface font-semibold">Q 0.00</span>
         </div>
-        <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
+        <div class="flex justify-between text-body-md text-on-surface-variant mb-2">
           <span>Propina:</span>
-          <span id="modal-tip">Q 0.00</span>
+          <span id="modal-tip" class="text-on-surface font-semibold">Q 0.00</span>
         </div>
-        <div style="display: flex; justify-content: space-between; font-size: 19px; font-weight: 800; color: var(--gold-highlight-text); border-top: var(--hairline-border); padding-top: 10px;">
-          <span>Total a Pagar:</span>
-          <span id="modal-total">Q 0.00</span>
+        <div class="flex justify-between items-baseline pt-2 border-t border-white/10">
+          <span class="font-title-lg text-title-lg text-on-surface font-bold uppercase">Total a Pagar:</span>
+          <span id="modal-total" class="font-currency-display text-currency-display text-primary font-bold">Q 0.00</span>
         </div>
       </div>
 
-      <div style="display: flex; gap: 10px;">
-        <button type="button" class="btn modal-cancel" style="flex: 1;">Cancelar</button>
-        <button type="button" id="confirm-payment-btn" class="btn btn-gold" style="flex: 2;">
-          Confirmar y Emitir Factura
+      <!-- Botones de Acción -->
+      <div class="flex gap-3">
+        <button type="button" class="btn modal-cancel flex-1">Cancelar</button>
+        <button type="button" id="confirm-payment-btn" class="btn btn-gold flex-[2] text-title-md font-bold">
+          Confirmar y Emitir Factura FEL
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ─── MODAL: Ticket Térmico ESC/POS (solo este se imprime) ─── -->
-  <div id="ticket-modal">
-    <div class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="ticket-modal-title">
-      <div class="modal-content" style="max-width: 480px;">
-        <div class="modal-header">
-          <h3 class="modal-title" id="ticket-modal-title">🖨️ Ticket &amp; Factura FEL</h3>
-          <button class="modal-close" aria-label="Cerrar">&times;</button>
-        </div>
+  <!-- ─── MODAL: Ticket Térmico ESC/POS (#ticket-modal) ─── -->
+  <div id="ticket-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="ticket-modal-title">
+    <div class="modal-content max-w-[480px]">
+      <div class="modal-header">
+        <h3 class="modal-title flex items-center gap-2" id="ticket-modal-title">
+          <span class="material-symbols-outlined text-primary">print</span>
+          <span>Factura Electrónica &amp; Ticket</span>
+        </h3>
+        <button class="modal-close" aria-label="Cerrar">&times;</button>
+      </div>
 
-        <div id="ticket-inventory-alerts" class="badge badge-warning"
-             style="display: none; width: 100%; margin-bottom: 12px; padding: 10px; text-align: left; line-height: 1.5; font-size: 13px; text-transform: none; border-radius: var(--radius-md);">
-        </div>
+      <div id="ticket-inventory-alerts" class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-sm mb-3" style="display: none;"></div>
 
-        <pre id="ticket-content-box" class="thermal-ticket-box"></pre>
+      <pre id="ticket-content-box" class="thermal-ticket-box"></pre>
 
-        <div style="display: flex; gap: 10px; margin-top: 18px;">
-          <button type="button" class="btn modal-close" style="flex: 1;">Cerrar</button>
-          <button type="button" id="print-ticket-btn" class="btn btn-gold" style="flex: 2;">
-            🖨️ Imprimir Ticket (80mm)
-          </button>
-        </div>
+      <div id="ticket-qr-container" class="ticket-qr-container"></div>
+
+      <div class="flex gap-3 mt-4">
+        <button type="button" class="btn modal-close flex-1">Cerrar</button>
+        <button type="button" id="print-ticket-btn" class="btn btn-gold flex-[2] font-bold">
+          🖨️ Imprimir Ticket (80mm)
+        </button>
       </div>
     </div>
   </div>

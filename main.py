@@ -14,6 +14,14 @@ from app.api.v1 import api_router
 async def lifespan(app: FastAPI):
     # Crear tablas si no existen (en MySQL o SQLite fallback)
     Base.metadata.create_all(bind=engine)
+    try:
+        from sqlalchemy import text
+        with engine.begin() as conn:
+            cols = conn.execute(text("SHOW COLUMNS FROM usuarios LIKE 'foto_url'")).fetchall()
+            if not cols:
+                conn.execute(text("ALTER TABLE usuarios ADD COLUMN foto_url VARCHAR(255) NULL"))
+    except Exception:
+        pass
     yield
 
 app = FastAPI(
@@ -37,16 +45,21 @@ app.add_middleware(
 # Montar routers API v1
 app.include_router(api_router)
 
-# Alias para rutas compatibles con especificación (/api/ordenes/... y /api/reportes/...)
+# Alias para rutas compatibles con especificación (/api/ordenes/..., /api/reportes/..., /api/usuarios/...)
 from app.api.v1.ordenes import router as alias_ordenes
 from app.api.v1.reportes import router as alias_reportes
+from app.api.v1.usuarios import router as alias_usuarios
 app.include_router(alias_ordenes, prefix="/api")
 app.include_router(alias_reportes, prefix="/api")
+app.include_router(alias_usuarios, prefix="/api")
 
 # Montar estáticos del frontend
 frontend_dir = os.path.join(os.path.dirname(__file__), "frontend")
 if os.path.exists(frontend_dir):
     app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+    assets_dir = os.path.join(frontend_dir, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
 @app.get("/")
 def index():

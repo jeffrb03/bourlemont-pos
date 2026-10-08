@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" fill="none">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F9E79F" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#997A15" />
+    </linearGradient>
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <rect width="120" height="120" rx="30" fill="#0C101B" stroke="rgba(212,175,55,0.3)" stroke-width="1.5" />
+  <!-- Elegant Champagne flute minimalist monogram 'B' & flute -->
+  <path d="M60 22 C60 22, 48 38, 48 50 C48 60, 56 64, 59 65 L59 86 L50 86 C48 86, 47 88, 47 90 C47 92, 48 94, 50 94 L70 94 C72 94, 73 92, 73 90 C73 88, 72 86, 70 86 L61 86 L61 65 C64 64, 72 60, 72 50 C72 38, 60 22, 60 22 Z" fill="url(#goldGrad)" opacity="0.9" />
+  <circle cx="60" cy="40" r="2" fill="#FFFFFF" opacity="0.8" />
+  <circle cx="58" cy="34" r="1.5" fill="#FFFFFF" opacity="0.6" />
+  <circle cx="62" cy="48" r="1.5" fill="#FFFFFF" opacity="0.7" />
+  <!-- Letter B geometric outline accent -->
+  <path d="M38 32 H44 C50 32, 54 36, 54 41 C54 45, 51 48, 47 49 C52 50, 56 54, 56 60 C56 66, 50 70, 44 70 H38 V32 Z" stroke="url(#goldGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.4" />
+</svg>

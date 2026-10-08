@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" fill="none">
+  <defs>
+    <linearGradient id="goldCardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F9E79F" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#806500" />
+    </linearGradient>
+    <radialGradient id="cardGlow" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="rgba(212,175,55,0.25)" />
+      <stop offset="100%" stop-color="rgba(17,19,25,0)" />
+    </radialGradient>
+  </defs>
+  <rect width="200" height="200" fill="#111319" />
+  <circle cx="100" cy="90" r="70" fill="url(#cardGlow)" />
+  <!-- Elegant Champagne flute & bubble art -->
+  <path d="M100 40 C100 40, 80 62, 80 84 C80 98, 92 106, 97 108 L97 142 L82 142 C79 142, 78 145, 78 148 C78 151, 79 154, 82 154 L118 154 C121 154, 122 151, 122 148 C122 145, 121 142, 118 142 L103 142 L103 108 C108 106, 120 98, 120 84 C120 62, 100 40, 100 40 Z" fill="url(#goldCardGrad)" opacity="0.9" />
+  <ellipse cx="100" cy="55" rx="8" ry="3" fill="#FFFDF0" opacity="0.6" />
+  <circle cx="100" cy="72" r="3" fill="#FFF" opacity="0.8" />
+  <circle cx="95" cy="85" r="2.2" fill="#FFF" opacity="0.6" />
+  <circle cx="105" cy="80" r="2" fill="#FFF" opacity="0.7" />
+  <circle cx="98" cy="95" r="2.5" fill="#FFF" opacity="0.6" />
+</svg>

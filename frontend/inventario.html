@@ -1,266 +1,988 @@
 <!DOCTYPE html>
-<html lang="es">
+<html class="dark" lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inventario en Mililitros | Bourlemont POS</title>
-  <link rel="stylesheet" href="/static/assets/css/apple-tinted.css">
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta name="description" content="Control de Cava e Inventario en Mililitros Bourlemont Champagne Bar. Trazabilidad algorítmica y gestión de mermas."/>
+  <title>Control de Inventario &amp; Cava | Bourlemont POS</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/assets/css/pos.css"/>
   <style>
-    .inventory-container {
-      padding: 28px;
-      max-width: 1400px;
-      margin: 0 auto;
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+
+    .section-tab {
+      padding: 0.5rem 1.25rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #d0c5af;
+      background: #282a30;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .section-tab.active {
+      background: #f2ca50;
+      color: #3c2f00;
+      box-shadow: 0 4px 16px rgba(242, 202, 80, 0.28);
+    }
+    .section-view { display: none; }
+    .section-view.active { display: block; }
+
+    .filter-btn {
+      padding: 0.375rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #d0c5af;
+      background: #1d2025;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .filter-btn:hover {
+      background: #282a30;
+      color: #e2e2ea;
+    }
+    .filter-btn.active {
+      background: #f2ca50;
+      color: #3c2f00;
+      box-shadow: 0 2px 10px rgba(242, 202, 80, 0.25);
     }
 
-    .table-container {
-      background-color: var(--bg-panel);
-      border: var(--hairline-border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      margin-top: 20px;
-    }
-
-    .custom-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    .custom-table th {
-      background-color: var(--bg-surface);
-      padding: 14px 18px;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--gold-highlight-text);
-      border-bottom: var(--hairline-border);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .custom-table td {
-      padding: 14px 18px;
-      font-size: 14px;
-      border-bottom: var(--hairline-border);
-      color: var(--text-primary);
-    }
-
-    .custom-table tr:hover {
-      background-color: rgba(255, 255, 255, 0.02);
-    }
-
-    .stat-badge {
+    .badge-status {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 0.35rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.7rem;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .badge-status.optimo {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .badge-status.reordenar {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .badge-status.negativo {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .badge-status.escandallo {
+      background: rgba(212, 175, 55, 0.15);
+      color: #f2ca50;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
   </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      "darkMode": "class",
+      "theme": {
+        "extend": {
+          "colors": {
+            "on-primary-fixed-variant": "#574500",
+            "tertiary-fixed": "#ffe08d",
+            "on-secondary": "#233143",
+            "outline-variant": "#4d4635",
+            "on-primary-container": "#554300",
+            "secondary-fixed-dim": "#b9c8de",
+            "on-primary": "#3c2f00",
+            "on-secondary-fixed-variant": "#39485a",
+            "inverse-on-surface": "#2e3036",
+            "surface-container-low": "#191c21",
+            "surface-dim": "#111319",
+            "secondary-container": "#39485a",
+            "on-surface": "#e2e2ea",
+            "primary-fixed-dim": "#e9c349",
+            "on-tertiary-container": "#564300",
+            "primary": "#f2ca50",
+            "on-secondary-container": "#a7b6cc",
+            "tertiary": "#eecb6c",
+            "on-surface-variant": "#d0c5af",
+            "background": "#111319",
+            "tertiary-fixed-dim": "#e5c365",
+            "on-background": "#e2e2ea",
+            "surface-tint": "#e9c349",
+            "tertiary-container": "#d0b054",
+            "primary-fixed": "#ffe088",
+            "on-secondary-fixed": "#0d1c2d",
+            "surface-container-lowest": "#0c0e13",
+            "inverse-surface": "#e2e2ea",
+            "on-error": "#690005",
+            "error-container": "#93000a",
+            "on-tertiary": "#3d2f00",
+            "secondary-fixed": "#d4e4fa",
+            "on-error-container": "#ffdad6",
+            "on-tertiary-fixed-variant": "#584400",
+            "surface-container-highest": "#33353b",
+            "secondary": "#b9c8de",
+            "on-tertiary-fixed": "#241a00",
+            "surface": "#111319",
+            "surface-container": "#1d2025",
+            "inverse-primary": "#735c00",
+            "surface-variant": "#33353b",
+            "error": "#ffb4ab",
+            "primary-container": "#d4af37",
+            "outline": "#99907c",
+            "surface-bright": "#37393f",
+            "surface-container-high": "#282a30",
+            "on-primary-fixed": "#241a00"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-panel": "1.25rem",
+            "space-3xl": "4rem",
+            "space-sm": "0.75rem",
+            "margin-screen": "1.5rem",
+            "space-2xl": "3rem",
+            "space-lg": "1.5rem",
+            "space-2xs": "0.25rem",
+            "space-xl": "2rem",
+            "space-xs": "0.5rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "label-sm": ["Plus Jakarta Sans"],
+            "currency-display": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"],
+            "title-md": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "title-lg": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-xl-mobile": ["Plus Jakarta Sans"]
+          }
+        }
+      }
+    };
+  </script>
 </head>
-<body>
-  <!-- Header Global -->
-  <header class="header-bar">
-    <div class="brand-section">
-      <div class="brand-logo">B</div>
-      <div>
-        <div class="brand-title">Bourlemont</div>
-        <div class="brand-subtitle">Control de Existencias & Escandallo</div>
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen">
+  <!-- Sidebar Stitch -->
+  <aside class="fixed left-0 top-0 h-full w-72 p-space-md z-50 pointer-events-none">
+    <div class="h-full w-full bg-surface-container/85 backdrop-blur-2xl rounded-2xl p-space-md flex flex-col justify-between shadow-[0_8px_32px_rgba(0,0,0,0.6)] border border-white/5 pointer-events-auto">
+      <div class="flex flex-col gap-space-lg">
+        <div class="flex items-center justify-center p-4 border-b border-stone-800/60 mb-2">
+          <img src="/assets/img/logo1.png" onerror="if(!this._f1){this._f1=true; this.src='/assets/img/logo.png';}else if(!this._f2){this._f2=true; this.src='/assets/img/bourlemont-logo.svg';}" alt="Bourlemont" class="max-h-12 w-auto object-contain mx-auto"/>
+        </div>
+
+        <nav class="flex flex-col gap-space-2xs">
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/pos.html">
+            <span class="material-symbols-outlined text-title-lg">point_of_sale</span>
+            <span>Punto de Venta</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 admin-only" id="nav-dash" href="/dashboard.html">
+            <span class="material-symbols-outlined text-title-lg">dashboard</span>
+            <span>Dashboard &amp; Arqueos</span>
+          </a>
+          <a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl transition-all duration-200 bg-primary-container text-on-primary font-title-md shadow-[0_0_20px_rgba(212,175,55,0.25)]" href="/inventario.html">
+            <span class="material-symbols-outlined text-title-lg">inventory_2</span>
+            <span>Inventario en ml</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/recetas.html">
+            <span class="material-symbols-outlined text-title-lg">liquor</span>
+            <span>Recetas &amp; Escandallos</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 admin-only" id="nav-aud" href="/auditoria.html">
+            <span class="material-symbols-outlined text-title-lg">history</span>
+            <span>Auditoría de Pagos</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 admin-only" id="nav-usr" href="/usuarios.html">
+            <span class="material-symbols-outlined text-title-lg">group</span>
+            <span>Usuarios</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="p-space-xs rounded-xl bg-surface-container-low/70 flex items-center justify-between border border-white/5">
+        <div class="flex items-center gap-space-sm overflow-hidden">
+          <div class="relative flex-shrink-0">
+            <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary font-bold text-sm">
+              <span class="material-symbols-outlined text-[18px]">person</span>
+            </div>
+            <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-surface-container-low"></span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="font-title-md text-title-md text-on-surface truncate leading-snug" id="header-user-name">Administrador</span>
+            <span class="font-label-sm text-label-sm text-primary uppercase truncate tracking-wider" id="header-user-role">ADMINISTRADOR</span>
+          </div>
+        </div>
+        <a class="p-1 rounded-lg text-on-surface-variant hover:text-primary transition-colors" href="/pos.html" title="Volver al Salón">
+          <span class="material-symbols-outlined text-title-lg">arrow_back</span>
+        </a>
       </div>
     </div>
+  </aside>
 
-    <nav class="nav-links">
-      <a href="/pos.html" class="nav-item">Punto de Venta</a>
-      <a href="/inventario.html" class="nav-item active">Inventario en ml</a>
-      <a href="/recetas.html" class="nav-item">Recetas & Escandallos</a>
-      <a href="/auditoria.html" class="nav-item admin-only">Auditoría de Pagos</a>
-      <a href="/dashboard.html" class="nav-item admin-only">Dashboard & Arqueos</a>
-    </nav>
-
-    <div style="display: flex; align-items: center; gap: 14px;">
-      <div class="user-status-pill">
-        <div class="status-dot"></div>
-        <span id="header-user-name" style="color: #FFF; font-weight: 600;">Usuario</span>
+  <!-- Contenido Principal -->
+  <div class="pl-72 flex flex-col min-h-screen">
+    <header class="fixed top-0 left-72 right-0 h-16 z-40 bg-surface/85 backdrop-blur-xl border-b border-white/5 px-4 lg:px-6 flex items-center justify-between">
+      <div class="flex items-center gap-2 text-on-surface font-semibold text-sm">
+        <span class="material-symbols-outlined text-primary text-[20px]">inventory_2</span>
+        <span>Control de Inventario &amp; Escandallos</span>
       </div>
-      <a href="/pos.html" class="btn btn-subtle-gold" style="padding: 8px 14px; font-size: 13px;">Volver a Barra</a>
-    </div>
-  </header>
-
-  <div class="inventory-container">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
-      <div>
-        <h1 style="font-size: 24px; font-weight: 700; color: #FFF;">Control de Botellas y Existencias en ml</h1>
-        <p style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">
-          Trazabilidad algorítmica para erradicar mermas invisibles por servicio en barra 360°.
-        </p>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-space-xs bg-surface-container px-space-sm py-space-2xs rounded-full border border-white/5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Turno Activo</span>
+        </div>
+        <button id="top-logout-btn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-error text-xs font-semibold border border-white/5 transition-all" title="Bloquear / Cerrar Sesión" type="button">
+          <span class="material-symbols-outlined text-[16px]">lock</span>
+          <span>Bloquear</span>
+        </button>
       </div>
-      <div style="display: flex; gap: 10px;">
-        <button id="btn-nuevo-producto" class="btn btn-gold">+ Nuevo Insumo / Licor</button>
+    </header>
+
+    <main class="w-full pt-16 bg-surface flex-1">
+      <div class="flex flex-col w-full px-space-xl py-space-lg gap-space-lg">
+        <!-- Section Header & Controls -->
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md">
+          <div class="flex flex-col gap-space-2xs">
+            <div class="flex items-center gap-space-xs text-primary font-label-md text-label-md uppercase tracking-widest font-semibold">
+              <span class="material-symbols-outlined text-title-md">inventory</span>
+              <span>Control de Existencias &amp; Escandallo</span>
+            </div>
+            <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight font-bold">Control de Inventario en Mililitros</h1>
+            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+              Trazabilidad algorítmica para erradicar mermas invisibles por servicio en barra 360°. Cifras oficiales en Quetzales (Q).
+            </p>
+          </div>
+
+          <div class="flex items-center gap-space-sm flex-wrap">
+            <button class="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-gradient-to-r from-primary to-primary-fixed-dim text-on-primary font-title-md text-title-md font-bold shadow-[0_4px_24px_rgba(212,175,55,0.3)] hover:brightness-110 active:scale-[0.99] transition-all" id="btn-nuevo-producto" type="button">
+              <span class="material-symbols-outlined text-title-lg">add_circle</span>
+              <span>+ Nuevo Insumo / Licor</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric Bento Strip -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+          <div class="relative overflow-hidden rounded-2xl bg-surface-container/70 backdrop-blur-xl p-space-lg shadow-lg border border-white/5 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-semibold">Valor Total de Carta</span>
+              <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-title-md">account_balance_wallet</span>
+              </div>
+            </div>
+            <div class="mt-space-md flex items-baseline gap-space-xs">
+              <span class="font-currency-display text-currency-display text-primary font-bold" id="metric-valor-total">Q --</span>
+              <span class="font-label-sm text-label-sm text-on-surface-variant">GTQ</span>
+            </div>
+            <div class="mt-space-xs flex items-center gap-space-xs text-primary font-label-sm text-label-sm">
+              <span class="material-symbols-outlined text-sm">verified</span>
+              <span>Inventario valorado con IVA 12%</span>
+            </div>
+          </div>
+
+          <div class="relative overflow-hidden rounded-2xl bg-surface-container/70 backdrop-blur-xl p-space-lg shadow-lg border border-white/5 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-semibold">Referencias Registradas</span>
+              <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-secondary">
+                <span class="material-symbols-outlined text-title-md">inventory_2</span>
+              </div>
+            </div>
+            <div class="mt-space-md flex items-baseline gap-space-xs">
+              <span class="font-currency-display text-currency-display text-on-surface font-bold" id="metric-total-skus">0</span>
+              <span class="font-label-sm text-label-sm text-on-surface-variant">SKUs activos</span>
+            </div>
+            <div class="mt-space-xs flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+              <span id="metric-sku-desglose">Cavas, Destilados y Mezcladores</span>
+            </div>
+          </div>
+
+          <div class="relative overflow-hidden rounded-2xl bg-surface-container/70 backdrop-blur-xl p-space-lg shadow-lg border border-white/5 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-semibold">Alertas de Stock Crítico</span>
+              <div class="w-8 h-8 rounded-full bg-error-container/30 flex items-center justify-center text-error">
+                <span class="material-symbols-outlined text-title-md">notifications_active</span>
+              </div>
+            </div>
+            <div class="mt-space-md flex items-baseline gap-space-xs">
+              <span class="font-currency-display text-currency-display text-error font-bold" id="metric-alertas-count">0</span>
+              <span class="font-label-sm text-label-sm text-on-surface-variant">bajo stock mínimo</span>
+            </div>
+            <div class="mt-space-xs flex items-center gap-space-xs text-error font-label-sm text-label-sm">
+              <span>Nivel inferior al umbral de reposición</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pestañas de Sección -->
+        <div class="flex gap-2">
+          <button class="section-tab active" data-section="productos" type="button">
+            <span class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-base">inventory_2</span>
+              <span>Productos &amp; Licores</span>
+            </span>
+          </button>
+          <button class="section-tab admin-only" data-section="escandallos" type="button">
+            <span class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-base">science</span>
+              <span>Gestión de Escandallos (ml)</span>
+            </span>
+          </button>
+        </div>
+
+        <!-- VISTA 1: PRODUCTOS -->
+        <div class="section-view active" id="view-productos">
+          <!-- Filtros y Búsqueda -->
+          <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-space-md mb-space-md bg-surface-container-low/70 backdrop-blur-xl p-space-sm rounded-2xl border border-white/5">
+            <div class="relative flex-1 max-w-md">
+              <span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-title-md pointer-events-none">search</span>
+              <input class="w-full bg-surface-container-lowest/80 text-on-surface font-body-md text-body-md pl-10 pr-space-md py-space-sm rounded-full placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-1 focus:ring-primary shadow-inner border border-white/5" id="inv-search" placeholder="Filtrar bodega por cuvée, destilado o insumo..." type="search"/>
+            </div>
+
+            <div class="flex items-center gap-space-2xs overflow-x-auto pb-1 md:pb-0">
+              <button class="filter-btn active" data-cat="">Todos</button>
+              <button class="filter-btn" data-cat="CHAMPAGNE">🍾 Champagne</button>
+              <button class="filter-btn" data-cat="LICORES">🥃 Licores</button>
+              <button class="filter-btn" data-cat="COCTELES_AUTOR">🍹 Cócteles</button>
+              <button class="filter-btn" data-cat="INSUMOS_BASE">🧂 Insumos</button>
+            </div>
+          </div>
+
+          <!-- Tabla Liquid Glass -->
+          <div class="rounded-2xl bg-surface-container/70 backdrop-blur-2xl shadow-xl border border-white/5 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-surface-container-high/50 text-on-surface-variant font-label-md text-label-md uppercase tracking-wider border-b border-white/5">
+                    <th class="py-space-md px-space-md" style="width: 60px;">Img</th>
+                    <th class="py-space-md px-space-md">Producto</th>
+                    <th class="py-space-md px-space-md">Categoría</th>
+                    <th class="py-space-md px-space-md">Tipo</th>
+                    <th class="py-space-md px-space-md">Precio (Q)</th>
+                    <th class="py-space-md px-space-md">Stock (ml)</th>
+                    <th class="py-space-md px-space-md">≈ Botellas</th>
+                    <th class="py-space-md px-space-md">Mínimo</th>
+                    <th class="py-space-md px-space-md">Estado</th>
+                    <th class="py-space-md px-space-md text-right" id="th-acciones">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5" id="inventory-table-body">
+                  <tr>
+                    <td colspan="10" class="text-center text-on-surface-variant py-10">Cargando inventario de cava...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- VISTA 2: ESCANDALLOS -->
+        <div class="section-view" id="view-escandallos">
+          <div class="bg-surface-container/70 backdrop-blur-2xl p-space-lg rounded-2xl border border-white/5">
+            <div class="mb-4">
+              <h3 class="text-title-lg font-bold text-primary mb-1">Formulación Algorítmica de Escandallo</h3>
+              <p class="text-body-md text-on-surface-variant">
+                Selecciona un cóctel para definir su ficha técnica. Cada venta en el POS deduce automáticamente estos mililitros de la bodega.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+              <div>
+                <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-2">
+                  Producto Final (Cóctel / Copa)
+                </label>
+                <select id="escandallo-producto-sel" class="input-field">
+                  <option value="">— Seleccionar producto —</option>
+                </select>
+
+                <div id="escandallo-current" class="mt-4 p-4 rounded-xl bg-surface-container-lowest border border-white/5" style="display: none;">
+                  <h4 class="font-title-md font-bold text-on-surface mb-3 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-base">receipt_long</span>
+                    <span>Receta y Mililitros Actuales:</span>
+                  </h4>
+                  <div id="escandallo-ingredients-list" class="flex flex-col gap-2"></div>
+                  <button id="btn-add-ingrediente" class="btn btn-subtle-gold w-full mt-3 font-semibold" type="button">
+                    + Agregar Insumo a la Receta
+                  </button>
+                </div>
+              </div>
+
+              <div id="escandallo-editor" class="p-4 rounded-xl bg-surface-container-low border border-white/5" style="display: none;">
+                <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-2">
+                  Nuevo Ingrediente para Escandallo
+                </label>
+                <div class="flex flex-col gap-3">
+                  <select id="new-insumo-sel" class="input-field">
+                    <option value="">— Seleccionar insumo base —</option>
+                  </select>
+                  <div class="flex gap-2 items-center">
+                    <input type="number" id="new-insumo-ml" class="input-field flex-1" placeholder="Mililitros a descontar (ml)" min="1">
+                    <button id="btn-confirm-ingrediente" class="btn btn-gold font-bold px-5" type="button">Agregar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-
-    <!-- Filtros de Categoría -->
-    <div style="display: flex; gap: 10px; margin-bottom: 16px;">
-      <button class="btn btn-subtle-gold filter-btn active" data-cat="">Todos</button>
-      <button class="btn btn-subtle-gold filter-btn" data-cat="CHAMPAGNE">Champagne</button>
-      <button class="btn btn-subtle-gold filter-btn" data-cat="LICORES">Licores Premium</button>
-      <button class="btn btn-subtle-gold filter-btn" data-cat="INSUMOS_BASE">Insumos Bar</button>
-    </div>
-
-    <!-- Tabla de Existencias -->
-    <div class="table-container">
-      <table class="custom-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Producto / Licor</th>
-            <th>Categoría</th>
-            <th>Precio Venta</th>
-            <th>Stock Real (ml)</th>
-            <th>Equivalente Botellas</th>
-            <th>Umbral Mínimo</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="inventory-table-body">
-          <!-- Render dinámico -->
-        </tbody>
-      </table>
-    </div>
+    </main>
   </div>
 
-  <!-- Modal Ajuste de Stock -->
-  <div class="modal-overlay" id="ajuste-modal">
-    <div class="modal-content">
+  <!-- ─── MODAL: Crear / Editar Producto ─── -->
+  <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden" id="modal-nuevo-producto" data-alias="producto-modal" role="dialog" aria-modal="true">
+    <div class="modal-content max-w-[580px]">
       <div class="modal-header">
-        <h3 class="modal-title">Ajuste de Existencias</h3>
-        <button class="modal-close">&times;</button>
+        <h3 class="modal-title flex items-center gap-2" id="producto-modal-title">
+          <span class="material-symbols-outlined text-primary">add_box</span>
+          <span>Nuevo Insumo / Licor</span>
+        </h3>
+        <button class="modal-close" aria-label="Cerrar">&times;</button>
       </div>
-      <form id="ajuste-form">
-        <input type="hidden" id="ajuste-prod-id">
-        <div style="margin-bottom: 14px;">
-          <label style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Producto</label>
-          <input type="text" id="ajuste-prod-name" class="input-field" readonly style="opacity: 0.8;">
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-          <div>
-            <label style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Nuevo Stock en ml</label>
-            <input type="number" id="ajuste-nuevo-ml" class="input-field" required>
+
+      <form id="producto-form" class="flex flex-col gap-4">
+        <input type="hidden" id="prod-id">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="sm:col-span-2">
+            <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">
+              Nombre del Producto *
+            </label>
+            <input type="text" id="prod-nombre" class="input-field" placeholder="Ej: Dom Pérignon Vintage 2013" required>
           </div>
+
           <div>
-            <label style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Stock Mínimo (ml)</label>
-            <input type="number" id="ajuste-min-ml" class="input-field" required>
+            <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">
+              Categoría *
+            </label>
+            <select id="prod-categoria" class="input-field" required>
+              <option value="CHAMPAGNE">Champagne &amp; Cavas</option>
+              <option value="LICORES">Licores Premium</option>
+              <option value="COCTELES_AUTOR">Cócteles de Autor</option>
+              <option value="INSUMOS_BASE">Insumos de Bar</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">
+              Tipo *
+            </label>
+            <select id="prod-tipo" class="input-field" required>
+              <option value="FINAL">FINAL (venta directa)</option>
+              <option value="INSUMO">INSUMO (base para recetas)</option>
+              <option value="COMPUESTO">COMPUESTO (con escandallo)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">
+              Precio de Venta (Q) *
+            </label>
+            <input type="number" id="prod-precio" class="input-field" step="0.01" min="0" placeholder="0.00" required>
+          </div>
+
+          <div>
+            <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">
+              Stock actual (ml)
+            </label>
+            <input type="number" id="prod-stock" class="input-field" min="0" placeholder="0">
+          </div>
+
+          <div>
+            <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">
+              Stock mínimo de alerta (ml)
+            </label>
+            <input type="number" id="prod-min" class="input-field" min="0" placeholder="750">
+          </div>
+
+          <div>
+            <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">
+              Unidad de medida
+            </label>
+            <select id="prod-unidad" class="input-field">
+              <option value="ml">ml (mililitros)</option>
+              <option value="copa">copa</option>
+              <option value="botella">botella</option>
+              <option value="unidad">unidad</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">
+              Imagen del Producto (Subida Directa o Arrastrar y Soltar)
+            </label>
+            <div id="drop-zone-imagen" class="border-2 border-dashed border-white/15 hover:border-primary/60 rounded-xl p-4 text-center cursor-pointer transition-colors bg-surface-container-lowest/50 flex flex-col items-center justify-center gap-1.5">
+              <input type="file" id="input-imagen-archivo" accept="image/*" class="hidden">
+              <span class="material-symbols-outlined text-primary text-3xl pointer-events-none">cloud_upload</span>
+              <p class="text-xs text-on-surface pointer-events-none font-medium">Arrastra una imagen aquí o haz clic para <span class="text-primary underline">examinar</span></p>
+              <p class="text-[11px] text-on-surface-variant pointer-events-none" id="preview-nombre-archivo">Formatos: PNG, JPG, WEBP, SVG</p>
+              <div id="preview-imagen-container" class="mt-1 hidden">
+                <img id="preview-imagen-img" src="" alt="Vista previa" class="w-16 h-16 object-cover rounded-lg border border-primary/40 mx-auto">
+              </div>
+            </div>
+            <input type="text" id="prod-imagen" class="input-field mt-2 text-xs" placeholder="/assets/img/... o URL de imagen">
           </div>
         </div>
-        <div style="margin-bottom: 20px;">
-          <label style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Precio de Venta (Q)</label>
-          <input type="number" step="0.01" id="ajuste-precio" class="input-field" required>
-        </div>
-        <div style="display: flex; gap: 10px;">
-          <button type="button" class="btn modal-close" style="flex: 1;">Cancelar</button>
-          <button type="submit" class="btn btn-gold" style="flex: 2;">Guardar Cambios</button>
+
+        <div class="flex gap-3 mt-2">
+          <button type="button" class="btn modal-cancel flex-1">Cancelar</button>
+          <button type="submit" id="prod-submit-btn" class="btn btn-gold flex-[2] font-bold">Guardar Producto</button>
         </div>
       </form>
     </div>
   </div>
 
+  <!-- ─── MODAL: Confirmar Eliminación ─── -->
+  <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden" id="delete-modal" role="dialog" aria-modal="true">
+    <div class="modal-content max-w-[420px] text-center">
+      <div class="modal-header">
+        <h3 class="modal-title text-error flex items-center gap-2">
+          <span class="material-symbols-outlined">warning</span>
+          <span>Confirmar Eliminación</span>
+        </h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <p class="text-on-surface-variant mb-2">
+        ¿Estás seguro de eliminar el producto <strong id="delete-prod-name" class="text-on-surface"></strong>?
+      </p>
+      <p class="text-xs text-error mb-4 font-semibold">
+        Esta acción es irreversible y eliminará también sus registros de escandallo.
+      </p>
+      <input type="hidden" id="delete-prod-id">
+      <div class="flex gap-3">
+        <button type="button" class="btn modal-cancel flex-1">Cancelar</button>
+        <button id="confirm-delete-btn" class="btn btn-danger flex-[2] font-bold" type="button">Sí, Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
   <script type="module">
     import { api, authState } from "/static/assets/js/api.js";
 
-    if (!authState.isAuthenticated()) {
-      window.location.href = "/index.html";
+    // ── Auth Guard por Rol ──────────────────────────────────────────────────
+    if (!authState.isAuthenticated()) window.location.href = "/index.html";
+    const user = authState.getUser();
+    if (user) {
+      document.getElementById("header-user-name").textContent = user.nombre;
     }
 
-    const user = authState.getUser();
-    document.getElementById("header-user-name").textContent = user.nombre;
+    // Si es Bartender, ocultar botón de nuevo insumo
     if (!authState.isAdmin()) {
+      const btnNuevo = document.getElementById("btn-nuevo-producto");
+      if (btnNuevo) btnNuevo.style.display = "none";
+      const btnAddIngrediente = document.getElementById("btn-add-ingrediente");
+      if (btnAddIngrediente) btnAddIngrediente.style.display = "none";
       document.querySelectorAll(".admin-only").forEach(el => el.style.display = "none");
     }
 
+    // ── Estado ──────────────────────────────────────────────────────────────
     let allProducts = [];
+    let allInsumos = [];
     let currentFilter = "";
+    let currentSearch = "";
 
+    // ── Carga inicial ───────────────────────────────────────────────────────
     async function loadData() {
       try {
         allProducts = await api.getProductos();
+        updateBentoMetrics();
         renderTable();
+        allInsumos = allProducts.filter(p => p.tipo === "INSUMO");
+        populateEscandalloSelectors();
       } catch (err) {
-        alert("Error al cargar inventario: " + err.message);
+        showToast("Error al cargar inventario: " + err.message, "danger");
       }
     }
 
+    function updateBentoMetrics() {
+      const totalValor = allProducts.reduce((acc, p) => acc + (parseFloat(p.precio_venta || 0) * (p.stock_ml > 0 ? (p.stock_ml / 750) : 0)), 0);
+      const metricValor = document.getElementById("metric-valor-total");
+      if (metricValor) metricValor.textContent = `Q ${totalValor.toLocaleString("es-GT", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+      const metricSkus = document.getElementById("metric-total-skus");
+      if (metricSkus) metricSkus.textContent = allProducts.length;
+
+      const criticos = allProducts.filter(p => p.stock_ml <= p.stock_minimo_ml).length;
+      const metricCriticos = document.getElementById("metric-alertas-count");
+      if (metricCriticos) metricCriticos.textContent = criticos;
+
+      const desglose = document.getElementById("metric-sku-desglose");
+      if (desglose) {
+        const champ = allProducts.filter(p => p.categoria === "CHAMPAGNE").length;
+        const lic = allProducts.filter(p => p.categoria === "LICORES").length;
+        const coct = allProducts.filter(p => p.categoria === "COCTELES_AUTOR").length;
+        desglose.textContent = `${champ} Champagnes • ${lic} Licores • ${coct} Cócteles`;
+      }
+    }
+
+    // ── Tabla de Inventario ─────────────────────────────────────────────────
     function renderTable() {
       const tbody = document.getElementById("inventory-table-body");
-      const filtered = allProducts.filter(p => !currentFilter || p.categoria === currentFilter);
+      const isAdmin = authState.isAdmin();
+      const thAcciones = document.getElementById("th-acciones");
+      if (thAcciones) thAcciones.style.display = isAdmin ? "" : "none";
+
+      let filtered = allProducts.filter(p => {
+        const matchCat = !currentFilter || p.categoria === currentFilter;
+        const matchQ = !currentSearch || p.nombre.toLowerCase().includes(currentSearch.toLowerCase());
+        return matchCat && matchQ;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${isAdmin ? 10 : 9}" class="text-center text-on-surface-variant py-8">
+          Sin productos coincidentes en esta categoría.</td></tr>`;
+        return;
+      }
 
       tbody.innerHTML = filtered.map(p => {
-        const isLow = p.stock_ml <= p.stock_minimo_ml;
         const isNeg = p.stock_ml < 0;
-        let badge = `<span class="badge badge-success">✓ Óptimo</span>`;
-        if (isNeg) {
-          badge = `<span class="badge badge-danger">⚠️ Negativo (${p.stock_ml} ml)</span>`;
-        } else if (isLow && p.stock_ml > 0) {
-          badge = `<span class="badge badge-warning">⚠️ Reordenar</span>`;
-        } else if (p.stock_ml === 0 && p.tipo === "COMPUESTO") {
-          badge = `<span class="badge badge-gold">Receta / Cóctel</span>`;
+        const isLow = p.stock_ml > 0 && p.stock_ml <= p.stock_minimo_ml;
+        let badge = `<span class="badge-status optimo">● Óptimo</span>`;
+        if (isNeg) badge = `<span class="badge-status negativo">⚠ Negativo</span>`;
+        else if (isLow) badge = `<span class="badge-status reordenar">⚠ Reordenar</span>`;
+        else if (p.stock_ml === 0 && p.tipo === "COMPUESTO")
+          badge = `<span class="badge-status escandallo">🧪 Escandallo</span>`;
+
+        const imgEl = `<img src="${p.imagen_url}" onerror="this.src='/assets/img/cocktail-fallback.svg'" class="w-10 h-10 object-contain rounded bg-stone-900 border border-stone-800">`;
+
+        let actionsTd = "";
+        if (isAdmin) {
+          actionsTd = `
+          <td class="py-3 px-3 text-right">
+            <div class="inline-flex gap-1.5">
+              <button class="btn btn-subtle-gold btn-edit px-2.5 py-1 text-xs font-semibold" data-id="${p.id_producto}">Editar</button>
+              <button class="btn btn-danger btn-del px-2.5 py-1 text-xs" data-id="${p.id_producto}" data-name="${escH(p.nombre)}">Eliminar</button>
+            </div>
+          </td>`;
         }
 
         return `
-          <tr>
-            <td style="color: var(--text-secondary); font-family: monospace;">#${p.id_producto}</td>
-            <td style="font-weight: 600; color: #FFF;">${p.nombre}</td>
-            <td><span class="badge badge-gold">${p.categoria}</span></td>
-            <td style="font-weight: 600; color: var(--gold-highlight-text);">Q ${parseFloat(p.precio_venta).toFixed(2)}</td>
-            <td style="font-weight: 700;">${p.stock_ml.toLocaleString()} ml</td>
-            <td style="color: var(--text-secondary);">${p.stock_ml > 0 ? (p.stock_ml / 750).toFixed(2) + ' botellas' : '-'}</td>
-            <td style="color: var(--text-secondary);">${p.stock_minimo_ml.toLocaleString()} ml</td>
-            <td>${badge}</td>
-            <td>
-              <button class="btn btn-subtle-gold btn-edit" data-id="${p.id_producto}" style="padding: 6px 12px; font-size: 12px;">Editar / Ajustar</button>
-            </td>
-          </tr>
-        `;
+        <tr class="hover:bg-surface-container-high/40 transition-colors">
+          <td class="py-3 px-3">${imgEl}</td>
+          <td class="py-3 px-3 font-semibold text-on-surface max-w-[200px]">${escH(p.nombre)}</td>
+          <td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary uppercase">${p.categoria}</span></td>
+          <td class="py-3 px-3 text-on-surface-variant text-xs">${p.tipo}</td>
+          <td class="py-3 px-3 font-bold text-primary">Q ${parseFloat(p.precio_venta).toFixed(2)}</td>
+          <td class="py-3 px-3 font-semibold">${p.stock_ml.toLocaleString()} ml</td>
+          <td class="py-3 px-3 text-on-surface-variant">${p.stock_ml > 0 ? (p.stock_ml/750).toFixed(2)+' bot.' : '—'}</td>
+          <td class="py-3 px-3 text-on-surface-variant">${p.stock_minimo_ml.toLocaleString()} ml</td>
+          <td class="py-3 px-3">${badge}</td>
+          ${actionsTd}
+        </tr>`;
       }).join("");
 
-      tbody.querySelectorAll(".btn-edit").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const id = parseInt(btn.getAttribute("data-id"));
-          const prod = allProducts.find(p => p.id_producto === id);
-          if (prod) openAjusteModal(prod);
+      // Listeners
+      if (authState.isAdmin()) {
+        tbody.querySelectorAll(".btn-edit").forEach(btn => {
+          btn.addEventListener("click", () => openEditModal(parseInt(btn.getAttribute("data-id"), 10)));
+        });
+        tbody.querySelectorAll(".btn-del").forEach(btn => {
+          btn.addEventListener("click", () => {
+            document.getElementById("delete-prod-id").value = btn.getAttribute("data-id");
+            document.getElementById("delete-prod-name").textContent = btn.getAttribute("data-name");
+            document.getElementById("delete-modal").classList.remove("hidden");
+          });
+        });
+      }
+    }
+
+    // ── Modal Crear / Editar ────────────────────────────────────────────────
+    const getModalProducto = () => document.getElementById("modal-nuevo-producto") || document.getElementById("producto-modal");
+
+    // ── Drag & Drop / File Input para imagen ──
+    const dropZone = document.getElementById("drop-zone-imagen");
+    const fileInput = document.getElementById("input-imagen-archivo");
+    const prodImgInput = document.getElementById("prod-imagen");
+    const previewContainer = document.getElementById("preview-imagen-container");
+    const previewImg = document.getElementById("preview-imagen-img");
+    const previewNombre = document.getElementById("preview-nombre-archivo");
+
+    if (dropZone && fileInput) {
+      dropZone.addEventListener("click", () => fileInput.click());
+
+      ["dragenter", "dragover"].forEach(eventName => {
+        dropZone.addEventListener(eventName, e => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.add("border-primary", "bg-primary/5");
+        });
+      });
+
+      ["dragleave", "drop"].forEach(eventName => {
+        dropZone.addEventListener(eventName, e => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.remove("border-primary", "bg-primary/5");
+        });
+      });
+
+      dropZone.addEventListener("drop", e => {
+        const dt = e.dataTransfer;
+        if (dt && dt.files && dt.files.length) {
+          handleFileUpload(dt.files[0]);
+        }
+      });
+
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files && fileInput.files.length) {
+          handleFileUpload(fileInput.files[0]);
+        }
+      });
+    }
+
+    async function handleFileUpload(file) {
+      if (!file.type.startsWith("image/")) {
+        showToast("El archivo seleccionado debe ser una imagen válida.", "warning");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        if (previewImg) previewImg.src = e.target.result;
+        if (previewContainer) previewContainer.classList.remove("hidden");
+      };
+      reader.readAsDataURL(file);
+
+      if (previewNombre) previewNombre.textContent = `Subiendo: ${file.name}…`;
+
+      try {
+        const res = await api.uploadImagen(file);
+        if (prodImgInput) prodImgInput.value = res.url;
+        if (previewNombre) previewNombre.textContent = `✓ Archivo cargado: ${res.filename}`;
+        showToast("✓ Imagen subida y vinculada al producto.", "success");
+      } catch (err) {
+        if (previewNombre) previewNombre.textContent = "Error al subir imagen.";
+        showToast("Error al subir imagen: " + err.message, "danger");
+      }
+    }
+
+    function openCreateModal() {
+      document.getElementById("prod-id").value = "";
+      document.getElementById("producto-form").reset();
+      if (fileInput) fileInput.value = "";
+      if (previewContainer) previewContainer.classList.add("hidden");
+      if (previewImg) previewImg.src = "";
+      if (previewNombre) previewNombre.textContent = "Formatos: PNG, JPG, WEBP, SVG";
+      document.getElementById("producto-modal-title").innerHTML = `<span class="material-symbols-outlined text-primary">add_box</span><span>Nuevo Insumo / Licor</span>`;
+      document.getElementById("prod-submit-btn").textContent = "Crear Insumo / Licor";
+      getModalProducto().classList.remove("hidden");
+    }
+
+    function openEditModal(id) {
+      const p = allProducts.find(x => x.id_producto === id);
+      if (!p) return;
+      document.getElementById("prod-id").value = p.id_producto;
+      document.getElementById("prod-nombre").value = p.nombre;
+      document.getElementById("prod-categoria").value = p.categoria;
+      document.getElementById("prod-tipo").value = p.tipo;
+      document.getElementById("prod-precio").value = parseFloat(p.precio_venta).toFixed(2);
+      document.getElementById("prod-stock").value = p.stock_ml;
+      document.getElementById("prod-min").value = p.stock_minimo_ml;
+      document.getElementById("prod-unidad").value = p.unidad_medida;
+      document.getElementById("prod-imagen").value = p.imagen_url || "";
+      
+      if (fileInput) fileInput.value = "";
+      if (p.imagen_url) {
+        if (previewImg) {
+          previewImg.src = p.imagen_url.startsWith("http") || p.imagen_url.startsWith("/") ? p.imagen_url : `/assets/img/${p.imagen_url}`;
+        }
+        if (previewContainer) previewContainer.classList.remove("hidden");
+        if (previewNombre) previewNombre.textContent = `Imagen actual: ${p.imagen_url}`;
+      } else {
+        if (previewContainer) previewContainer.classList.add("hidden");
+        if (previewImg) previewImg.src = "";
+        if (previewNombre) previewNombre.textContent = "Formatos: PNG, JPG, WEBP, SVG";
+      }
+
+      document.getElementById("producto-modal-title").innerHTML = `<span class="material-symbols-outlined text-primary">edit</span><span>Editar: ${p.nombre}</span>`;
+      document.getElementById("prod-submit-btn").textContent = "Guardar Cambios";
+      getModalProducto().classList.remove("hidden");
+    }
+
+    document.getElementById("producto-form").addEventListener("submit", async e => {
+      e.preventDefault();
+      const btn = document.getElementById("prod-submit-btn");
+      btn.disabled = true;
+      btn.textContent = "Guardando…";
+
+      const id = document.getElementById("prod-id").value;
+      const payload = {
+        nombre: document.getElementById("prod-nombre").value.trim(),
+        categoria: document.getElementById("prod-categoria").value,
+        tipo: document.getElementById("prod-tipo").value,
+        precio_venta: parseFloat(document.getElementById("prod-precio").value),
+        stock_ml: parseInt(document.getElementById("prod-stock").value, 10) || 0,
+        stock_minimo_ml: parseInt(document.getElementById("prod-min").value, 10) || 750,
+        unidad_medida: document.getElementById("prod-unidad").value,
+        imagen_url: document.getElementById("prod-imagen").value.trim() || null
+      };
+
+      try {
+        if (id) {
+          await api.updateProducto(parseInt(id, 10), payload);
+          showToast(`✓ Producto actualizado exitosamente.`, "success");
+        } else {
+          await api.createProducto(payload);
+          showToast(`✓ Producto creado en inventario.`, "success");
+        }
+        getModalProducto().classList.add("hidden");
+        await loadData();
+      } catch (err) {
+        showToast("Error: " + err.message, "danger");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Guardar";
+      }
+    });
+
+    // ── Eliminar Producto ───────────────────────────────────────────────────
+    document.getElementById("confirm-delete-btn").addEventListener("click", async () => {
+      const id = parseInt(document.getElementById("delete-prod-id").value, 10);
+      try {
+        await api.deleteProducto(id);
+        document.getElementById("delete-modal").classList.add("hidden");
+        showToast("✓ Producto eliminado del inventario.", "success");
+        await loadData();
+      } catch (err) {
+        showToast("Error: " + err.message, "danger");
+      }
+    });
+
+    // ── Escandallos ─────────────────────────────────────────────────────────
+    function populateEscandalloSelectors() {
+      const prodSel = document.getElementById("escandallo-producto-sel");
+      const insumoSel = document.getElementById("new-insumo-sel");
+
+      const compuestos = allProducts.filter(p => p.tipo === "COMPUESTO" || p.tipo === "FINAL");
+      prodSel.innerHTML = `<option value="">— Seleccionar producto —</option>` +
+        compuestos.map(p => `<option value="${p.id_producto}">${escH(p.nombre)}</option>`).join("");
+
+      insumoSel.innerHTML = `<option value="">— Seleccionar insumo —</option>` +
+        allInsumos.map(p => `<option value="${p.id_producto}">${escH(p.nombre)} (${p.stock_ml} ml)</option>`).join("");
+    }
+
+    document.getElementById("escandallo-producto-sel").addEventListener("change", function() {
+      const id = parseInt(this.value, 10);
+      const prod = allProducts.find(p => p.id_producto === id);
+      const panel = document.getElementById("escandallo-current");
+      const editor = document.getElementById("escandallo-editor");
+      if (!prod) {
+        panel.style.display = "none";
+        editor.style.display = "none";
+        return;
+      }
+      renderIngredientsList(prod);
+      panel.style.display = "block";
+      editor.style.display = "none";
+    });
+
+    function renderIngredientsList(prod) {
+      const list = document.getElementById("escandallo-ingredients-list");
+      if (!prod.recetas_como_final || prod.recetas_como_final.length === 0) {
+        list.innerHTML = `<p class="text-on-surface-variant text-sm">Sin ingredientes definidos.</p>`;
+        return;
+      }
+      list.innerHTML = prod.recetas_como_final.map(r => `
+        <div class="flex justify-between items-center bg-surface-container p-2.5 rounded-xl border border-white/5 text-sm">
+          <span class="text-on-surface font-semibold">${escH(r.nombre_insumo)}</span>
+          <div class="flex items-center gap-3">
+            <span class="text-primary font-bold">−${r.cantidad_descontar_ml} ml</span>
+            ${authState.isAdmin() ? `<button class="btn btn-danger btn-del-ing px-2 py-0.5 text-xs" data-id="${r.id_receta}">✕</button>` : ""}
+          </div>
+        </div>`).join("");
+
+      list.querySelectorAll(".btn-del-ing").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const idR = parseInt(btn.getAttribute("data-id"), 10);
+          try {
+            const res = await fetch(`/api/v1/inventario/recetas/${idR}`, {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${authState.getToken()}` }
+            });
+            if (!res.ok) throw new Error((await res.json()).detail || "Error");
+            showToast("Ingrediente eliminado.", "success");
+            await loadData();
+            const id = parseInt(document.getElementById("escandallo-producto-sel").value, 10);
+            const updatedProd = allProducts.find(p => p.id_producto === id);
+            if (updatedProd) renderIngredientsList(updatedProd);
+          } catch (err) {
+            showToast("Error: " + err.message, "danger");
+          }
         });
       });
     }
 
-    function openAjusteModal(p) {
-      document.getElementById("ajuste-prod-id").value = p.id_producto;
-      document.getElementById("ajuste-prod-name").value = p.nombre;
-      document.getElementById("ajuste-nuevo-ml").value = p.stock_ml;
-      document.getElementById("ajuste-min-ml").value = p.stock_minimo_ml;
-      document.getElementById("ajuste-precio").value = p.precio_venta;
-      document.getElementById("ajuste-modal").classList.add("active");
-    }
-
-    document.querySelectorAll(".modal-close").forEach(b => {
-      b.addEventListener("click", () => {
-        document.getElementById("ajuste-modal").classList.remove("active");
-      });
+    document.getElementById("btn-add-ingrediente").addEventListener("click", () => {
+      document.getElementById("escandallo-editor").style.display = "block";
     });
 
-    document.getElementById("ajuste-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const id = parseInt(document.getElementById("ajuste-prod-id").value);
-      const stock_ml = parseInt(document.getElementById("ajuste-nuevo-ml").value);
-      const stock_minimo_ml = parseInt(document.getElementById("ajuste-min-ml").value);
-      const precio_venta = parseFloat(document.getElementById("ajuste-precio").value);
+    document.getElementById("btn-confirm-ingrediente").addEventListener("click", async () => {
+      const prodId = parseInt(document.getElementById("escandallo-producto-sel").value, 10);
+      const insumoId = parseInt(document.getElementById("new-insumo-sel").value, 10);
+      const ml = parseInt(document.getElementById("new-insumo-ml").value, 10);
+
+      if (!prodId || !insumoId || !ml || ml <= 0) {
+        showToast("Completa todos los campos del ingrediente.", "warning");
+        return;
+      }
+
+      const prod = allProducts.find(p => p.id_producto === prodId);
+      if (!prod) return;
+
+      const existentes = (prod.recetas_como_final || []).map(r => ({
+        id_insumo_base: r.id_insumo_base,
+        cantidad_descontar_ml: r.cantidad_descontar_ml
+      }));
+      existentes.push({ id_insumo_base: insumoId, cantidad_descontar_ml: ml });
 
       try {
-        await api.updateProducto(id, { stock_ml, stock_minimo_ml, precio_venta });
-        document.getElementById("ajuste-modal").classList.remove("active");
+        await api.asignarReceta({ id_producto_final: prodId, ingredientes: existentes });
+        showToast("✓ Ingrediente agregado al escandallo.", "success");
+        document.getElementById("escandallo-editor").style.display = "none";
+        document.getElementById("new-insumo-ml").value = "";
         await loadData();
+        const updatedProd = allProducts.find(p => p.id_producto === prodId);
+        if (updatedProd) renderIngredientsList(updatedProd);
       } catch (err) {
-        alert("Error al actualizar producto: " + err.message);
+        showToast("Error: " + err.message, "danger");
       }
     });
 
+    // ── Filtros ─────────────────────────────────────────────────────────────
     document.querySelectorAll(".filter-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
@@ -270,6 +992,89 @@
       });
     });
 
+    document.getElementById("inv-search").addEventListener("input", e => {
+      currentSearch = e.target.value;
+      renderTable();
+    });
+
+    // ── Tabs de sección ─────────────────────────────────────────────────────
+    document.querySelectorAll(".section-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".section-tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".section-view").forEach(v => v.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(`view-${tab.getAttribute("data-section")}`).classList.add("active");
+      });
+    });
+
+    // ── Nuevo producto ───────────────────────────────────────────────────────
+    document.getElementById("btn-nuevo-producto").addEventListener("click", openCreateModal);
+
+    // ── Logout Superior ──────────────────────────────────────────────────────
+    const topLogoutBtn = document.getElementById("top-logout-btn");
+    if (topLogoutBtn) {
+      topLogoutBtn.addEventListener("click", () => {
+        authState.clear();
+        window.location.href = "/index.html";
+      });
+    }
+
+    // ── Cerrar modales ───────────────────────────────────────────────────────
+    document.querySelectorAll(".modal-close, .modal-cancel").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#modal-nuevo-producto, #delete-modal").forEach(m => m.classList.add("hidden"));
+      });
+    });
+    document.querySelectorAll("#modal-nuevo-producto, #delete-modal").forEach(overlay => {
+      overlay.addEventListener("click", e => {
+        if (e.target === overlay) overlay.classList.add("hidden");
+      });
+    });
+
+    // ── Toast ────────────────────────────────────────────────────────────────
+    function showToast(msg, type = "success") {
+      const container = document.getElementById("toast-container");
+      const t = document.createElement("div");
+      t.className = `p-3 rounded-xl shadow-2xl text-sm font-semibold border ${
+        type === "danger"
+          ? "bg-red-950/90 text-red-200 border-red-700/50"
+          : type === "warning"
+          ? "bg-amber-950/90 text-amber-200 border-amber-700/50"
+          : "bg-surface-container-high/90 text-primary border-primary/40"
+      }`;
+      t.textContent = msg;
+      container.appendChild(t);
+      setTimeout(() => {
+        t.style.transition = "opacity .3s";
+        t.style.opacity = "0";
+        setTimeout(() => t.remove(), 300);
+      }, 4000);
+    }
+
+    function escH(s) {
+      return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+
+    // ── Permisos de Rol (BARTENDER vs ADMIN) ──────────────────────────────────
+    if (!authState.isAdmin()) {
+      document.querySelectorAll(".admin-only").forEach(el => (el.style.display = "none"));
+      const btnNuevo = document.getElementById("btn-nuevo-producto");
+      if (btnNuevo) btnNuevo.style.display = "none";
+      const btnAddIng = document.getElementById("btn-add-ingrediente");
+      if (btnAddIng) btnAddIng.style.display = "none";
+      const escEditor = document.getElementById("escandallo-editor");
+      if (escEditor) escEditor.style.display = "none";
+    }
+
+    const u = authState.getUser();
+    if (u) {
+      const uName = document.getElementById("header-user-name");
+      const uRole = document.getElementById("header-user-role");
+      if (uName) uName.textContent = u.nombre;
+      if (uRole) uRole.textContent = u.rol === "ADMIN" ? "ADMINISTRADOR" : "BARTENDER";
+    }
+
+    // ── Init ─────────────────────────────────────────────────────────────────
     loadData();
   </script>
 </body>

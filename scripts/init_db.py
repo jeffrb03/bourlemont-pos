@@ -1,11 +1,30 @@
+"""
+init_db.py — Inicialización y Poblado de Base de Datos MySQL para Bourlemont POS
+==============================================================================
+Regenera el esquema relacional en MySQL (XAMPP / InnoDB / utf8mb4) y puebla
+los datos semilla iniciales requeridos para la operación del Champagne Bar.
+
+Uso directo:
+    python scripts/init_db.py
+"""
 import sys
 import os
+import argparse
 from decimal import Decimal
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
-# Asegurar path raíz
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Asegurar codificación UTF-8 en salida estándar (Windows console fix)
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
+# Asegurar path raíz del proyecto
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from sqlalchemy import text
 from app.db.base import Base
 from app.db.session import engine, SessionLocal
 from app.models.models import (
@@ -20,146 +39,149 @@ from app.models.models import (
 )
 from app.core.security import hash_pin, hash_password
 
-def seed_database():
-    print("Iniciando creación de tablas y sembrado de datos en Bourlemont POS...")
-    Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
-    
-    try:
-        # Verificar si ya existen usuarios
-        if db.query(Usuario).count() > 0:
-            print("La base de datos ya contiene registros. Omitiendo seed inicial.")
-            return
 
-        # 1. USUARIOS (1 Administrador y 3 Bartenders)
-        print("Registrando equipo de bar...")
-        admin = Usuario(
-            nombre="Carlos Bourlemont",
-            pin_hash=hash_pin("9999"),
-            password_hash=hash_password("admin_bourlemont_2026"),
-            rol=RolUsuario.ADMIN,
-            activo=True
-        )
-        b1 = Usuario(
+def regenerar_tablas():
+    """
+    Regenera las 9 tablas relacionales con motor InnoDB y charset utf8mb4:
+    - usuarios, productos, recetas_escandallos, ordenes, detalle_orden,
+      transacciones_pago, arqueos_caja, bitacora_auditoria, facturas_fel.
+    """
+    print("[*] Conectando a MySQL para regenerar esquema DDL...")
+    with engine.connect() as conn:
+        conn.execute(text("SET FOREIGN_KEY_CHECKS = 0;"))
+        Base.metadata.drop_all(bind=engine)
+        conn.execute(text("SET FOREIGN_KEY_CHECKS = 1;"))
+        conn.commit()
+    print("[+] Tablas anteriores eliminadas limpiamente.")
+
+    Base.metadata.create_all(bind=engine)
+    print("[+] Esquema DDL recreado exitosamente:")
+    for table_name in Base.metadata.tables.keys():
+        print(f"    - {table_name}")
+
+
+def seed_database():
+    """
+    Inserta los datos semilla iniciales:
+    - Bartender: Mateo Morales (PIN: '1234', Rol: 'BARTENDER')
+    - Admin: Carlos Bourlemont (PIN: '2026', Password: 'admin', Rol: 'ADMIN')
+    - Insumos base: Champagne Brut (750 ml), Gin Tanqueray (750 ml), Cognac Hennessy (700 ml), Jarabe/Sirope (1000 ml).
+    - Cócteles: 'Copa Champagne Brut (150 ml)' (Q 260.00), 'French 75 Bourlemont' (Q 185.00), 'Dom Pérignon Vintage' (Q 3,800.00).
+    """
+    db = SessionLocal()
+    try:
+        now_gt = datetime.now(timezone(timedelta(hours=-6)))
+
+        # ── 1. USUARIOS ────────────────────────────────────────────────────────
+        print("\n[1/5] Insertando usuarios del bar...")
+        bartender_mateo = Usuario(
             nombre="Mateo Morales",
             pin_hash=hash_pin("1234"),
             rol=RolUsuario.BARTENDER,
             activo=True
         )
-        b2 = Usuario(
+        admin_carlos = Usuario(
+            nombre="Carlos Bourlemont",
+            pin_hash=hash_pin("2026"),
+            password_hash=hash_password("admin"),
+            rol=RolUsuario.ADMIN,
+            activo=True
+        )
+        # Bartenders de relevo en barra
+        bartender_sofia = Usuario(
             nombre="Sofía Castillo",
             pin_hash=hash_pin("2468"),
             rol=RolUsuario.BARTENDER,
             activo=True
         )
-        b3 = Usuario(
+        bartender_alejandro = Usuario(
             nombre="Alejandro Ruiz",
             pin_hash=hash_pin("7788"),
             rol=RolUsuario.BARTENDER,
             activo=True
         )
-        db.add_all([admin, b1, b2, b3])
+
+        db.add_all([bartender_mateo, admin_carlos, bartender_sofia, bartender_alejandro])
         db.flush()
+        print(f"    [+] Bartender : Mateo Morales     (PIN: 1234, Rol: BARTENDER)")
+        print(f"    [+] Admin     : Carlos Bourlemont (PIN: 2026, Pass: admin, Rol: ADMIN)")
+        print(f"    [+] Bartender : Sofía Castillo    (PIN: 2468, Rol: BARTENDER)")
+        print(f"    [+] Bartender : Alejandro Ruiz    (PIN: 7788, Rol: BARTENDER)")
 
-        # 2. INSUMOS BASE Y LICORES (Medidos en ml para escandallo)
-        print("Registrando cavas, licores premium e insumos base...")
-        # Champagnes
-        p_dom = Producto(
-            nombre="Dom Pérignon Vintage 2013",
-            categoria=CategoriaProducto.CHAMPAGNE,
-            tipo=TipoProducto.FINAL,
-            precio_venta=Decimal("3800.00"),
-            stock_ml=7500,  # 10 botellas
-            stock_minimo_ml=2250,
-            unidad_medida="ml"
+        # ── 2. INSUMOS BASE ───────────────────────────────────────────────────
+        print("\n[2/5] Insertando insumos base en mililitros (ml)...")
+        insumo_champagne_brut = Producto(
+            nombre="Champagne Brut (750 ml)",
+            categoria=CategoriaProducto.INSUMOS_BASE,
+            tipo=TipoProducto.INSUMO,
+            precio_venta=Decimal("0.00"),
+            stock_ml=7500,       # 10 botellas de 750 ml
+            stock_minimo_ml=750,
+            unidad_medida="ml",
+            imagen_url="/assets/img/champagne-brut.jpg"
         )
-        p_veuve = Producto(
-            nombre="Veuve Clicquot Yellow Label Brut",
-            categoria=CategoriaProducto.CHAMPAGNE,
-            tipo=TipoProducto.FINAL,
-            precio_venta=Decimal("1450.00"),
-            stock_ml=15000, # 20 botellas
-            stock_minimo_ml=3000,
-            unidad_medida="ml"
+        insumo_gin_tanqueray = Producto(
+            nombre="Gin Tanqueray (750 ml)",
+            categoria=CategoriaProducto.LICORES,
+            tipo=TipoProducto.INSUMO,
+            precio_venta=Decimal("650.00"),
+            stock_ml=7500,       # 10 botellas de 750 ml
+            stock_minimo_ml=750,
+            unidad_medida="ml",
+            imagen_url="/assets/img/tanqueray.jpg"
         )
-        p_moet = Producto(
-            nombre="Moët & Chandon Impérial Brut",
-            categoria=CategoriaProducto.CHAMPAGNE,
-            tipo=TipoProducto.FINAL,
-            precio_venta=Decimal("1200.00"),
-            stock_ml=15000, # 20 botellas
-            stock_minimo_ml=3000,
-            unidad_medida="ml"
-        )
-        p_krug = Producto(
-            nombre="Krug Grande Cuvée 170th Edition",
-            categoria=CategoriaProducto.CHAMPAGNE,
-            tipo=TipoProducto.FINAL,
-            precio_venta=Decimal("5200.00"),
-            stock_ml=4500,  # 6 botellas
-            stock_minimo_ml=1500,
-            unidad_medida="ml"
-        )
-
-        # Licores Premium
-        p_hennessy = Producto(
-            nombre="Cognac Hennessy XO",
+        insumo_cognac_hennessy = Producto(
+            nombre="Cognac Hennessy (700 ml)",
             categoria=CategoriaProducto.LICORES,
             tipo=TipoProducto.INSUMO,
             precio_venta=Decimal("2600.00"),
-            stock_ml=3750,  # 5 botellas
-            stock_minimo_ml=750,
-            unidad_medida="ml"
+            stock_ml=4900,       # 7 botellas de 700 ml
+            stock_minimo_ml=700,
+            unidad_medida="ml",
+            imagen_url="/assets/img/hennessy.jpg"
         )
-        p_tanqueray = Producto(
+        insumo_jarabe = Producto(
+            nombre="Jarabe/Sirope (1000 ml)",
+            categoria=CategoriaProducto.INSUMOS_BASE,
+            tipo=TipoProducto.INSUMO,
+            precio_venta=Decimal("0.00"),
+            stock_ml=5000,       # 5 botellas de 1000 ml
+            stock_minimo_ml=1000,
+            unidad_medida="ml",
+            imagen_url="/assets/img/sirope.jpg"
+        )
+        # Insumo base para Dom Pérignon
+        insumo_dom_vintage = Producto(
+            nombre="Dom Pérignon Vintage 2013",
+            categoria=CategoriaProducto.CHAMPAGNE,
+            tipo=TipoProducto.INSUMO,
+            precio_venta=Decimal("3800.00"),
+            stock_ml=7500,       # 10 botellas de 750 ml
+            stock_minimo_ml=1500,
+            unidad_medida="ml",
+            imagen_url="/assets/img/dom-perignon.jpg"
+        )
+        # Insumos complementarios para compatibilidad de suite
+        insumo_tanqueray_ten = Producto(
             nombre="Gin Tanqueray No. TEN",
             categoria=CategoriaProducto.LICORES,
             tipo=TipoProducto.INSUMO,
             precio_venta=Decimal("650.00"),
-            stock_ml=7500,  # 10 botellas
+            stock_ml=7500,
             stock_minimo_ml=1500,
             unidad_medida="ml"
         )
-        p_macallan = Producto(
-            nombre="The Macallan 12 Double Cask",
-            categoria=CategoriaProducto.LICORES,
+        insumo_moet = Producto(
+            nombre="Moët & Chandon Impérial Brut",
+            categoria=CategoriaProducto.CHAMPAGNE,
             tipo=TipoProducto.INSUMO,
-            precio_venta=Decimal("1350.00"),
-            stock_ml=6000,  # 8 botellas
-            stock_minimo_ml=1500,
+            precio_venta=Decimal("1200.00"),
+            stock_ml=15000,
+            stock_minimo_ml=3000,
             unidad_medida="ml"
         )
-        p_campari = Producto(
-            nombre="Campari Milano Bitter",
-            categoria=CategoriaProducto.LICORES,
-            tipo=TipoProducto.INSUMO,
-            precio_venta=Decimal("380.00"),
-            stock_ml=4500,
-            stock_minimo_ml=750,
-            unidad_medida="ml"
-        )
-        p_vermouth = Producto(
-            nombre="Vermouth Carpano Antica Formula",
-            categoria=CategoriaProducto.LICORES,
-            tipo=TipoProducto.INSUMO,
-            precio_venta=Decimal("450.00"),
-            stock_ml=5000,
-            stock_minimo_ml=1000,
-            unidad_medida="ml"
-        )
-
-        # Insumos Bar
-        p_jarabe = Producto(
-            nombre="Jarabe Simple Artesanal Bourlemont",
-            categoria=CategoriaProducto.INSUMOS_BASE,
-            tipo=TipoProducto.INSUMO,
-            precio_venta=Decimal("0.00"),
-            stock_ml=5000,
-            stock_minimo_ml=1000,
-            unidad_medida="ml"
-        )
-        p_limon = Producto(
-            nombre="Jugo de Limón Amarillo Eureka Fresco",
+        insumo_limon = Producto(
+            nombre="Jugo de Limón Fresco",
             categoria=CategoriaProducto.INSUMOS_BASE,
             tipo=TipoProducto.INSUMO,
             precio_venta=Decimal("0.00"),
@@ -167,208 +189,145 @@ def seed_database():
             stock_minimo_ml=800,
             unidad_medida="ml"
         )
-        p_angostura = Producto(
-            nombre="Angostura Aromatic Bitters",
-            categoria=CategoriaProducto.INSUMOS_BASE,
-            tipo=TipoProducto.INSUMO,
-            precio_venta=Decimal("0.00"),
-            stock_ml=600,
-            stock_minimo_ml=150,
-            unidad_medida="ml"
-        )
-        p_durazno = Producto(
-            nombre="Puré de Durazno Blanco Natural",
-            categoria=CategoriaProducto.INSUMOS_BASE,
-            tipo=TipoProducto.INSUMO,
-            precio_venta=Decimal("0.00"),
-            stock_ml=4000,
-            stock_minimo_ml=1000,
-            unidad_medida="ml"
-        )
 
         db.add_all([
-            p_dom, p_veuve, p_moet, p_krug,
-            p_hennessy, p_tanqueray, p_macallan, p_campari, p_vermouth,
-            p_jarabe, p_limon, p_angostura, p_durazno
+            insumo_champagne_brut,
+            insumo_gin_tanqueray,
+            insumo_cognac_hennessy,
+            insumo_jarabe,
+            insumo_dom_vintage,
+            insumo_tanqueray_ten,
+            insumo_moet,
+            insumo_limon
         ])
         db.flush()
+        print(f"    [+] Insumo : Champagne Brut (750 ml)   | Stock: {insumo_champagne_brut.stock_ml} ml")
+        print(f"    [+] Insumo : Gin Tanqueray (750 ml)    | Stock: {insumo_gin_tanqueray.stock_ml} ml")
+        print(f"    [+] Insumo : Cognac Hennessy (700 ml)  | Stock: {insumo_cognac_hennessy.stock_ml} ml")
+        print(f"    [+] Insumo : Jarabe/Sirope (1000 ml)   | Stock: {insumo_jarabe.stock_ml} ml")
+        print(f"    [+] Insumo : Dom Pérignon Vintage 2013 | Stock: {insumo_dom_vintage.stock_ml} ml")
 
-        # 3. CÓCTELES DE AUTOR Y COPAS (Productos Finales Compuestos)
-        print("Registrando cócteles de autor y copas por porción...")
-        c_french = Producto(
+        # ── 3. PRODUCTOS FINALES / CÓCTELES ────────────────────────────────────
+        print("\n[3/5] Insertando cócteles y productos finales para venta...")
+        coctel_copa_champagne = Producto(
+            nombre="Copa Champagne Brut (150 ml)",
+            categoria=CategoriaProducto.CHAMPAGNE,
+            tipo=TipoProducto.COMPUESTO,
+            precio_venta=Decimal("260.00"),
+            stock_ml=0,
+            stock_minimo_ml=0,
+            unidad_medida="copa",
+            imagen_url="/assets/img/copa-champagne.jpg"
+        )
+        coctel_french_75 = Producto(
             nombre="French 75 Bourlemont",
             categoria=CategoriaProducto.COCTELES_AUTOR,
             tipo=TipoProducto.COMPUESTO,
             precio_venta=Decimal("185.00"),
             stock_ml=0,
             stock_minimo_ml=0,
-            unidad_medida="copa"
+            unidad_medida="copa",
+            imagen_url="/assets/img/french-75.jpg"
         )
-        c_mimosa = Producto(
-            nombre="Royal Mimosa Bourlemont",
-            categoria=CategoriaProducto.COCTELES_AUTOR,
-            tipo=TipoProducto.COMPUESTO,
-            precio_venta=Decimal("175.00"),
-            stock_ml=0,
-            stock_minimo_ml=0,
-            unidad_medida="copa"
-        )
-        c_imperial = Producto(
-            nombre="Champagne Cocktail Impérial",
-            categoria=CategoriaProducto.COCTELES_AUTOR,
-            tipo=TipoProducto.COMPUESTO,
-            precio_venta=Decimal("210.00"),
-            stock_ml=0,
-            stock_minimo_ml=0,
-            unidad_medida="copa"
-        )
-        c_negroni = Producto(
-            nombre="Negroni Sbagliato Bourlemont",
-            categoria=CategoriaProducto.COCTELES_AUTOR,
-            tipo=TipoProducto.COMPUESTO,
-            precio_venta=Decimal("195.00"),
-            stock_ml=0,
-            stock_minimo_ml=0,
-            unidad_medida="copa"
-        )
-        c_copa_veuve = Producto(
-            nombre="Copa Veuve Clicquot Brut (150 ml)",
+        coctel_dom_perignon = Producto(
+            nombre="Dom Pérignon Vintage",
             categoria=CategoriaProducto.CHAMPAGNE,
             tipo=TipoProducto.COMPUESTO,
-            precio_venta=Decimal("260.00"),
+            precio_venta=Decimal("3800.00"),
             stock_ml=0,
             stock_minimo_ml=0,
-            unidad_medida="copa"
-        )
-        c_copa_dom = Producto(
-            nombre="Copa Dom Pérignon Vintage (150 ml)",
-            categoria=CategoriaProducto.CHAMPAGNE,
-            tipo=TipoProducto.COMPUESTO,
-            precio_venta=Decimal("680.00"),
-            stock_ml=0,
-            stock_minimo_ml=0,
-            unidad_medida="copa"
+            unidad_medida="botella",
+            imagen_url="/assets/img/dom-perignon.jpg"
         )
 
-        db.add_all([c_french, c_mimosa, c_imperial, c_negroni, c_copa_veuve, c_copa_dom])
+        db.add_all([coctel_copa_champagne, coctel_french_75, coctel_dom_perignon])
         db.flush()
+        print(f"    [+] Cóctel : Copa Champagne Brut (150 ml) -> Q 260.00")
+        print(f"    [+] Cóctel : French 75 Bourlemont         -> Q 185.00")
+        print(f"    [+] Cóctel : Dom Pérignon Vintage         -> Q 3,800.00")
 
-        # 4. RECETAS / ESCANDALLOS EN MILILITROS
-        print("Mapeando escandallos matemáticos por receta en ml...")
+        # ── 4. RECETAS / ESCANDALLOS ──────────────────────────────────────────
+        print("\n[4/5] Mapeando recetas y escandallos algorítmicos...")
         recetas = [
-            # French 75: 45ml Gin + 25ml Limón + 15ml Jarabe + 90ml Champagne Moët
-            RecetaEscandallo(id_producto_final=c_french.id_producto, id_insumo_base=p_tanqueray.id_producto, cantidad_descontar_ml=45),
-            RecetaEscandallo(id_producto_final=c_french.id_producto, id_insumo_base=p_limon.id_producto, cantidad_descontar_ml=25),
-            RecetaEscandallo(id_producto_final=c_french.id_producto, id_insumo_base=p_jarabe.id_producto, cantidad_descontar_ml=15),
-            RecetaEscandallo(id_producto_final=c_french.id_producto, id_insumo_base=p_moet.id_producto, cantidad_descontar_ml=90),
-
-            # Royal Mimosa: 60ml Puré Durazno + 120ml Veuve Clicquot
-            RecetaEscandallo(id_producto_final=c_mimosa.id_producto, id_insumo_base=p_durazno.id_producto, cantidad_descontar_ml=60),
-            RecetaEscandallo(id_producto_final=c_mimosa.id_producto, id_insumo_base=p_veuve.id_producto, cantidad_descontar_ml=120),
-
-            # Champagne Cocktail Imperial: 30ml Hennessy XO + 5ml Angostura + 10ml Jarabe + 120ml Veuve Clicquot
-            RecetaEscandallo(id_producto_final=c_imperial.id_producto, id_insumo_base=p_hennessy.id_producto, cantidad_descontar_ml=30),
-            RecetaEscandallo(id_producto_final=c_imperial.id_producto, id_insumo_base=p_angostura.id_producto, cantidad_descontar_ml=5),
-            RecetaEscandallo(id_producto_final=c_imperial.id_producto, id_insumo_base=p_jarabe.id_producto, cantidad_descontar_ml=10),
-            RecetaEscandallo(id_producto_final=c_imperial.id_producto, id_insumo_base=p_veuve.id_producto, cantidad_descontar_ml=120),
-
-            # Negroni Sbagliato: 30ml Campari + 30ml Vermouth Carpano + 60ml Moët
-            RecetaEscandallo(id_producto_final=c_negroni.id_producto, id_insumo_base=p_campari.id_producto, cantidad_descontar_ml=30),
-            RecetaEscandallo(id_producto_final=c_negroni.id_producto, id_insumo_base=p_vermouth.id_producto, cantidad_descontar_ml=30),
-            RecetaEscandallo(id_producto_final=c_negroni.id_producto, id_insumo_base=p_moet.id_producto, cantidad_descontar_ml=60),
-
-            # Copa Veuve: 150ml Veuve Clicquot
-            RecetaEscandallo(id_producto_final=c_copa_veuve.id_producto, id_insumo_base=p_veuve.id_producto, cantidad_descontar_ml=150),
-
-            # Copa Dom Pérignon: 150ml Dom Pérignon
-            RecetaEscandallo(id_producto_final=c_copa_dom.id_producto, id_insumo_base=p_dom.id_producto, cantidad_descontar_ml=150)
+            # Copa Champagne Brut: descuenta 150 ml de Champagne Brut (750 ml)
+            RecetaEscandallo(
+                id_producto_final=coctel_copa_champagne.id_producto,
+                id_insumo_base=insumo_champagne_brut.id_producto,
+                cantidad_descontar_ml=150
+            ),
+            # French 75 Bourlemont:
+            # - 90 ml Champagne Brut
+            # - 45 ml Gin Tanqueray
+            # - 15 ml Jarabe/Sirope
+            RecetaEscandallo(
+                id_producto_final=coctel_french_75.id_producto,
+                id_insumo_base=insumo_champagne_brut.id_producto,
+                cantidad_descontar_ml=90
+            ),
+            RecetaEscandallo(
+                id_producto_final=coctel_french_75.id_producto,
+                id_insumo_base=insumo_gin_tanqueray.id_producto,
+                cantidad_descontar_ml=45
+            ),
+            RecetaEscandallo(
+                id_producto_final=coctel_french_75.id_producto,
+                id_insumo_base=insumo_jarabe.id_producto,
+                cantidad_descontar_ml=15
+            ),
+            # Dom Pérignon Vintage: descuenta 750 ml de Dom Pérignon Vintage 2013
+            RecetaEscandallo(
+                id_producto_final=coctel_dom_perignon.id_producto,
+                id_insumo_base=insumo_dom_vintage.id_producto,
+                cantidad_descontar_ml=750
+            )
         ]
         db.add_all(recetas)
         db.flush()
+        print("    [+] Escandallo asignado: Copa Champagne Brut -> 150 ml Champagne Brut")
+        print("    [+] Escandallo asignado: French 75 -> 90 ml Champagne + 45 ml Gin + 15 ml Jarabe")
+        print("    [+] Escandallo asignado: Dom Pérignon Vintage -> 750 ml Dom Pérignon")
 
-        # 5. TURNO DE CAJA ABIERTO INICIAL (Listo para operar)
-        print("Abriendo turno de caja activo con fondo inicial de Q 1,000.00...")
+        # ── 5. TURNO DE CAJA & BITÁCORA ────────────────────────────────────────
+        print("\n[5/5] Registrando arqueo de caja inicial y bitácora de auditoría...")
         arqueo_inicial = ArqueoCaja(
-            id_usuario=b1.id_usuario,
-            fecha_apertura=datetime.utcnow() - timedelta(hours=3),
+            id_usuario=bartender_mateo.id_usuario,
+            fecha_apertura=now_gt - timedelta(hours=2),
             fondo_inicial=Decimal("1000.00"),
             estado=EstadoArqueo.ABIERTO
         )
         db.add(arqueo_inicial)
-        
-        # 6. ÓRDENES DE MUESTRA COBRADAS (Para visualizar reportes y auditoría)
-        print("Registrando órdenes iniciales de prueba...")
-        ord1 = Orden(
-            numero_mesa="Barra 360 - Asiento 1",
-            id_usuario_creacion=b1.id_usuario,
-            estado=EstadoOrden.PAGADA,
-            fecha_creacion=datetime.utcnow() - timedelta(hours=2),
-            fecha_cierre=datetime.utcnow() - timedelta(hours=1, minutes=45),
-            total=Decimal("370.00")
-        )
-        db.add(ord1)
-        db.flush()
 
-        d1 = DetalleOrden(id_orden=ord1.id_orden, id_producto=c_french.id_producto, cantidad=2, precio_unitario=Decimal("185.00"), subtotal=Decimal("370.00"))
-        pago1 = TransaccionPago(
-            id_orden=ord1.id_orden,
-            id_usuario_cobro=b1.id_usuario,
-            metodo_pago=MetodoPago.TARJETA_VISA,
-            monto_pagado=Decimal("370.00"),
-            propina=Decimal("37.00"),
-            fecha_transaccion=datetime.utcnow() - timedelta(hours=1, minutes=45)
+        bitacora = BitacoraAuditoria(
+            id_usuario=admin_carlos.id_usuario,
+            accion="INICIALIZACION_FASE_1",
+            descripcion="Tablas regeneradas y datos semilla iniciales cargados en MySQL (XAMPP/InnoDB)."
         )
-        fel1 = FacturaFEL(
-            id_orden=ord1.id_orden,
-            uuid_autorizacion="48F6C2A1-94E5-4C67-B91F-3D248D93FA10",
-            serie="BLM26",
-            numero_dte=f"{ord1.id_orden:09d}",
-            fecha_certificacion=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S-06:00"),
-            nit_receptor="CF",
-            nombre_receptor="CONSUMIDOR FINAL",
-            estado_certificacion=EstadoFEL.CERTIFICADA
-        )
-        db.add_all([d1, pago1, fel1])
-
-        # Orden abierta actual en mesa 4
-        ord_activa = Orden(
-            numero_mesa="Mesa 4 (Terraza)",
-            id_usuario_creacion=b2.id_usuario,
-            estado=EstadoOrden.ABIERTA,
-            fecha_creacion=datetime.utcnow() - timedelta(minutes=25),
-            total=Decimal("470.00")
-        )
-        db.add(ord_activa)
-        db.flush()
-
-        d2_1 = DetalleOrden(id_orden=ord_activa.id_orden, id_producto=c_copa_veuve.id_producto, cantidad=1, precio_unitario=Decimal("260.00"), subtotal=Decimal("260.00"))
-        d2_2 = DetalleOrden(id_orden=ord_activa.id_orden, id_producto=c_imperial.id_producto, cantidad=1, precio_unitario=Decimal("210.00"), subtotal=Decimal("210.00"))
-        db.add_all([d2_1, d2_2])
-
-        # Bitácora inicial
-        log1 = BitacoraAuditoria(
-            id_usuario=admin.id_usuario,
-            accion="INICIALIZACION_SISTEMA",
-            descripcion="Inicialización del sistema Bourlemont POS y sembrado de recetas de coctelería y cavas."
-        )
-        db.add(log1)
+        db.add(bitacora)
 
         db.commit()
-        print("\n¡Sembrado completado exitosamente en Bourlemont POS!")
-        print("-------------------------------------------------------------")
-        print("USUARIOS PREPARADOS:")
-        print("  • Bartender: Mateo Morales   (PIN: 1234)")
-        print("  • Bartender: Sofía Castillo  (PIN: 2468)")
-        print("  • Bartender: Alejandro Ruiz  (PIN: 7788)")
-        print("  • Admin:     Carlos Bourlemont (PIN: 9999 / Pass: admin_bourlemont_2026)")
-        print("-------------------------------------------------------------")
+        print("\n" + "="*70)
+        print("[OK] BASE DE DATOS 'bourlemontdb' REGENERADA Y POBLADA EXITOSAMENTE EN MYSQL")
+        print("="*70)
 
-    except Exception as e:
+    except Exception as exc:
         db.rollback()
-        print(f"Error al inicializar base de datos: {e}")
-        raise e
+        print(f"\n[ERROR] Fallo al sembrar la base de datos: {exc}")
+        import traceback
+        traceback.print_exc()
+        raise
     finally:
         db.close()
 
-if __name__ == "__main__":
+
+def main():
+    parser = argparse.ArgumentParser(description="Regenera y puebla la base de datos MySQL para Bourlemont POS")
+    parser.add_argument("--no-reset", action="store_true", help="No regenerar tablas, solo sembrar si está vacía")
+    args = parser.parse_args()
+
+    if not args.no_reset:
+        regenerar_tablas()
     seed_database()
+
+
+if __name__ == "__main__":
+    main()

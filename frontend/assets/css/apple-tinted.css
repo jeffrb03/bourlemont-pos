@@ -523,9 +523,9 @@ a {
   .header-bar,
   .nav-links,
   .pos-catalog-area,
-  .pos-order-panel,
-  .modal-overlay:not(#ticket-modal),
-  .bl-toast {
+  #checkout-modal,
+  .bl-toast,
+  #toast-container {
     display: none !important;
   }
 

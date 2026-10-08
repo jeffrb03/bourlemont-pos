@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from decimal import Decimal
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -63,7 +63,7 @@ def apertura_caja(
         
     nuevo_arqueo = ArqueoCaja(
         id_usuario=current_user.id_usuario,
-        fecha_apertura=datetime.now(timezone.utc),
+        fecha_apertura=datetime.now(timezone(timedelta(hours=-6))),
         fondo_inicial=payload.fondo_inicial,
         estado=EstadoArqueo.ABIERTO
     )
@@ -96,7 +96,7 @@ def cierre_caja_ciego(
     if not arqueo:
         raise HTTPException(status_code=400, detail="No hay ningún turno de caja abierto para cerrar.")
         
-    fecha_cierre_now = datetime.now(timezone.utc)
+    fecha_cierre_now = datetime.now(timezone(timedelta(hours=-6)))
     
     # Sumar todas las ventas cobradas en efectivo desde la fecha de apertura
     pagos_efectivo = db.query(

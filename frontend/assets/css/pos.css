@@ -1,279 +1,263 @@
 /* ==============================================================
-   BOURLEMONT CHAMPAGNE BAR - POS INTERFACE STYLES
+   BOURLEMONT CHAMPAGNE BAR - POS INTERFACE STYLES (STITCH LUXURY)
+   Palette: Rich Obsidian (#111319), Champagne Gold (#F2CA50, #D4AF37),
+   Amber Accents, Glassmorphic Panels & Smooth Micro-interactions.
    ============================================================== */
 
-.pos-container {
-  display: grid;
-  grid-template-columns: 1fr 420px;
-  height: calc(100vh - 67px);
-  overflow: hidden;
-}
-
-/* ─── Área Izquierda: Catálogo ─── */
-.pos-catalog-area {
+/* Modal Backdrop & Animation */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(12, 14, 19, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 20px 24px;
-  overflow: hidden;
-  background-color: var(--bg-canvas);
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 1rem;
 }
 
-.catalog-header {
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background: rgba(29, 32, 37, 0.95);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 1.5rem;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 35px rgba(242, 202, 80, 0.12);
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.75rem;
+  color: #e2e2ea;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transform: scale(0.96);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+}
+
+.modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Pestañas Horizontales de Categorías */
-.category-tabs {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  overflow-x: auto;
-  padding-bottom: 4px;
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #f2ca50;
+  letter-spacing: -0.01em;
 }
 
-.category-tab {
-  padding: 10px 20px;
-  border-radius: var(--radius-md);
-  border: var(--hairline-border);
-  background-color: var(--bg-surface);
-  color: var(--text-secondary);
-  font-size: 14px;
-  font-weight: 600;
+.modal-close {
+  background: transparent;
+  border: none;
+  color: #d0c5af;
+  font-size: 1.5rem;
   cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  line-height: 1;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.modal-close:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Category Tabs */
+.category-tab {
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  background-color: #282a30;
+  color: #d0c5af;
+  font-size: 0.875rem;
+  font-weight: 600;
   white-space: nowrap;
-  transition: var(--transition-haptic);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .category-tab:hover {
-  background-color: var(--bg-surface-hover);
-  color: #FFF;
-}
-
-.category-tab:active {
-  transform: var(--scale-press);
+  background-color: #33353b;
+  color: #e2e2ea;
 }
 
 .category-tab.active {
-  background-color: var(--gold-subtle-bg);
-  border-color: var(--gold-subtle-border);
-  color: var(--gold-highlight-text);
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+  background-color: #f2ca50;
+  color: #3c2f00;
+  box-shadow: 0 4px 18px rgba(242, 202, 80, 0.28);
+  transform: scale(1.02);
 }
 
-.search-input-wrapper {
-  min-width: 220px;
-}
-
-/* ─── Grilla de Productos ─── */
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 14px;
+/* Product Cards Grid Compacto tipo Stitch (180px responsivo) */
+#catalogo-productos,
+.products-grid,
+.catalogo-productos {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+  gap: 1rem !important;
   overflow-y: auto;
-  padding-right: 6px;
-  flex: 1;
+  padding-right: 0.25rem;
+  align-content: start;
 }
 
 .product-card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-panel);
-  border: var(--hairline-border);
-  border-radius: var(--radius-lg);
-  padding: 0;
+  justify-content: space-between;
+  width: 100%;
+  height: 245px;
+  min-height: 245px;
+  max-height: 245px;
+  box-sizing: border-box;
+  background: rgba(29, 32, 37, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 1rem;
+  padding: 0.75rem;
   cursor: pointer;
-  min-height: 170px;
-  transition: var(--transition-haptic);
-  position: relative;
   overflow: hidden;
-}
-
-.product-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background-color: transparent;
-  transition: background-color 0.2s;
-  z-index: 1;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 .product-card:hover {
-  background-color: var(--bg-surface-hover);
-  border-color: rgba(212, 175, 55, 0.35);
+  background: rgba(40, 42, 48, 0.85);
+  border-color: rgba(242, 202, 80, 0.4);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-}
-
-.product-card:hover::before {
-  background-color: var(--gold-primary);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(242, 202, 80, 0.15);
 }
 
 .product-card:active,
 .product-card.pressed {
-  transform: var(--scale-press);
+  transform: scale(0.97);
 }
 
-/* Imagen / Silueta del producto */
 .product-card-img-wrap {
   width: 100%;
-  height: 90px;
+  height: 110px;
+  min-height: 110px;
+  max-height: 110px;
+  border-radius: 0.75rem;
   overflow: hidden;
-  background-color: #0d0d0f;
-  border-bottom: var(--hairline-border);
+  background-color: rgba(12, 14, 19, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 0.5rem;
+  position: relative;
 }
 
+.product-card img,
 .product-card-img {
-  height: 80px;
-  width: auto;
+  width: 100%;
+  height: 110px;
   object-fit: contain;
-  opacity: 0.85;
-  transition: opacity 0.2s, transform 0.2s;
+  object-position: center;
+  background: rgba(28, 25, 23, 0.4);
+  border-radius: 8px;
+  padding: 4px;
+  transition: transform 0.4s ease;
+  display: block;
+  margin: 0 auto;
 }
 
 .product-card:hover .product-card-img {
-  opacity: 1;
-  transform: scale(1.04);
+  transform: scale(1.06);
 }
 
 .product-card-body {
-  padding: 12px 14px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 0.25rem;
   flex: 1;
 }
 
-.product-card.champagne {
-  border-color: rgba(212, 175, 55, 0.2);
-}
-
-.product-card.cocteles-autor {
-  border-color: rgba(255, 159, 10, 0.2);
-}
-
 .product-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #FFF;
-  line-height: 1.3;
-  margin-bottom: 5px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #f2ca50;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 2.25rem;
 }
 
 .product-meta {
-  font-size: 11px;
-  color: var(--text-secondary);
+  font-size: 0.7rem;
+  color: #99907c;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .product-price-row {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  padding: 8px 14px 12px;
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .product-price {
-  font-size: 17px;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: var(--gold-highlight-text);
+  color: #f2ca50;
+  letter-spacing: -0.02em;
 }
 
-.product-stock-tag {
-  font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 4px;
+.stock-tag {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
   background: rgba(255, 255, 255, 0.06);
-  color: var(--text-secondary);
+  color: #d0c5af;
+  font-weight: 600;
 }
 
-.product-stock-tag.low {
-  background-color: var(--status-danger-bg);
-  color: var(--status-danger);
-  border: 1px solid var(--status-danger-border);
+.stock-tag.low {
+  background: rgba(147, 0, 10, 0.3);
+  color: #ffb4ab;
+  border: 1px solid rgba(255, 180, 171, 0.3);
 }
 
-/* ─── Comanda Lateral ─── */
-.pos-order-panel {
-  display: flex;
-  flex-direction: column;
-  background-color: var(--bg-panel);
-  border-left: var(--hairline-border);
-  height: 100%;
-}
-
-.order-panel-header {
-  padding: 16px 20px;
-  border-bottom: var(--hairline-border);
-}
-
-.table-selector-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.table-input {
-  flex: 1;
-  padding: 10px 14px;
-  background-color: var(--bg-surface);
-  border: var(--hairline-border);
-  border-radius: var(--radius-sm);
-  color: #FFF;
-  font-size: 14px;
-  font-family: var(--font-family);
-  cursor: pointer;
-}
-
-.order-items-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 14px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.empty-order-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--text-tertiary);
-  gap: 12px;
-  text-align: center;
-}
-
-.empty-icon {
-  font-size: 42px;
-  opacity: 0.35;
-}
-
+/* Order Item Row (Right rail) */
 .order-item-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px;
-  background-color: var(--bg-surface);
-  border: var(--hairline-border);
-  border-radius: var(--radius-md);
-  transition: background-color 0.15s;
-  gap: 8px;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.75rem;
+  background: rgba(25, 28, 33, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.15s ease;
+  gap: 0.5rem;
 }
 
 .order-item-row:hover {
-  background-color: var(--bg-surface-hover);
+  background: rgba(33, 36, 42, 0.9);
+  border-color: rgba(242, 202, 80, 0.2);
 }
 
 .order-item-info {
@@ -282,282 +266,376 @@
 }
 
 .order-item-name {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
-  color: #FFF;
+  color: #e2e2ea;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .order-item-unit-price {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-top: 2px;
+  font-size: 0.75rem;
+  color: #99907c;
 }
 
 .order-item-qty-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
+  gap: 0.35rem;
+  background: rgba(12, 14, 19, 0.8);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .qty-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background-color: var(--bg-panel);
-  border: var(--hairline-border);
-  color: #FFF;
-  font-size: 16px;
-  font-weight: bold;
+  width: 22px;
+  height: 22px;
+  border-radius: 0.35rem;
+  border: none;
+  background: #282a30;
+  color: #e2e2ea;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: var(--transition-haptic);
-  line-height: 1;
+  transition: background 0.15s;
 }
 
-.qty-btn:active {
-  transform: var(--scale-press);
-  background-color: var(--gold-subtle-bg);
-  border-color: var(--gold-subtle-border);
+.qty-btn:hover {
+  background: #f2ca50;
+  color: #3c2f00;
 }
 
 .qty-value {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
-  min-width: 22px;
+  color: #f2ca50;
+  min-width: 18px;
   text-align: center;
-  color: #FFF;
 }
 
 .order-item-subtotal {
-  font-size: 14px;
+  font-size: 0.925rem;
   font-weight: 700;
-  color: var(--gold-highlight-text);
-  min-width: 70px;
+  color: #f2ca50;
+  min-width: 65px;
   text-align: right;
-  flex-shrink: 0;
 }
 
 .delete-item-btn {
-  background: none;
+  background: transparent;
   border: none;
-  color: var(--text-tertiary);
+  color: #99907c;
   cursor: pointer;
-  padding: 4px 6px;
-  font-size: 14px;
-  transition: color 0.15s;
-  flex-shrink: 0;
+  font-size: 0.9rem;
+  padding: 0.25rem;
+  border-radius: 0.35rem;
+  transition: color 0.15s, background 0.15s;
 }
 
 .delete-item-btn:hover {
-  color: var(--status-danger);
+  color: #ffb4ab;
+  background: rgba(147, 0, 10, 0.3);
 }
 
-/* ─── Pie de la Comanda ─── */
-.order-panel-footer {
-  padding: 20px;
-  border-top: var(--hairline-border);
-  background-color: rgba(20, 20, 22, 0.98);
-}
-
-.order-summary-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.order-total-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-top: 12px;
-  margin-bottom: 18px;
-  padding-top: 10px;
-  border-top: var(--hairline-border-light);
-}
-
-.order-total-label {
-  font-size: 16px;
-  font-weight: 700;
-  color: #FFF;
-}
-
-.order-total-amount {
-  font-size: 26px;
-  font-weight: 800;
-  color: var(--gold-highlight-text);
-}
-
-.checkout-btn {
-  width: 100%;
-  padding: 16px;
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-/* ─── Modal de Cobro ─── */
-.payment-methods-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin: 16px 0;
-}
-
-.payment-method-btn {
-  padding: 14px;
+/* Empty State */
+.empty-order-state {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  background-color: var(--bg-surface);
-  border: var(--hairline-border);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  font-size: 13px;
-  font-weight: 600;
+  justify-content: center;
+  height: 100%;
+  min-height: 220px;
+  color: #99907c;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  opacity: 0.8;
+}
+
+/* Thermal Ticket ESC/POS Box */
+.thermal-ticket-box {
+  background: #0c0e13;
+  color: #f2ca50;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px dashed rgba(212, 175, 55, 0.3);
+  max-height: 380px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.ticket-qr-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+/* Payment Method Buttons in Checkout Modal */
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.payment-method-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.75rem;
+  background: #282a30;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #e2e2ea;
   cursor: pointer;
-  transition: var(--transition-haptic);
+  transition: all 0.2s;
+  font-size: 0.75rem;
+  gap: 0.25rem;
 }
 
 .payment-method-btn:hover {
-  background-color: var(--bg-surface-hover);
-}
-
-.payment-method-btn:active {
-  transform: var(--scale-press);
+  background: #33353b;
+  border-color: rgba(242, 202, 80, 0.3);
 }
 
 .payment-method-btn.active {
-  background-color: var(--gold-subtle-bg);
-  border-color: var(--gold-primary);
-  color: var(--gold-highlight-text);
+  background: rgba(242, 202, 80, 0.15);
+  border-color: #f2ca50;
+  color: #f2ca50;
+  font-weight: 600;
+  box-shadow: 0 0 15px rgba(242, 202, 80, 0.15);
 }
 
-.nit-input-row {
-  display: flex;
-  gap: 8px;
-  margin-top: 14px;
+/* Tip Buttons */
+.tip-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background: #282a30;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #e2e2ea;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-/* ─── Ticket Térmico ─── */
-.thermal-ticket-box {
-  background-color: #000;
-  border: 1px dashed var(--gold-subtle-border);
-  color: #00FF66;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 11px;
-  line-height: 1.4;
-  padding: 16px;
-  border-radius: var(--radius-sm);
-  max-height: 350px;
-  overflow-y: auto;
-  white-space: pre-wrap;
-  margin-top: 14px;
+.tip-btn:hover {
+  background: #33353b;
 }
 
-/* ─── Spinner Inline ─── */
-.spinner-inline {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: #FFF;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  vertical-align: middle;
-  margin-right: 6px;
+.tip-btn.active {
+  background: #f2ca50;
+  color: #3c2f00;
+  border-color: #f2ca50;
+  box-shadow: 0 0 12px rgba(242, 202, 80, 0.3);
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+/* Input Styles for Modals */
+.input-field {
+  width: 100%;
+  background: rgba(12, 14, 19, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  color: #e2e2ea;
+  font-size: 0.875rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* ─── Toast Animation ─── */
-@keyframes toastIn {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
+.input-field:focus {
+  border-color: #f2ca50;
+  box-shadow: 0 0 0 1px #f2ca50;
 }
 
-/* ─────────────────────────────────────────────────────────────
-   IMPRESIÓN TÉRMICA 80mm (ESC/POS)
-   ───────────────────────────────────────────────────────────── */
+/* Buttons in Modals */
+.btn {
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #f2ca50 0%, #d4af37 100%);
+  color: #3c2f00;
+  box-shadow: 0 4px 16px rgba(242, 202, 80, 0.25);
+}
+
+.btn-gold:hover {
+  filter: brightness(1.08);
+  transform: scale(1.01);
+}
+
+.btn-gold:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-subtle-gold {
+  background: rgba(242, 202, 80, 0.12);
+  color: #f2ca50;
+  border: 1px solid rgba(242, 202, 80, 0.25);
+}
+
+.btn-subtle-gold:hover {
+  background: rgba(242, 202, 80, 0.2);
+}
+
+.btn-danger {
+  background: rgba(147, 0, 10, 0.8);
+  color: #ffdad6;
+}
+
+.btn-danger:hover {
+  background: #93000a;
+}
+
+.modal-cancel {
+  background: #282a30;
+  color: #d0c5af;
+}
+
+.modal-cancel:hover {
+  background: #33353b;
+  color: #e2e2ea;
+}
+
+/* ==============================================================
+   IMPRESIÓN ESTRICTA DE TICKET TÉRMICO (80mm BOURLEMONT)
+   ============================================================== */
+@page {
+  size: 80mm auto;
+  margin: 0mm;
+}
+
 @media print {
-  /* Ocultar TODA la UI excepto el contenedor del ticket */
-  body > *:not(#ticket-modal),
-  .header-bar,
-  .pos-container,
-  .pos-catalog-area,
-  .pos-order-panel,
-  #checkout-modal {
-    display: none !important;
+  /* Ocultar absolutamente todos los elementos de la interfaz */
+  body * {
+    visibility: hidden !important;
   }
 
-  /* El contenedor wrapper del ticket */
+  /* Mostrar ÚNICAMENTE el contenedor de impresión del ticket */
+  #ticket-printable-area,
+  #ticket-printable-area *,
+  #ticket-content,
+  #ticket-content *,
+  #ticket-content-box,
+  #ticket-content-box *,
+  #ticket-qr-container,
+  #ticket-qr-container * {
+    visibility: visible !important;
+  }
+
+  /* Reposicionar el ticket centrado y en 80mm al inicio de la página */
   #ticket-modal {
-    display: block !important;
-    position: static !important;
-    background: none !important;
-  }
-
-  /* El overlay interno se vuelve estático */
-  #ticket-modal .modal-overlay {
-    position: static !important;
-    background: none !important;
-    display: block !important;
-    opacity: 1 !important;
-    backdrop-filter: none !important;
-    pointer-events: auto !important;
-  }
-
-  /* Cuadro del ticket centrado al ancho 80mm */
-  #ticket-modal .modal-content {
-    box-shadow: none !important;
-    border: none !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 80mm !important;
+    margin: 0 !important;
     padding: 0 !important;
-    max-width: 100% !important;
-    width: 72mm !important;
-    margin: 0 auto !important;
-    background: #FFF !important;
-    transform: none !important;
-    max-height: none !important;
-    overflow: visible !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    display: block !important;
+    visibility: visible !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
-  /* Ocultar controles del modal */
+  #ticket-modal .modal-content {
+    position: static !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    border: none !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
   #ticket-modal .modal-header,
   #ticket-modal button,
-  #ticket-modal #ticket-inventory-alerts {
+  #ticket-inventory-alerts {
     display: none !important;
+    visibility: hidden !important;
   }
 
-  /* El pre con el ticket en blanco y negro */
-  .thermal-ticket-box {
-    background: #FFF !important;
-    color: #000 !important;
+  #ticket-printable-area {
+    display: block !important;
+    width: 76mm !important;
+    max-width: 76mm !important;
+    margin: 0 auto !important;
+    padding: 2mm 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-sizing: border-box !important;
+  }
+
+  #ticket-content-box {
+    display: block !important;
+    width: 100% !important;
+    color: #000000 !important;
+    background: #ffffff !important;
     border: none !important;
-    font-size: 10px !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 11px !important;
     line-height: 1.35 !important;
-    padding: 0 !important;
-    max-height: none !important;
-    overflow: visible !important;
     white-space: pre-wrap !important;
     word-break: break-word !important;
-    width: 100% !important;
-    margin-top: 0 !important;
-    page-break-inside: avoid;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
   }
 
-  /* Tamaño de página térmica 80mm */
-  @page {
-    size: 80mm auto;
-    margin: 3mm 2mm;
+  #ticket-qr-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-top: 8px !important;
+    text-align: center !important;
+    background: #ffffff !important;
+  }
+
+  #ticket-qr-container svg {
+    display: block !important;
+    margin: 0 auto !important;
+    width: 100px !important;
+    height: 100px !important;
+  }
+
+  .ticket-qr-caption {
+    display: block !important;
+    color: #000000 !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    margin-top: 4px !important;
+    font-family: sans-serif !important;
   }
 }

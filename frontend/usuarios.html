@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta name="description" content="Gestión de Personal, Seguridad y Colaboradores. Bourlemont Champagne Bar."/>
+  <title>Gestión de Usuarios | Bourlemont POS</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/assets/css/pos.css"/>
+  <style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+
+    #toast-msg {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: rgba(29, 32, 37, 0.95);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      color: #e2e2ea;
+      padding: 12px 20px;
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(242, 202, 80, 0.2);
+      display: none;
+      z-index: 100000;
+      font-size: 14px;
+      font-weight: 600;
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      "darkMode": "class",
+      "theme": {
+        "extend": {
+          "colors": {
+            "on-primary-fixed-variant": "#574500",
+            "tertiary-fixed": "#ffe08d",
+            "on-secondary": "#233143",
+            "outline-variant": "#4d4635",
+            "on-primary-container": "#554300",
+            "secondary-fixed-dim": "#b9c8de",
+            "on-primary": "#3c2f00",
+            "on-secondary-fixed-variant": "#39485a",
+            "inverse-on-surface": "#2e3036",
+            "surface-container-low": "#191c21",
+            "surface-dim": "#111319",
+            "secondary-container": "#39485a",
+            "on-surface": "#e2e2ea",
+            "primary-fixed-dim": "#e9c349",
+            "on-tertiary-container": "#564300",
+            "primary": "#f2ca50",
+            "on-secondary-container": "#a7b6cc",
+            "tertiary": "#eecb6c",
+            "on-surface-variant": "#d0c5af",
+            "background": "#111319",
+            "tertiary-fixed-dim": "#e5c365",
+            "on-background": "#e2e2ea",
+            "surface-tint": "#e9c349",
+            "tertiary-container": "#d0b054",
+            "primary-fixed": "#ffe088",
+            "on-secondary-fixed": "#0d1c2d",
+            "surface-container-lowest": "#0c0e13",
+            "inverse-surface": "#e2e2ea",
+            "on-error": "#690005",
+            "error-container": "#93000a",
+            "on-tertiary": "#3d2f00",
+            "secondary-fixed": "#d4e4fa",
+            "on-error-container": "#ffdad6",
+            "on-tertiary-fixed-variant": "#584400",
+            "surface-container-highest": "#33353b",
+            "secondary": "#b9c8de",
+            "on-tertiary-fixed": "#241a00",
+            "surface": "#111319",
+            "surface-container": "#1d2025",
+            "inverse-primary": "#735c00",
+            "surface-variant": "#33353b",
+            "error": "#ffb4ab",
+            "primary-container": "#d4af37",
+            "outline": "#99907c",
+            "surface-bright": "#37393f",
+            "surface-container-high": "#282a30",
+            "on-primary-fixed": "#241a00"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-panel": "1.25rem",
+            "space-3xl": "4rem",
+            "space-sm": "0.75rem",
+            "margin-screen": "1.5rem",
+            "space-2xl": "3rem",
+            "space-lg": "1.5rem",
+            "space-2xs": "0.25rem",
+            "space-xl": "2rem",
+            "space-xs": "0.5rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "label-sm": ["Plus Jakarta Sans"],
+            "currency-display": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"],
+            "title-md": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "title-lg": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-xl-mobile": ["Plus Jakarta Sans"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen">
+  <!-- Sidebar Stitch -->
+  <aside class="fixed left-0 top-0 h-full w-72 p-space-md z-50 pointer-events-none">
+    <div class="h-full w-full bg-surface-container/85 backdrop-blur-2xl rounded-2xl p-space-md flex flex-col justify-between shadow-[0_8px_32px_rgba(0,0,0,0.6)] border border-white/5 pointer-events-auto">
+      <div class="flex flex-col gap-space-lg">
+        <div class="flex items-center justify-center p-4 border-b border-stone-800/60 mb-2">
+          <img src="/assets/img/logo1.png" onerror="if(!this._f1){this._f1=true; this.src='/assets/img/logo.png';}else if(!this._f2){this._f2=true; this.src='/assets/img/bourlemont-logo.svg';}" alt="Bourlemont" class="max-h-12 w-auto object-contain mx-auto"/>
+        </div>
+
+        <nav class="flex flex-col gap-space-2xs">
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/pos.html">
+            <span class="material-symbols-outlined text-title-lg">point_of_sale</span>
+            <span>Punto de Venta</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/dashboard.html">
+            <span class="material-symbols-outlined text-title-lg">dashboard</span>
+            <span>Dashboard &amp; Arqueos</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/inventario.html">
+            <span class="material-symbols-outlined text-title-lg">inventory_2</span>
+            <span>Inventario en ml</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/recetas.html">
+            <span class="material-symbols-outlined text-title-lg">liquor</span>
+            <span>Recetas &amp; Escandallos</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/auditoria.html">
+            <span class="material-symbols-outlined text-title-lg">history</span>
+            <span>Auditoría de Pagos</span>
+          </a>
+          <a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl transition-all duration-200 bg-primary-container text-on-primary font-title-md shadow-[0_0_20px_rgba(212,175,55,0.25)]" href="/usuarios.html">
+            <span class="material-symbols-outlined text-title-lg">group</span>
+            <span>Usuarios</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="p-space-xs rounded-xl bg-surface-container-low/70 flex items-center justify-between border border-white/5">
+        <div class="flex items-center gap-space-sm overflow-hidden">
+          <div class="relative flex-shrink-0">
+            <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary font-bold text-sm">
+              <span class="material-symbols-outlined text-[18px]">person</span>
+            </div>
+            <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-surface-container-low"></span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="font-title-md text-title-md text-on-surface truncate leading-snug" id="header-user-name">Administrador</span>
+            <span class="font-label-sm text-label-sm text-primary uppercase truncate tracking-wider" id="header-user-role">ADMINISTRADOR</span>
+          </div>
+        </div>
+        <a class="p-1 rounded-lg text-on-surface-variant hover:text-primary transition-colors" href="/pos.html" title="Volver al Salón">
+          <span class="material-symbols-outlined text-title-lg">arrow_back</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Contenido Principal -->
+  <div class="pl-72 flex flex-col min-h-screen">
+    <header class="fixed top-0 left-72 right-0 h-16 z-40 bg-surface/85 backdrop-blur-xl border-b border-white/5 px-4 lg:px-6 flex items-center justify-between">
+      <div class="flex items-center gap-2 text-on-surface font-semibold text-sm">
+        <span class="material-symbols-outlined text-primary text-[20px]">group</span>
+        <span>Gestión de Colaboradores &amp; Seguridad</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-space-xs bg-surface-container px-space-sm py-space-2xs rounded-full border border-white/5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Turno Activo</span>
+        </div>
+        <button id="top-logout-btn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-error text-xs font-semibold border border-white/5 transition-all" title="Bloquear / Cerrar Sesión" type="button">
+          <span class="material-symbols-outlined text-[16px]">lock</span>
+          <span>Bloquear</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="w-full pt-16 bg-surface flex-1">
+      <div class="flex flex-col w-full px-space-xl py-space-lg gap-space-lg">
+        <!-- Ambient Glow -->
+        <div class="relative w-full">
+          <div class="absolute -top-24 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+          <div class="absolute top-1/2 right-12 w-80 h-80 bg-tertiary-container/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+          <!-- Section Header -->
+          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md mb-space-lg">
+            <div class="flex flex-col gap-space-2xs">
+              <div class="flex items-center gap-space-xs text-primary font-label-md text-label-md uppercase tracking-widest font-semibold">
+                <span class="w-1.5 h-4 bg-primary rounded-full"></span>
+                <span>Personal Bourlemont Champagne Bar</span>
+              </div>
+              <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight font-bold">Gestión de Colaboradores &amp; Roles</h1>
+              <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                Administra el equipo del salón, accesos rápidos por PIN numérico para bartenders y credenciales administrativas de auditoría.
+              </p>
+            </div>
+
+            <button class="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-gradient-to-r from-primary to-primary-fixed-dim text-on-primary font-title-md text-title-md font-bold shadow-[0_4px_24px_rgba(212,175,55,0.3)] hover:brightness-110 active:scale-[0.99] transition-all" id="btn-nuevo-usuario" type="button">
+              <span class="material-symbols-outlined text-title-lg">person_add</span>
+              <span>+ Nuevo Colaborador</span>
+            </button>
+          </div>
+
+          <!-- Tabla Liquid Glass -->
+          <div class="rounded-2xl bg-surface-container/70 backdrop-blur-2xl shadow-xl border border-white/5 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-surface-container-high/50 text-on-surface-variant font-label-md text-label-md uppercase tracking-wider border-b border-white/5">
+                    <th class="py-space-md px-space-md" style="width: 80px;">ID</th>
+                    <th class="py-space-md px-space-md">Nombre Completo</th>
+                    <th class="py-space-md px-space-md" style="width: 180px;">Rol</th>
+                    <th class="py-space-md px-space-md" style="width: 140px;">Estado</th>
+                    <th class="py-space-md px-space-md text-right" style="width: 200px;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5" id="usuarios-table-body">
+                  <tr><td colspan="5" class="text-center py-8 text-on-surface-variant">Cargando colaboradores del bar...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ─── MODAL: Nuevo Colaborador (#modal-nuevo-usuario) ─── -->
+  <div id="modal-nuevo-usuario" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden" role="dialog" aria-modal="true">
+    <div class="modal-content max-w-[500px]">
+      <div class="modal-header">
+        <h3 class="modal-title flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">person_add</span>
+          <span>Registrar Nuevo Colaborador</span>
+        </h3>
+        <button class="modal-close" id="btn-cerrar-modal-nuevo">&times;</button>
+      </div>
+
+      <form id="form-nuevo-usuario" class="flex flex-col gap-4">
+        <div>
+          <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">Nombre Completo *</label>
+          <input type="text" id="nuevo-nombre" class="input-field" placeholder="Ej. Andrea Gómez" required>
+        </div>
+
+        <div>
+          <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">Rol en el Bar *</label>
+          <select id="nuevo-rol" class="input-field" required>
+            <option value="BARTENDER">Bartender (Servicio &amp; Barra)</option>
+            <option value="ADMIN">Administrador (Gerencia &amp; Auditoría)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">Foto / Avatar (Opcional)</label>
+          <div class="flex items-center gap-3 p-2.5 bg-surface-container-low rounded-xl border border-white/5">
+            <div id="nuevo-avatar-preview" class="w-12 h-12 rounded-full overflow-hidden bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0 text-primary">
+              <span class="material-symbols-outlined text-2xl">person</span>
+            </div>
+            <div class="flex-1 flex flex-col gap-1.5">
+              <div class="flex items-center gap-2">
+                <input type="file" id="nuevo-avatar-file" accept="image/*" class="hidden">
+                <button type="button" id="btn-upload-nuevo-avatar" class="px-2.5 py-1 text-xs rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-white/10 text-on-surface font-semibold flex items-center gap-1 transition-colors">
+                  <span class="material-symbols-outlined text-[15px]">upload</span> Subir Foto
+                </button>
+                <span class="text-xs text-on-surface-variant">o avatar rápido:</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button type="button" class="btn-preset-avatar-nuevo w-6 h-6 rounded-full border border-white/20 overflow-hidden hover:scale-110 transition-transform" data-url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" title="Avatar Femenino">
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                </button>
+                <button type="button" class="btn-preset-avatar-nuevo w-6 h-6 rounded-full border border-white/20 overflow-hidden hover:scale-110 transition-transform" data-url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80" title="Avatar Masculino 1">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                </button>
+                <button type="button" class="btn-preset-avatar-nuevo w-6 h-6 rounded-full border border-white/20 overflow-hidden hover:scale-110 transition-transform" data-url="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80" title="Avatar Masculino 2">
+                  <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                </button>
+                <button type="button" class="btn-preset-avatar-nuevo w-6 h-6 rounded-full border border-white/20 overflow-hidden hover:scale-110 transition-transform bg-primary/20 flex items-center justify-center text-primary" data-url="/assets/img/bourlemont-logo.svg" title="Logo Bourlemont">
+                  <span class="material-symbols-outlined text-[13px]">local_bar</span>
+                </button>
+                <button type="button" id="btn-clear-nuevo-avatar" class="text-xs text-on-surface-variant hover:text-error ml-1" title="Quitar avatar">✕</button>
+              </div>
+              <input type="hidden" id="nuevo-foto-url" value="">
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1" id="grupo-nuevo-pin">
+          <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block">PIN Numérico de Acceso (4 dígitos) *</label>
+          <input type="password" id="nuevo-pin" class="input-field" placeholder="••••" maxlength="4" pattern="\d{4}" inputmode="numeric" required>
+          <span class="text-xs text-on-surface-variant/70">PIN de acceso rápido para la terminal táctil del salón.</span>
+        </div>
+
+        <div class="flex flex-col gap-1" id="grupo-nuevo-pass" style="display: none;">
+          <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block">Contraseña de Acceso Gerencial *</label>
+          <input type="password" id="nuevo-pass" class="input-field" placeholder="Contraseña de seguridad">
+          <span class="text-xs text-on-surface-variant/70">Requerida para acceder a reportes, auditoría y cierres de caja.</span>
+        </div>
+
+        <div class="flex gap-3 mt-3">
+          <button type="button" class="btn modal-cancel flex-1" id="btn-cancelar-nuevo">Cancelar</button>
+          <button type="submit" class="btn btn-gold flex-[2] font-bold">Guardar Colaborador</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── MODAL: Editar Colaborador (#modal-editar-usuario) ─── -->
+  <div id="modal-editar-usuario" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden" role="dialog" aria-modal="true">
+    <div class="modal-content max-w-[500px]">
+      <div class="modal-header">
+        <h3 class="modal-title flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">manage_accounts</span>
+          <span>Modificar Colaborador</span>
+        </h3>
+        <button class="modal-close" id="btn-cerrar-modal-edit">&times;</button>
+      </div>
+
+      <form id="form-editar-usuario" class="flex flex-col gap-4">
+        <input type="hidden" id="edit-id">
+
+        <div>
+          <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">Nombre Completo *</label>
+          <input type="text" id="edit-nombre" class="input-field" required>
+        </div>
+
+        <div>
+          <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">Rol *</label>
+          <select id="edit-rol" class="input-field" required>
+            <option value="BARTENDER">Bartender (Servicio &amp; Barra)</option>
+            <option value="ADMIN">Administrador (Gerencia &amp; Auditoría)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">Foto / Avatar (Opcional)</label>
+          <div class="flex items-center gap-3 p-2.5 bg-surface-container-low rounded-xl border border-white/5">
+            <div id="edit-avatar-preview" class="w-12 h-12 rounded-full overflow-hidden bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0 text-primary">
+              <span class="material-symbols-outlined text-2xl">person</span>
+            </div>
+            <div class="flex-1 flex flex-col gap-1.5">
+              <div class="flex items-center gap-2">
+                <input type="file" id="edit-avatar-file" accept="image/*" class="hidden">
+                <button type="button" id="btn-upload-edit-avatar" class="px-2.5 py-1 text-xs rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-white/10 text-on-surface font-semibold flex items-center gap-1 transition-colors">
+                  <span class="material-symbols-outlined text-[15px]">upload</span> Subir Foto
+                </button>
+                <span class="text-xs text-on-surface-variant">o avatar rápido:</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button type="button" class="btn-preset-avatar-edit w-6 h-6 rounded-full border border-white/20 overflow-hidden hover:scale-110 transition-transform" data-url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" title="Avatar Femenino">
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                </button>
+                <button type="button" class="btn-preset-avatar-edit w-6 h-6 rounded-full border border-white/20 overflow-hidden hover:scale-110 transition-transform" data-url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80" title="Avatar Masculino 1">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                </button>
+                <button type="button" class="btn-preset-avatar-edit w-6 h-6 rounded-full border border-white/20 overflow-hidden hover:scale-110 transition-transform" data-url="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80" title="Avatar Masculino 2">
+                  <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                </button>
+                <button type="button" class="btn-preset-avatar-edit w-6 h-6 rounded-full border border-white/20 overflow-hidden hover:scale-110 transition-transform bg-primary/20 flex items-center justify-center text-primary" data-url="/assets/img/bourlemont-logo.svg" title="Logo Bourlemont">
+                  <span class="material-symbols-outlined text-[13px]">local_bar</span>
+                </button>
+                <button type="button" id="btn-clear-edit-avatar" class="text-xs text-on-surface-variant hover:text-error ml-1" title="Quitar avatar">✕</button>
+              </div>
+              <input type="hidden" id="edit-foto-url" value="">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">Estado de Cuenta *</label>
+          <select id="edit-activo" class="input-field" required>
+            <option value="true">Activo (Habilitado para operar)</option>
+            <option value="false">Inactivo (Deshabilitado)</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block">Resetear PIN de Acceso</label>
+          <input type="password" id="edit-pin" class="input-field" placeholder="••••" maxlength="4" pattern="\d{4}" inputmode="numeric">
+          <span class="text-xs text-on-surface-variant/70">Dejar en blanco para conservar el PIN actual.</span>
+        </div>
+
+        <div class="flex flex-col gap-1" id="grupo-edit-pass">
+          <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block">Resetear Contraseña Gerencial</label>
+          <input type="password" id="edit-pass" class="input-field" placeholder="Nueva contraseña de administrador">
+          <span class="text-xs text-on-surface-variant/70">Dejar en blanco para conservar la contraseña actual.</span>
+        </div>
+
+        <div class="flex gap-3 mt-3">
+          <button type="button" class="btn modal-cancel flex-1" id="btn-cancelar-edit">Cancelar</button>
+          <button type="submit" class="btn btn-gold flex-[2] font-bold">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── MODAL: Confirmar Desactivación (#modal-confirm-desactivar) ─── -->
+  <div id="modal-confirm-desactivar" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden" role="dialog" aria-modal="true">
+    <div class="modal-content max-w-[440px] text-center p-6 bg-surface-container rounded-2xl border border-white/10 shadow-2xl">
+      <div class="flex items-center justify-center w-14 h-14 mx-auto mb-4 rounded-full bg-error-container/20 border border-error/30 text-error">
+        <span class="material-symbols-outlined text-3xl">person_off</span>
+      </div>
+      <h3 class="font-title-lg text-title-lg text-on-surface font-bold mb-2">¿Deseas desactivar a este colaborador?</h3>
+      <p class="text-body-md text-on-surface-variant mb-6" id="deactivate-user-prompt">
+        El colaborador no podrá iniciar sesión en la terminal táctil ni registrar órdenes.
+      </p>
+      <input type="hidden" id="deactivate-user-id">
+      <div class="flex gap-3">
+        <button type="button" class="btn modal-cancel flex-1 py-2.5 rounded-xl font-semibold" id="btn-cancelar-desactivar">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-danger flex-[1.4] py-2.5 rounded-xl font-bold bg-error text-on-error hover:brightness-110 shadow-lg" id="btn-confirmar-desactivar">
+          Confirmar Desactivación
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notificación -->
+  <div id="toast-msg"></div>
+
+  <script type="module">
+    import { api, authState } from "/static/assets/js/api.js";
+
+    if (!authState.isAuthenticated()) {
+      window.location.href = "/index.html";
+    } else if (!authState.isAdmin()) {
+      alert("Acceso denegado: Este módulo requiere credenciales de Administrador.");
+      window.location.href = "/pos.html";
+    }
+
+    const uActual = authState.getUser();
+    if (uActual) {
+      const elName = document.getElementById("header-user-name");
+      const elRole = document.getElementById("header-user-role");
+      if (elName) elName.textContent = uActual.nombre || "Administrador";
+      if (elRole) elRole.textContent = uActual.rol === 'ADMIN' ? 'ADMINISTRADOR' : 'BARTENDER';
+    }
+
+    function showToast(mensaje, esError = false) {
+      const toast = document.getElementById("toast-msg");
+      toast.textContent = mensaje;
+      toast.style.borderColor = esError ? "rgba(239, 68, 68, 0.6)" : "rgba(242, 202, 80, 0.6)";
+      toast.style.color = esError ? "#ffb4ab" : "#f2ca50";
+      toast.style.display = "block";
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 3500);
+    }
+
+    function setAvatarPreview(containerId, url) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      if (url) {
+        el.innerHTML = `<img src="${url}" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\\'material-symbols-outlined text-2xl\\'>person</span>'"/>`;
+      } else {
+        el.innerHTML = `<span class="material-symbols-outlined text-2xl">person</span>`;
+      }
+    }
+
+    async function cargarUsuarios() {
+      const tbody = document.getElementById("usuarios-table-body");
+      try {
+        const usuarios = await api.getUsuarios();
+        if (!usuarios || usuarios.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="text-center text-on-surface-variant py-8">No hay colaboradores registrados.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = usuarios.map(u => {
+          const rolBadge = u.rol === "ADMIN"
+            ? `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/15 text-primary border border-primary/25">Administrador</span>`
+            : `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-container-high text-on-surface-variant">Bartender</span>`;
+
+          const estadoBadge = u.activo
+            ? `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Activo</span>`
+            : `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-red-500/15 text-red-400 border border-red-500/25"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>Inactivo</span>`;
+
+          const avatarContent = u.foto_url 
+            ? `<img src="${u.foto_url}" alt="${u.nombre}" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\\'material-symbols-outlined text-[18px]\\'>person</span>'"/>` 
+            : `<span class="material-symbols-outlined text-[18px]">person</span>`;
+
+          return `
+            <tr class="hover:bg-surface-container-high/40 transition-colors">
+              <td class="py-3 px-3 font-mono text-primary font-semibold">#${u.id_usuario}</td>
+              <td class="py-3 px-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full overflow-hidden bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0 text-primary">
+                    ${avatarContent}
+                  </div>
+                  <span class="font-semibold text-on-surface">${u.nombre}</span>
+                </div>
+              </td>
+              <td class="py-3 px-3">${rolBadge}</td>
+              <td class="py-3 px-3">${estadoBadge}</td>
+              <td class="py-3 px-3 text-right">
+                <div class="inline-flex gap-1.5 justify-end">
+                  <button class="btn btn-subtle-gold btn-edit px-2.5 py-1 text-xs font-semibold" data-user='${JSON.stringify(u)}'>
+                    ✏️ Editar
+                  </button>
+                  ${u.activo ? `
+                    <button class="btn btn-danger btn-deactivate px-2.5 py-1 text-xs font-semibold" data-id="${u.id_usuario}" data-nombre="${u.nombre}">
+                      Desactivar
+                    </button>
+                  ` : ''}
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join("");
+
+        document.querySelectorAll(".btn-edit").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const u = JSON.parse(btn.getAttribute("data-user"));
+            abrirModalEditar(u);
+          });
+        });
+
+        document.querySelectorAll(".btn-deactivate").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const id = btn.getAttribute("data-id");
+            const nombre = btn.getAttribute("data-nombre");
+            abrirModalDesactivar(id, nombre);
+          });
+        });
+
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-error py-8">Error al cargar usuarios: ${err.message}</td></tr>`;
+      }
+    }
+
+    // Modal Desactivar
+    const modalDesactivar = document.getElementById("modal-confirm-desactivar");
+    const btnCancelarDesactivar = document.getElementById("btn-cancelar-desactivar");
+    const btnConfirmarDesactivar = document.getElementById("btn-confirmar-desactivar");
+
+    function abrirModalDesactivar(id, nombre) {
+      document.getElementById("deactivate-user-id").value = id;
+      document.getElementById("deactivate-user-prompt").textContent =
+        `¿Confirmas la desactivación del colaborador '${nombre}'? No podrá iniciar turno ni operar la terminal.`;
+      modalDesactivar.classList.remove("hidden");
+    }
+
+    const cerrarDesactivar = () => modalDesactivar.classList.add("hidden");
+    btnCancelarDesactivar.addEventListener("click", cerrarDesactivar);
+
+    btnConfirmarDesactivar.addEventListener("click", async () => {
+      const id = document.getElementById("deactivate-user-id").value;
+      try {
+        await api.deleteUsuario(id);
+        cerrarDesactivar();
+        showToast("Colaborador desactivado exitosamente.");
+        cargarUsuarios();
+      } catch (err) {
+        showToast(err.message || "Error al desactivar usuario", true);
+      }
+    });
+
+    // Modal Nuevo Usuario
+    const modalNuevo = document.getElementById("modal-nuevo-usuario");
+    const btnNuevo = document.getElementById("btn-nuevo-usuario");
+    const btnCancelarNuevo = document.getElementById("btn-cancelar-nuevo");
+    const btnCerrarModalNuevo = document.getElementById("btn-cerrar-modal-nuevo");
+    const nuevoRolSelect = document.getElementById("nuevo-rol");
+    const grupoNuevoPass = document.getElementById("grupo-nuevo-pass");
+    const nuevoPassInput = document.getElementById("nuevo-pass");
+    const nuevoPinInput = document.getElementById("nuevo-pin");
+    const nuevoFotoUrlInput = document.getElementById("nuevo-foto-url");
+    const btnUploadNuevoAvatar = document.getElementById("btn-upload-nuevo-avatar");
+    const fileNuevoAvatar = document.getElementById("nuevo-avatar-file");
+
+    if (btnUploadNuevoAvatar && fileNuevoAvatar) {
+      btnUploadNuevoAvatar.addEventListener("click", () => fileNuevoAvatar.click());
+      fileNuevoAvatar.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+          btnUploadNuevoAvatar.disabled = true;
+          btnUploadNuevoAvatar.innerHTML = `<span class="material-symbols-outlined text-[15px] animate-spin">refresh</span> Subiendo...`;
+          const res = await api.uploadAvatar(file);
+          nuevoFotoUrlInput.value = res.url;
+          setAvatarPreview("nuevo-avatar-preview", res.url);
+          showToast("Avatar subido exitosamente.");
+        } catch (err) {
+          showToast(err.message || "Error al subir avatar", true);
+        } finally {
+          btnUploadNuevoAvatar.disabled = false;
+          btnUploadNuevoAvatar.innerHTML = `<span class="material-symbols-outlined text-[15px]">upload</span> Subir Foto`;
+        }
+      });
+    }
+
+    document.querySelectorAll(".btn-preset-avatar-nuevo").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const url = btn.getAttribute("data-url");
+        nuevoFotoUrlInput.value = url;
+        setAvatarPreview("nuevo-avatar-preview", url);
+      });
+    });
+
+    const btnClearNuevoAvatar = document.getElementById("btn-clear-nuevo-avatar");
+    if (btnClearNuevoAvatar) {
+      btnClearNuevoAvatar.addEventListener("click", () => {
+        nuevoFotoUrlInput.value = "";
+        setAvatarPreview("nuevo-avatar-preview", null);
+      });
+    }
+
+    btnNuevo.addEventListener("click", () => {
+      document.getElementById("form-nuevo-usuario").reset();
+      nuevoRolSelect.value = "BARTENDER";
+      grupoNuevoPass.style.display = "none";
+      nuevoPassInput.required = false;
+      nuevoPinInput.required = true;
+      nuevoFotoUrlInput.value = "";
+      setAvatarPreview("nuevo-avatar-preview", null);
+      modalNuevo.classList.remove("hidden");
+    });
+
+    const cerrarNuevo = () => modalNuevo.classList.add("hidden");
+    btnCancelarNuevo.addEventListener("click", cerrarNuevo);
+    if (btnCerrarModalNuevo) btnCerrarModalNuevo.addEventListener("click", cerrarNuevo);
+
+    nuevoRolSelect.addEventListener("change", (e) => {
+      if (e.target.value === "ADMIN") {
+        grupoNuevoPass.style.display = "flex";
+        nuevoPassInput.required = true;
+      } else {
+        grupoNuevoPass.style.display = "none";
+        nuevoPassInput.required = false;
+      }
+    });
+
+    document.getElementById("form-nuevo-usuario").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById("nuevo-nombre").value.trim();
+      const rol = nuevoRolSelect.value;
+      const pin = nuevoPinInput.value.trim();
+      const password = nuevoPassInput.value.trim();
+      const foto_url = nuevoFotoUrlInput.value.trim() || null;
+
+      if (!nombre) return;
+
+      const payload = {
+        nombre,
+        rol,
+        pin: pin || null,
+        password: rol === "ADMIN" ? password : null,
+        foto_url,
+        activo: true
+      };
+
+      try {
+        await api.crearUsuario(payload);
+        modalNuevo.classList.add("hidden");
+        showToast(`Colaborador '${nombre}' registrado exitosamente.`);
+        cargarUsuarios();
+      } catch (err) {
+        showToast(err.message || "Error al crear usuario", true);
+      }
+    });
+
+    // Modal Editar Usuario
+    const modalEdit = document.getElementById("modal-editar-usuario");
+    const btnCancelarEdit = document.getElementById("btn-cancelar-edit");
+    const btnCerrarModalEdit = document.getElementById("btn-cerrar-modal-edit");
+    const editRolSelect = document.getElementById("edit-rol");
+    const grupoEditPass = document.getElementById("grupo-edit-pass");
+    const editFotoUrlInput = document.getElementById("edit-foto-url");
+    const btnUploadEditAvatar = document.getElementById("btn-upload-edit-avatar");
+    const fileEditAvatar = document.getElementById("edit-avatar-file");
+
+    if (btnUploadEditAvatar && fileEditAvatar) {
+      btnUploadEditAvatar.addEventListener("click", () => fileEditAvatar.click());
+      fileEditAvatar.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+          btnUploadEditAvatar.disabled = true;
+          btnUploadEditAvatar.innerHTML = `<span class="material-symbols-outlined text-[15px] animate-spin">refresh</span> Subiendo...`;
+          const res = await api.uploadAvatar(file);
+          editFotoUrlInput.value = res.url;
+          setAvatarPreview("edit-avatar-preview", res.url);
+          showToast("Avatar subido exitosamente.");
+        } catch (err) {
+          showToast(err.message || "Error al subir avatar", true);
+        } finally {
+          btnUploadEditAvatar.disabled = false;
+          btnUploadEditAvatar.innerHTML = `<span class="material-symbols-outlined text-[15px]">upload</span> Subir Foto`;
+        }
+      });
+    }
+
+    document.querySelectorAll(".btn-preset-avatar-edit").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const url = btn.getAttribute("data-url");
+        editFotoUrlInput.value = url;
+        setAvatarPreview("edit-avatar-preview", url);
+      });
+    });
+
+    const btnClearEditAvatar = document.getElementById("btn-clear-edit-avatar");
+    if (btnClearEditAvatar) {
+      btnClearEditAvatar.addEventListener("click", () => {
+        editFotoUrlInput.value = "";
+        setAvatarPreview("edit-avatar-preview", null);
+      });
+    }
+
+    function abrirModalEditar(u) {
+      document.getElementById("edit-id").value = u.id_usuario;
+      document.getElementById("edit-nombre").value = u.nombre;
+      editRolSelect.value = u.rol;
+      document.getElementById("edit-activo").value = u.activo ? "true" : "false";
+      document.getElementById("edit-pin").value = "";
+      document.getElementById("edit-pass").value = "";
+      editFotoUrlInput.value = u.foto_url || "";
+      setAvatarPreview("edit-avatar-preview", u.foto_url || null);
+
+      if (u.rol === "ADMIN") {
+        grupoEditPass.style.display = "flex";
+      } else {
+        grupoEditPass.style.display = "none";
+      }
+
+      modalEdit.classList.remove("hidden");
+    }
+
+    const cerrarEdit = () => modalEdit.classList.add("hidden");
+    btnCancelarEdit.addEventListener("click", cerrarEdit);
+    if (btnCerrarModalEdit) btnCerrarModalEdit.addEventListener("click", cerrarEdit);
+
+    editRolSelect.addEventListener("change", (e) => {
+      if (e.target.value === "ADMIN") {
+        grupoEditPass.style.display = "flex";
+      } else {
+        grupoEditPass.style.display = "none";
+      }
+    });
+
+    document.getElementById("form-editar-usuario").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const id = document.getElementById("edit-id").value;
+      const nombre = document.getElementById("edit-nombre").value.trim();
+      const rol = editRolSelect.value;
+      const activo = document.getElementById("edit-activo").value === "true";
+      const pin = document.getElementById("edit-pin").value.trim();
+      const password = document.getElementById("edit-pass").value.trim();
+      const foto_url = editFotoUrlInput.value.trim() || null;
+
+      const payload = {
+        nombre,
+        rol,
+        foto_url,
+        activo
+      };
+
+      if (pin) {
+        payload.pin = pin;
+      }
+      if (password) {
+        payload.password = password;
+      }
+
+      try {
+        await api.updateUsuario(id, payload);
+        modalEdit.classList.add("hidden");
+        showToast("Colaborador actualizado exitosamente.");
+        cargarUsuarios();
+      } catch (err) {
+        showToast(err.message || "Error al actualizar usuario", true);
+      }
+    });
+
+    [modalNuevo, modalEdit, modalDesactivar].forEach(modal => {
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.classList.add("hidden");
+      });
+    });
+
+    const topLogoutBtn = document.getElementById("top-logout-btn");
+    if (topLogoutBtn) {
+      topLogoutBtn.addEventListener("click", () => {
+        authState.clear();
+        window.location.href = "/index.html";
+      });
+    }
+
+    cargarUsuarios();
+  </script>
+</body>
+</html>

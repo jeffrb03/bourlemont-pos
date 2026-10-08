@@ -1,58 +1,51 @@
 import logging
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.engine import Engine
 from app.core.config import settings
 
 logger = logging.getLogger("bourlemont.db")
 
 def create_configured_engine():
+    """
+    Crea el engine de SQLAlchemy para MySQL (XAMPP/InnoDB).
+    Conexión estricta obligatoria: Sin fallback automático a SQLite.
+    """
     db_url = settings.DATABASE_URL
-    is_sqlite = db_url.startswith("sqlite")
-    
-    # Intento de conexión con MySQL si está configurado
-    if not is_sqlite and settings.FALLBACK_TO_SQLITE:
-        try:
-            test_engine = create_engine(
-                db_url,
-                pool_pre_ping=True,
-                pool_recycle=3600,
-                connect_args={"connect_timeout": 2}
-            )
-            # Prueba de handshake rápido
-            with test_engine.connect() as conn:
-                pass
-            logger.info(f"Conectado exitosamente a la base de datos MySQL: {db_url}")
-            return test_engine
-        except Exception as e:
-            logger.warning(
-                f"No se pudo conectar a MySQL ({e}). "
-                f"Activando modo de contingencia local SQLite ({settings.SQLITE_URL})."
-            )
-            db_url = settings.SQLITE_URL
-            is_sqlite = True
-
-    if is_sqlite:
-        engine = create_engine(
-            db_url,
-            connect_args={"check_same_thread": False}
+    if not db_url.startswith("mysql"):
+        raise RuntimeError(
+            f"Configuración inválida: Se requiere conexión estricta a MySQL. Recibido: {db_url}"
         )
-        # Habilitar claves foráneas en SQLite
-        @event.listens_for(engine, "connect")
-        def set_sqlite_pragma(dbapi_connection, connection_record):
-            cursor = dbapi_connection.cursor()
-            cursor.execute("PRAGMA foreign_keys=ON")
-            cursor.close()
-        return engine
-    else:
-        return create_engine(
+
+    # --- MySQL principal estricto ---
+    try:
+        mysql_engine = create_engine(
             db_url,
             pool_pre_ping=True,
-            pool_recycle=3600
+            pool_recycle=3600,
+            pool_size=5,
+            max_overflow=10,
+            connect_args={"connect_timeout": 5, "charset": "utf8mb4"},
         )
+        # Handshake real para detectar fallo temprano
+        with mysql_engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        logger.info(f"✓ Conectado a MySQL: {db_url.split('@')[-1]}")
+        return mysql_engine
+
+    except Exception as exc:
+        logger.critical(
+            "Error crítico: No se pudo conectar a MySQL (XAMPP). "
+            "El fallback automático a SQLite está deshabilitado."
+        )
+        raise RuntimeError(
+            f"Fallo de conexión estricta a MySQL: {exc}\n"
+            "Solución: Inicia XAMPP (Apache + MySQL) y asegúrate de que exista la base 'bourlemontdb'."
+        ) from exc
+
 
 engine = create_configured_engine()
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 
 def get_db_session():
     db = SessionLocal()

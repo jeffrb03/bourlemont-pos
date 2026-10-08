@@ -1,146 +1,356 @@
 <!DOCTYPE html>
-<html lang="es">
+<html class="dark" lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Auditoría y Corrección | Bourlemont POS</title>
-  <link rel="stylesheet" href="/static/assets/css/apple-tinted.css">
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta name="description" content="Historial de Órdenes, Bitácora Inmutable y Auditoría de Pagos Bourlemont Champagne Bar."/>
+  <title>Historial &amp; Auditoría de Pagos | Bourlemont POS</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/assets/css/pos.css"/>
   <style>
-    .audit-container {
-      padding: 28px;
-      max-width: 1400px;
-      margin: 0 auto;
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
     }
+    ::-webkit-scrollbar { display: none; }
 
-    .table-container {
-      background-color: var(--bg-panel);
-      border: var(--hairline-border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      margin-top: 18px;
+    .audit-tab {
+      padding: 0.5rem 1.25rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #d0c5af;
+      background: #282a30;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
-    .custom-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    .custom-table th {
-      background-color: var(--bg-surface);
-      padding: 14px 18px;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--gold-highlight-text);
-      border-bottom: var(--hairline-border);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .custom-table td {
-      padding: 14px 18px;
-      font-size: 14px;
-      border-bottom: var(--hairline-border);
-      color: var(--text-primary);
-    }
-
-    .custom-table tr:hover {
-      background-color: rgba(255, 255, 255, 0.02);
+    .audit-tab.active {
+      background: #f2ca50;
+      color: #3c2f00;
+      box-shadow: 0 4px 16px rgba(242, 202, 80, 0.28);
     }
   </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      "darkMode": "class",
+      "theme": {
+        "extend": {
+          "colors": {
+            "on-primary-fixed-variant": "#574500",
+            "tertiary-fixed": "#ffe08d",
+            "on-secondary": "#233143",
+            "outline-variant": "#4d4635",
+            "on-primary-container": "#554300",
+            "secondary-fixed-dim": "#b9c8de",
+            "on-primary": "#3c2f00",
+            "on-secondary-fixed-variant": "#39485a",
+            "inverse-on-surface": "#2e3036",
+            "surface-container-low": "#191c21",
+            "surface-dim": "#111319",
+            "secondary-container": "#39485a",
+            "on-surface": "#e2e2ea",
+            "primary-fixed-dim": "#e9c349",
+            "on-tertiary-container": "#564300",
+            "primary": "#f2ca50",
+            "on-secondary-container": "#a7b6cc",
+            "tertiary": "#eecb6c",
+            "on-surface-variant": "#d0c5af",
+            "background": "#111319",
+            "tertiary-fixed-dim": "#e5c365",
+            "on-background": "#e2e2ea",
+            "surface-tint": "#e9c349",
+            "tertiary-container": "#d0b054",
+            "primary-fixed": "#ffe088",
+            "on-secondary-fixed": "#0d1c2d",
+            "surface-container-lowest": "#0c0e13",
+            "inverse-surface": "#e2e2ea",
+            "on-error": "#690005",
+            "error-container": "#93000a",
+            "on-tertiary": "#3d2f00",
+            "secondary-fixed": "#d4e4fa",
+            "on-error-container": "#ffdad6",
+            "on-tertiary-fixed-variant": "#584400",
+            "surface-container-highest": "#33353b",
+            "secondary": "#b9c8de",
+            "on-tertiary-fixed": "#241a00",
+            "surface": "#111319",
+            "surface-container": "#1d2025",
+            "inverse-primary": "#735c00",
+            "surface-variant": "#33353b",
+            "error": "#ffb4ab",
+            "primary-container": "#d4af37",
+            "outline": "#99907c",
+            "surface-bright": "#37393f",
+            "surface-container-high": "#282a30",
+            "on-primary-fixed": "#241a00"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-panel": "1.25rem",
+            "space-3xl": "4rem",
+            "space-sm": "0.75rem",
+            "margin-screen": "1.5rem",
+            "space-2xl": "3rem",
+            "space-lg": "1.5rem",
+            "space-2xs": "0.25rem",
+            "space-xl": "2rem",
+            "space-xs": "0.5rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "label-sm": ["Plus Jakarta Sans"],
+            "currency-display": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"],
+            "title-md": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "title-lg": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-xl-mobile": ["Plus Jakarta Sans"]
+          }
+        }
+      }
+    };
+  </script>
 </head>
-<body>
-  <header class="header-bar">
-    <div class="brand-section">
-      <div class="brand-logo">B</div>
-      <div>
-        <div class="brand-title">Bourlemont</div>
-        <div class="brand-subtitle">Auditoría Transaccional & Bitácora</div>
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen">
+  <!-- Sidebar Stitch -->
+  <aside class="fixed left-0 top-0 h-full w-72 p-space-md z-50 pointer-events-none">
+    <div class="h-full w-full bg-surface-container/85 backdrop-blur-2xl rounded-2xl p-space-md flex flex-col justify-between shadow-[0_8px_32px_rgba(0,0,0,0.6)] border border-white/5 pointer-events-auto">
+      <div class="flex flex-col gap-space-lg">
+        <div class="flex items-center justify-center p-4 border-b border-stone-800/60 mb-2">
+          <img src="/assets/img/logo1.png" onerror="if(!this._f1){this._f1=true; this.src='/assets/img/logo.png';}else if(!this._f2){this._f2=true; this.src='/assets/img/bourlemont-logo.svg';}" alt="Bourlemont" class="max-h-12 w-auto object-contain mx-auto"/>
+        </div>
+
+        <nav class="flex flex-col gap-space-2xs">
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/pos.html">
+            <span class="material-symbols-outlined text-title-lg">point_of_sale</span>
+            <span>Punto de Venta</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/dashboard.html">
+            <span class="material-symbols-outlined text-title-lg">dashboard</span>
+            <span>Dashboard &amp; Arqueos</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/inventario.html">
+            <span class="material-symbols-outlined text-title-lg">inventory_2</span>
+            <span>Inventario en ml</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/recetas.html">
+            <span class="material-symbols-outlined text-title-lg">liquor</span>
+            <span>Recetas &amp; Escandallos</span>
+          </a>
+          <a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl transition-all duration-200 bg-primary-container text-on-primary font-title-md shadow-[0_0_20px_rgba(212,175,55,0.25)]" href="/auditoria.html">
+            <span class="material-symbols-outlined text-title-lg">history</span>
+            <span>Auditoría de Pagos</span>
+          </a>
+          <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="/usuarios.html">
+            <span class="material-symbols-outlined text-title-lg">group</span>
+            <span>Usuarios</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="p-space-xs rounded-xl bg-surface-container-low/70 flex items-center justify-between border border-white/5">
+        <div class="flex items-center gap-space-sm overflow-hidden">
+          <div class="relative flex-shrink-0">
+            <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary font-bold text-sm">
+              <span class="material-symbols-outlined text-[18px]">person</span>
+            </div>
+            <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-surface-container-low"></span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="font-title-md text-title-md text-on-surface truncate leading-snug" id="header-user-name">Administrador</span>
+            <span class="font-label-sm text-label-sm text-primary uppercase truncate tracking-wider" id="header-user-role">ADMINISTRADOR</span>
+          </div>
+        </div>
+        <a class="p-1 rounded-lg text-on-surface-variant hover:text-primary transition-colors" href="/pos.html" title="Volver al Salón">
+          <span class="material-symbols-outlined text-title-lg">arrow_back</span>
+        </a>
       </div>
     </div>
+  </aside>
 
-    <nav class="nav-links">
-      <a href="/pos.html" class="nav-item">Punto de Venta</a>
-      <a href="/inventario.html" class="nav-item">Inventario en ml</a>
-      <a href="/recetas.html" class="nav-item">Recetas & Escandallos</a>
-      <a href="/auditoria.html" class="nav-item active admin-only">Auditoría de Pagos</a>
-      <a href="/dashboard.html" class="nav-item admin-only">Dashboard & Arqueos</a>
-    </nav>
+  <!-- Contenido Principal -->
+  <div class="pl-72 flex flex-col min-h-screen">
+    <header class="fixed top-0 left-72 right-0 h-16 z-40 bg-surface/85 backdrop-blur-xl border-b border-white/5 px-4 lg:px-6 flex items-center justify-between">
+      <div class="flex items-center gap-2 text-on-surface font-semibold text-sm">
+        <span class="material-symbols-outlined text-primary text-[20px]">history</span>
+        <span>Historial de Órdenes &amp; Auditoría</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-space-xs bg-surface-container px-space-sm py-space-2xs rounded-full border border-white/5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Turno Activo</span>
+        </div>
+        <button id="top-logout-btn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-error text-xs font-semibold border border-white/5 transition-all" title="Bloquear / Cerrar Sesión" type="button">
+          <span class="material-symbols-outlined text-[16px]">lock</span>
+          <span>Bloquear</span>
+        </button>
+      </div>
+    </header>
 
-    <div style="display: flex; align-items: center; gap: 14px;">
-      <a href="/pos.html" class="btn btn-subtle-gold" style="padding: 8px 14px; font-size: 13px;">Volver a Barra</a>
-    </div>
-  </header>
+    <main class="w-full pt-16 bg-surface flex-1">
+      <div class="flex flex-col w-full px-space-xl py-space-lg gap-space-lg">
+        <!-- Ambient Glow -->
+        <div class="relative w-full">
+          <div class="absolute -top-24 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+          <div class="absolute top-1/2 right-12 w-80 h-80 bg-tertiary-container/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
-  <div class="audit-container">
-    <div>
-      <h1 style="font-size: 24px; font-weight: 700; color: #FFF;">Corrección de Pagos & Historial de Turno</h1>
-      <p style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">
-        Módulo reservado para Administradores. Cualquier cambio en transacciones de pago queda sellado con justificación obligatoria.
-      </p>
-    </div>
+          <!-- Section Header -->
+          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md mb-space-lg">
+            <div class="flex flex-col gap-space-2xs">
+              <div class="flex items-center gap-space-xs text-primary font-label-md text-label-md uppercase tracking-widest font-semibold">
+                <span class="w-1.5 h-4 bg-primary rounded-full"></span>
+                <span>Grand Reserve Audit System</span>
+              </div>
+              <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight font-bold">Historial de Órdenes &amp; Auditoría</h1>
+              <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                Cualquier cambio o reclasificación en transacciones de pago queda sellado con justificación obligatoria en la bitácora inmutable.
+              </p>
+            </div>
+          </div>
 
-    <!-- Pestañas de Vista -->
-    <div style="display: flex; gap: 10px; margin-top: 24px;">
-      <button id="tab-pagos" class="btn btn-subtle-gold active">Transacciones de Pago</button>
-      <button id="tab-logs" class="btn btn-subtle-gold">Bitácora Inmutable (Logs)</button>
-    </div>
+          <!-- Quick KPI Strip -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm mb-space-lg">
+            <div class="bg-surface-container/70 backdrop-blur-xl p-space-md rounded-2xl flex flex-col shadow-sm border border-white/5">
+              <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Total Facturado Auditado</span>
+              <span class="font-currency-display text-2xl lg:text-3xl font-bold text-primary mt-space-2xs" id="kpi-total-facturado">Q 0.00</span>
+              <span class="font-label-sm text-label-sm text-secondary-fixed mt-space-2xs flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs text-primary">verified</span> 100% Criptográficamente sellado
+              </span>
+            </div>
+            <div class="bg-surface-container/70 backdrop-blur-xl p-space-md rounded-2xl flex flex-col shadow-sm border border-white/5">
+              <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Tickets / Transacciones</span>
+              <span class="font-currency-display text-2xl lg:text-3xl font-bold text-on-surface mt-space-2xs" id="kpi-total-tickets">0</span>
+              <span class="font-label-sm text-label-sm text-on-surface-variant mt-space-2xs flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs text-primary">point_of_sale</span> Órdenes liquidadas y registradas
+              </span>
+            </div>
+            <div class="bg-surface-container/70 backdrop-blur-xl p-space-md rounded-2xl flex flex-col shadow-sm border border-white/5">
+              <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Ticket Promedio</span>
+              <span class="font-currency-display text-2xl lg:text-3xl font-bold text-primary mt-space-2xs" id="kpi-ticket-promedio">Q 0.00</span>
+              <span class="font-label-sm text-label-sm text-tertiary mt-space-2xs flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs text-primary">workspace_premium</span> Rotación Champagne &amp; Bar
+              </span>
+            </div>
+          </div>
 
-    <!-- Vista 1: Pagos -->
-    <div id="view-pagos" class="table-container">
-      <table class="custom-table">
-        <thead>
-          <tr>
-            <th>ID Pago</th>
-            <th>ID Orden</th>
-            <th>Mesa / Barra</th>
-            <th>Bartender</th>
-            <th>Fecha / Hora</th>
-            <th>Método Actual</th>
-            <th>Total Cuenta</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody id="pagos-table-body">
-          <!-- Render dinámico -->
-        </tbody>
-      </table>
-    </div>
+          <!-- Controls & Filtering Rail -->
+          <div class="bg-surface-container/70 backdrop-blur-2xl rounded-2xl p-space-md shadow-md mb-space-lg flex flex-col lg:flex-row gap-space-md items-center justify-between border border-white/5">
+            <div class="flex flex-wrap items-center gap-space-sm w-full lg:w-auto">
+              <!-- Selector de Pestañas -->
+              <div class="flex gap-2">
+                <button id="tab-pagos" class="audit-tab active flex items-center gap-2" type="button">
+                  <span class="material-symbols-outlined text-base">payments</span>
+                  <span>Transacciones de Pago</span>
+                </button>
+                <button id="tab-logs" class="audit-tab flex items-center gap-2" type="button">
+                  <span class="material-symbols-outlined text-base">receipt_long</span>
+                  <span>Bitácora Inmutable (Logs)</span>
+                </button>
+              </div>
+            </div>
 
-    <!-- Vista 2: Bitácora -->
-    <div id="view-logs" class="table-container" style="display: none;">
-      <table class="custom-table">
-        <thead>
-          <tr>
-            <th>ID Log</th>
-            <th>Fecha</th>
-            <th>Usuario</th>
-            <th>Acción</th>
-            <th>Descripción / Justificación</th>
-          </tr>
-        </thead>
-        <tbody id="logs-table-body">
-          <!-- Render dinámico -->
-        </tbody>
-      </table>
-    </div>
+            <!-- Search & Export -->
+            <div class="flex items-center gap-space-sm w-full lg:w-auto">
+              <div class="relative flex-1 lg:w-80">
+                <span class="material-symbols-outlined absolute left-3 top-2.5 text-title-md text-on-surface-variant">search</span>
+                <input id="audit-search-input" class="w-full bg-surface-container-lowest/80 text-on-surface placeholder-on-surface-variant/60 font-body-md text-body-md pl-10 pr-4 py-2 rounded-full focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all border border-white/5 shadow-inner" placeholder="Buscar por #Ticket, Bartender o Mesa..." type="text"/>
+              </div>
+              <button id="btn-export-excel-audit" class="px-space-md py-2 rounded-full bg-surface-container-high hover:bg-surface-bright text-on-surface font-title-md text-title-md flex items-center gap-space-xs transition-all border border-white/5 shadow-sm" type="button">
+                <span class="material-symbols-outlined text-title-md text-primary">file_download</span>
+                <span>Exportar Excel</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- VISTA 1: TRANSACCIONES DE PAGO -->
+          <div id="view-pagos" class="rounded-2xl bg-surface-container/70 backdrop-blur-2xl shadow-xl border border-white/5 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-surface-container-high/50 text-on-surface-variant font-label-md text-label-md uppercase tracking-wider border-b border-white/5">
+                    <th class="py-space-md px-space-md">ID Pago</th>
+                    <th class="py-space-md px-space-md">ID Orden</th>
+                    <th class="py-space-md px-space-md">Mesa / Barra</th>
+                    <th class="py-space-md px-space-md">Bartender</th>
+                    <th class="py-space-md px-space-md">Fecha / Hora</th>
+                    <th class="py-space-md px-space-md">Método Actual</th>
+                    <th class="py-space-md px-space-md">Total Cuenta</th>
+                    <th class="py-space-md px-space-md text-right">Acción Admin</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5" id="pagos-table-body">
+                  <tr><td colspan="8" class="text-center py-8 text-on-surface-variant">Cargando pagos...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- VISTA 2: BITÁCORA INMUTABLE (LOGS) -->
+          <div id="view-logs" class="rounded-2xl bg-surface-container/70 backdrop-blur-2xl shadow-xl border border-white/5 overflow-hidden" style="display: none;">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-surface-container-high/50 text-on-surface-variant font-label-md text-label-md uppercase tracking-wider border-b border-white/5">
+                    <th class="py-space-md px-space-md">ID Log</th>
+                    <th class="py-space-md px-space-md">Fecha</th>
+                    <th class="py-space-md px-space-md">Usuario</th>
+                    <th class="py-space-md px-space-md">Acción</th>
+                    <th class="py-space-md px-space-md">Descripción / Justificación</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5" id="logs-table-body">
+                  <tr><td colspan="5" class="text-center py-8 text-on-surface-variant">Cargando bitácora…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 
-  <!-- Modal Corrección de Pago -->
-  <div class="modal-overlay" id="correction-modal">
-    <div class="modal-content">
+  <!-- ─── MODAL: Corrección de Pago (#correction-modal) ─── -->
+  <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden" id="correction-modal" role="dialog" aria-modal="true">
+    <div class="modal-content max-w-[500px]">
       <div class="modal-header">
-        <h3 class="modal-title">Corregir Método de Pago</h3>
+        <h3 class="modal-title flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">edit_note</span>
+          <span>Corregir Método de Pago</span>
+        </h3>
         <button class="modal-close">&times;</button>
       </div>
-      <form id="correction-form">
+
+      <form id="correction-form" class="flex flex-col gap-4">
         <input type="hidden" id="corr-pago-id">
-        <div style="margin-bottom: 14px;">
-          <label style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Detalle de Orden</label>
-          <input type="text" id="corr-info" class="input-field" readonly style="opacity: 0.8;">
+
+        <div>
+          <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">
+            Detalle de la Transacción
+          </label>
+          <input type="text" id="corr-info" class="input-field bg-surface-container-lowest" readonly style="opacity: 0.85;">
         </div>
-        <div style="margin-bottom: 14px;">
-          <label style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Nuevo Método de Pago</label>
+
+        <div>
+          <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">
+            Nuevo Método de Pago *
+          </label>
           <select id="corr-nuevo-metodo" class="input-field" required>
             <option value="EFECTIVO">EFECTIVO</option>
             <option value="TARJETA_VISA">TARJETA_VISA</option>
@@ -148,15 +358,17 @@
             <option value="TRANSFERENCIA">TRANSFERENCIA</option>
           </select>
         </div>
-        <div style="margin-bottom: 20px;">
-          <label style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 6px;">
-            Justificación Administrativa Obligatoria
+
+        <div>
+          <label class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant block mb-1">
+            Justificación Administrativa Obligatoria *
           </label>
           <textarea id="corr-motivo" class="input-field" rows="3" placeholder="Ej: Confusión de voucher en barra por el bartender, cliente canceló con Visa..." required style="resize: vertical;"></textarea>
         </div>
-        <div style="display: flex; gap: 10px;">
-          <button type="button" class="btn modal-close" style="flex: 1;">Cancelar</button>
-          <button type="submit" class="btn btn-gold" style="flex: 2;">Registrar Corrección</button>
+
+        <div class="flex gap-3 mt-2">
+          <button type="button" class="btn modal-cancel flex-1">Cancelar</button>
+          <button type="submit" class="btn btn-gold flex-[2] font-bold">Registrar Corrección</button>
         </div>
       </form>
     </div>
@@ -175,10 +387,52 @@
     }
 
     let pagosList = [];
+    let logsList = [];
+    let searchQuery = "";
+
+    function updateKPIs(pagos) {
+      const total = pagos.reduce((sum, p) => sum + parseFloat(p.monto_pagado || 0), 0);
+      const count = pagos.length;
+      const promedio = count > 0 ? total / count : 0;
+
+      const totalEl = document.getElementById("kpi-total-facturado");
+      const countEl = document.getElementById("kpi-total-tickets");
+      const promEl = document.getElementById("kpi-ticket-promedio");
+
+      if (totalEl) totalEl.textContent = `Q ${total.toLocaleString("es-GT", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      if (countEl) countEl.textContent = count;
+      if (promEl) promEl.textContent = `Q ${promedio.toLocaleString("es-GT", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    function getMetodoBadge(metodo) {
+      const m = (metodo || "").toUpperCase();
+      let icon = "payments";
+      let label = metodo;
+      if (m.includes("VISA")) {
+        icon = "credit_card";
+        label = "Tarjeta Visa";
+      } else if (m.includes("MASTERCARD")) {
+        icon = "credit_card";
+        label = "Mastercard";
+      } else if (m.includes("TRANSFERENCIA")) {
+        icon = "account_balance";
+        label = "Transferencia";
+      } else if (m === "EFECTIVO") {
+        icon = "payments";
+        label = "Efectivo";
+      }
+      return `
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest text-secondary-fixed text-xs font-semibold border border-white/5 shadow-sm">
+          <span class="material-symbols-outlined text-sm text-primary">${icon}</span>
+          <span>${label}</span>
+        </span>
+      `;
+    }
 
     async function loadPagos() {
       try {
         pagosList = await api.getPagosAuditoria();
+        updateKPIs(pagosList);
         renderPagos();
       } catch (err) {
         alert("Error al cargar pagos: " + err.message);
@@ -187,8 +441,8 @@
 
     async function loadLogs() {
       try {
-        const logs = await api.getLogsAuditoria();
-        renderLogs(logs);
+        logsList = await api.getLogsAuditoria();
+        renderLogs();
       } catch (err) {
         alert("Error al cargar logs: " + err.message);
       }
@@ -196,20 +450,52 @@
 
     function renderPagos() {
       const tbody = document.getElementById("pagos-table-body");
-      tbody.innerHTML = pagosList.map(p => {
+      if (!pagosList || pagosList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-on-surface-variant">No se encontraron pagos registrados en este turno.</td></tr>`;
+        return;
+      }
+
+      const q = searchQuery.toLowerCase().trim();
+      const filtered = pagosList.filter(p => {
+        if (!q) return true;
+        const idPago = String(p.id_pago);
+        const idOrden = String(p.id_orden);
+        const mesa = (p.numero_mesa || "").toLowerCase();
+        const user = (p.nombre_usuario || "").toLowerCase();
+        const met = (p.metodo_pago || "").toLowerCase();
+        return idPago.includes(q) || idOrden.includes(q) || mesa.includes(q) || user.includes(q) || met.includes(q);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-on-surface-variant">Sin pagos coincidentes con el filtro de búsqueda.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(p => {
         const fecha = new Date(p.fecha_transaccion).toLocaleString("es-GT");
         return `
-          <tr>
-            <td style="font-family: monospace; color: var(--text-secondary);">#${p.id_pago}</td>
-            <td style="font-weight: 600;">#${p.id_orden}</td>
-            <td>${p.numero_mesa}</td>
-            <td>${p.nombre_usuario}</td>
-            <td style="font-size: 13px; color: var(--text-secondary);">${fecha}</td>
-            <td><span class="badge badge-gold">${p.metodo_pago}</span></td>
-            <td style="font-weight: 700; color: var(--gold-highlight-text);">Q ${parseFloat(p.monto_pagado).toFixed(2)}</td>
-            <td>
-              <button class="btn btn-subtle-gold btn-corr" data-id="${p.id_pago}" style="padding: 6px 12px; font-size: 12px;">
-                Corregir Método
+          <tr class="hover:bg-surface-container-high/40 transition-colors">
+            <td class="py-3 px-3">
+              <div class="flex items-center gap-1.5 font-mono text-primary font-bold">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                <span>#PAG-${p.id_pago}</span>
+              </div>
+            </td>
+            <td class="py-3 px-3 font-semibold text-on-surface">#ORD-${p.id_orden}</td>
+            <td class="py-3 px-3">${p.numero_mesa}</td>
+            <td class="py-3 px-3">
+              <div class="flex items-center gap-1.5">
+                <div class="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs">${(p.nombre_usuario || 'U').slice(0, 2).toUpperCase()}</div>
+                <span class="text-on-surface">${p.nombre_usuario}</span>
+              </div>
+            </td>
+            <td class="py-3 px-3 text-xs text-on-surface-variant">${fecha}</td>
+            <td class="py-3 px-3">${getMetodoBadge(p.metodo_pago)}</td>
+            <td class="py-3 px-3 font-bold text-primary text-base">Q ${parseFloat(p.monto_pagado).toFixed(2)}</td>
+            <td class="py-3 px-3 text-right">
+              <button class="px-3 py-1.5 rounded-full bg-primary-container text-on-primary hover:bg-primary transition-all flex items-center gap-1 text-xs font-semibold shadow-md btn-corr ml-auto" data-id="${p.id_pago}">
+                <span class="material-symbols-outlined text-xs">edit_note</span>
+                <span>Editar Pago</span>
               </button>
             </td>
           </tr>
@@ -225,34 +511,58 @@
       });
     }
 
-    function renderLogs(logs) {
+    function renderLogs() {
       const tbody = document.getElementById("logs-table-body");
-      tbody.innerHTML = logs.map(l => {
+      if (!logsList || logsList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-on-surface-variant">No hay registros en la bitácora aún.</td></tr>`;
+        return;
+      }
+
+      const q = searchQuery.toLowerCase().trim();
+      const filtered = logsList.filter(l => {
+        if (!q) return true;
+        const idLog = String(l.id_log);
+        const user = (l.nombre_usuario || "").toLowerCase();
+        const accion = (l.accion || "").toLowerCase();
+        const desc = (l.descripcion || "").toLowerCase();
+        return idLog.includes(q) || user.includes(q) || accion.includes(q) || desc.includes(q);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-on-surface-variant">Sin registros coincidentes con el filtro.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(l => {
         const fecha = new Date(l.fecha).toLocaleString("es-GT");
         return `
-          <tr>
-            <td style="font-family: monospace; color: var(--text-secondary);">#${l.id_log}</td>
-            <td style="font-size: 13px; color: var(--text-secondary);">${fecha}</td>
-            <td style="font-weight: 600; color: #FFF;">${l.nombre_usuario}</td>
-            <td><span class="badge badge-gold">${l.accion}</span></td>
-            <td style="color: var(--text-secondary);">${l.descripcion}</td>
+          <tr class="hover:bg-surface-container-high/40 transition-colors">
+            <td class="py-3 px-3 font-mono text-primary font-semibold">#LOG-${l.id_log}</td>
+            <td class="py-3 px-3 text-xs text-on-surface-variant">${fecha}</td>
+            <td class="py-3 px-3 font-medium text-on-surface">${l.nombre_usuario}</td>
+            <td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary uppercase">${l.accion}</span></td>
+            <td class="py-3 px-3 text-on-surface-variant">${l.descripcion}</td>
           </tr>
         `;
       }).join("");
     }
 
+    const modalCorr = document.getElementById("correction-modal");
+
     function openCorrModal(p) {
       document.getElementById("corr-pago-id").value = p.id_pago;
-      document.getElementById("corr-info").value = `Pago #${p.id_pago} (Orden #${p.id_orden} · ${p.numero_mesa} · Q${parseFloat(p.monto_pagado).toFixed(2)})`;
+      document.getElementById("corr-info").value = `Pago #${p.id_pago} (Orden #${p.id_orden} · ${p.numero_mesa} · Q ${parseFloat(p.monto_pagado).toFixed(2)})`;
       document.getElementById("corr-nuevo-metodo").value = p.metodo_pago;
       document.getElementById("corr-motivo").value = "";
-      document.getElementById("correction-modal").classList.add("active");
+      modalCorr.classList.remove("hidden");
     }
 
-    document.querySelectorAll(".modal-close").forEach(b => {
-      b.addEventListener("click", () => {
-        document.getElementById("correction-modal").classList.remove("active");
-      });
+    const cerrarCorrModal = () => modalCorr.classList.add("hidden");
+    modalCorr.querySelectorAll(".modal-close, .modal-cancel").forEach(b => {
+      b.addEventListener("click", cerrarCorrModal);
+    });
+    modalCorr.addEventListener("click", (e) => {
+      if (e.target === modalCorr) cerrarCorrModal();
     });
 
     document.getElementById("correction-form").addEventListener("submit", async (e) => {
@@ -263,13 +573,53 @@
 
       try {
         await api.cambiarMetodoPago(idPago, nuevoMetodo, motivo);
-        document.getElementById("correction-modal").classList.remove("active");
-        alert("Método de pago corregido y registrado en la bitácora inmutable.");
+        cerrarCorrModal();
+        alert("✓ Método de pago corregido y registrado en la bitácora inmutable.");
         await loadPagos();
       } catch (err) {
         alert("Error al corregir: " + err.message);
       }
     });
+
+    // Búsqueda en vivo
+    const searchInput = document.getElementById("audit-search-input");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        searchQuery = e.target.value;
+        renderPagos();
+        renderLogs();
+      });
+    }
+
+    // Exportar Excel de auditoría
+    const btnExport = document.getElementById("btn-export-excel-audit");
+    if (btnExport) {
+      btnExport.addEventListener("click", async () => {
+        const origText = btnExport.innerHTML;
+        btnExport.disabled = true;
+        btnExport.innerHTML = `<span class="material-symbols-outlined text-title-md animate-spin text-primary">sync</span><span>Exportando...</span>`;
+        try {
+          const res = await fetch("/api/v1/reportes/ventas/excel", {
+            headers: { Authorization: `Bearer ${authState.getToken()}` }
+          });
+          if (!res.ok) throw new Error("Error al descargar archivo");
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `Bourlemont_Auditoria_Pagos_${new Date().toISOString().slice(0, 10)}.xlsx`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          alert("Error exportando Excel: " + err.message);
+        } finally {
+          btnExport.disabled = false;
+          btnExport.innerHTML = origText;
+        }
+      });
+    }
 
     // Pestañas
     const tabPagos = document.getElementById("tab-pagos");
@@ -292,6 +642,22 @@
       viewPagos.style.display = "none";
       loadLogs();
     });
+
+    const topLogoutBtn = document.getElementById("top-logout-btn");
+    if (topLogoutBtn) {
+      topLogoutBtn.addEventListener("click", () => {
+        authState.clear();
+        window.location.href = "/index.html";
+      });
+    }
+
+    const currentU = authState.getUser();
+    if (currentU) {
+      const elName = document.getElementById("header-user-name");
+      const elRole = document.getElementById("header-user-role");
+      if (elName) elName.textContent = currentU.nombre || "Administrador";
+      if (elRole) elRole.textContent = currentU.rol === 'ADMIN' ? 'ADMINISTRADOR' : 'BARTENDER';
+    }
 
     loadPagos();
   </script>
